@@ -27,7 +27,7 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 |---|---|---|---|
 | Omelette | Canvas 101 | GitHub Copilot app | Booth repo with the repository scoped Chez Mona order ticket canvas |
 | Fried Chicken | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
-| Soup | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) weekly triage workflow and one of its pinned runs |
+| Soup | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) triage workflow file, pinned to a commit |
 | Dip | Security | GitHub.com | Tiny booth owned Chez Mona repo with a SQL injection PR that already has a Copilot Autofix comment |
 
 ## Booth repository
@@ -58,7 +58,7 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 |---|---|---|
 | Omelette | Show instructions: open the Copilot app, select **chez-mona-ignite-26**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
 | Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
-| Soup | Open the [workflow file](https://github.com/github-samples/tailspin-toys/blob/main/.github/workflows/weekly-workshop-triage.md) on GitHub.com | Close the browser tabs |
+| Soup | Open the pinned workflow file on GitHub.com (see Soup lab content) | Close the browser tabs |
 | Dip | Open the "Add menu search" PR on GitHub.com | Close the browser tabs |
 
 ## Lab content
@@ -91,17 +91,14 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 
 ### Soup: Agentic Workflows
 
-- Learn: a workflow written in Markdown, run by an agent with guardrails.
-- Source: upstream [`github-samples/tailspin-toys`](https://github.com/github-samples/tailspin-toys), [`.github/workflows/weekly-workshop-triage.md`](https://github.com/github-samples/tailspin-toys/blob/main/.github/workflows/weekly-workshop-triage.md). No booth copy; the repo is public, so guests only read it.
-- Pinned run: [Nov 2, 2026 scheduled run](https://github.com/github-samples/tailspin-toys/actions/runs/41411629806). The agent reviewed the two open issues, skipped #156 (maintainer author) and #152 (bot tracking issue), found nothing to close, and reported a no-op. The launcher links to this run, not the latest one, because new runs can fail or change.
-- Why not a closed sample issue: as of Nov 3, 2026, the agent has never closed an upstream issue or PR, so no item carries its closing comment.
+- Learn: an agentic workflow is a GitHub Actions workflow written in Markdown. Frontmatter sets the trigger, permissions and allowed outputs; the body tells the agent what to do in plain language.
+- Source: [`weekly-workshop-triage.md`](https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md) in upstream `github-samples/tailspin-toys`, pinned to commit `5cea212` so later changes do not affect the lab. No booth copy and nothing to run; guests only read.
 - Steps:
-  1. Open the workflow file.
-  2. Read the frontmatter: trigger, permissions, safe outputs.
-  3. Open the pinned run, open the **agent** job and read its summary: which items it skipped and why.
-  4. Compare the summary with the "Never close these" and "When in doubt, leave it open" rules in the workflow.
+  1. Read the launcher's short explanation of agentic workflows.
+  2. Open the pinned workflow file and read it: the frontmatter (trigger, permissions, safe outputs), then the instructions.
+  3. Come back to the launcher for the quiz.
 - Quiz:
-  1. What triggers it? Answer: a weekly schedule, or a manual run.
+  1. When does it run? Answer: every Monday on a schedule, or manually on demand.
   2. What does the agent do when unsure? Answer: leaves the item open.
 - Receipt QR: Agentic Workflows docs (link to confirm).
 
@@ -175,7 +172,6 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 ## To verify before the event
 
 - [ ] Booth account can see the code scanning and Autofix comments on Dip's PR with read only access
-- [ ] Soup's pinned run log is still available at the event (GitHub keeps Actions logs for a limited retention period), and guests can find the agent summary within the time limit
 - [ ] CodeQL flags the Dip search line and Autofix produces a clear parameterized fix
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
