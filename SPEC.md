@@ -94,13 +94,15 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 - Learn: an agentic workflow is a GitHub Actions workflow written in Markdown. Frontmatter sets the trigger, permissions and allowed outputs; the body tells the agent what to do in plain language.
 - Source: [`weekly-workshop-triage.md`](https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md) in upstream `github-samples/tailspin-toys`, pinned to commit `5cea212` so later changes do not affect the lab. No booth copy and nothing to run; guests only read.
 - Steps:
-  1. Read the launcher's short explanation of agentic workflows.
-  2. Open the pinned workflow file and read it: the frontmatter (trigger, permissions, safe outputs), then the instructions.
-  3. Come back to the launcher for the quiz.
+  1. Concept: [What is an agentic workflow?](launcher/content/soup/01-what-is-an-agentic-workflow.md)
+  2. Concept: [How it works](launcher/content/soup/02-how-it-works.md)
+  3. Open the pinned workflow file and read it: the frontmatter (trigger, permissions, safe outputs), then the instructions.
+  4. Come back to the launcher for the quiz.
+- Concept steps are rendered Markdown in the launcher, quoted verbatim from [GitHub Agentic Workflows](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows) on GitHub Docs (checked Nov 3, 2026), each with its source link.
 - Quiz:
   1. When does it run? Answer: every Monday on a schedule, or manually on demand.
   2. What does the agent do when unsure? Answer: leaves the item open.
-- Receipt QR: Agentic Workflows docs (link to confirm).
+- Receipt QR: https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows
 
 ### Dip: Security
 
@@ -180,7 +182,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [ ] Shared account use is permitted, and quota is enough for booth traffic
 - [ ] Webcam scanning speed under booth lighting
 - [ ] Each lab fits in about 5 minutes on booth laptops
-- [ ] Docs links for Agentic Workflows and Copilot Autofix
+- [ ] Docs link for Copilot Autofix
 - [ ] Final printer model, Windows driver and configured queue name
 - [ ] ESC/POS RAW printing, raster QR output and auto-cut on the selected printer
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper
