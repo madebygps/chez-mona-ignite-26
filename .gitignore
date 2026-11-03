@@ -1,2 +1,4 @@
 .copilot/
 node_modules/
+__pycache__/
+.venv/

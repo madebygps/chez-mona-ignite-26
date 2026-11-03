@@ -37,7 +37,7 @@ One private repo, [madebygps/chez-mona-ignite-26](https://github.com/madebygps/c
 | Path | Contents |
 |---|---|
 | `.github/extensions/chez-mona-order-ticket/` | Omelette canvas, moved from [madebygps/canvas-101](https://github.com/madebygps/canvas-101) |
-| `copilot-sdk/` | Fried Chicken SDK starter (to build) |
+| `copilot-sdk/` | Fried Chicken SDK starter |
 | `launcher/` | Local launcher web app (to build) |
 
 Soup and Dip use separate booth owned repos visited on GitHub.com, so they are not cloned.
@@ -79,7 +79,7 @@ Soup and Dip use separate booth owned repos visited on GitHub.com, so they are n
 ### Fried Chicken: Copilot SDK
 
 - Learn: the SDK lets your app run a Copilot agent with your own tools.
-- Starter: no `.git` folder, no push remote. Includes a `get_menu` tool.
+- Starter: [`copilot-sdk/`](copilot-sdk/), a single `main.py` menu assistant. Its `get_menu` tool takes a `vegetarian_only` flag; the prompt asks for vegetarian dishes, so the agent chooses the argument itself. No `.git` folder, no push remote. Pinned to `github-copilot-sdk==1.0.28`, verified running on Windows with Python 3.12.
 - Steps:
   1. Open the starter in VS Code.
   2. Ask Copilot Chat: "What does `define_tool` do?" and "How does the agent get the menu?"
@@ -162,7 +162,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - Use a JavaScript QR library (for example ZXing or jsQR). The built in `BarcodeDetector` is not available in Chrome on Windows.
 - Use large, matte QR codes on tickets to cope with booth lighting.
 - The local server prepares the SDK starter and launches VS Code. A hosted site could not do this.
-- Pre stage the SDK runtime on each laptop: `pip install github-copilot-sdk`, then `python -m copilot download-runtime`.
+- Pre stage the SDK runtime on each laptop: `pip install -r copilot-sdk/requirements.txt`, then `python -m copilot download-runtime`. Requires Python 3.11 or later.
 - Install and update the launcher on all laptops with a script, possibly extending `octobooth-demos/machine-setup`.
 
 ## Accidental change protection

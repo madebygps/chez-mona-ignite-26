@@ -15,4 +15,5 @@ Learn what a canvas is in the GitHub Copilot app, then try one.
 | Path | Contents |
 |---|---|
 | [`.github/extensions/chez-mona-order-ticket/`](.github/extensions/chez-mona-order-ticket/) | Canvas 101 order ticket canvas |
+| [`copilot-sdk/`](copilot-sdk/) | Copilot SDK starter, copied to a temp folder for each guest |
 | [`SPEC.md`](SPEC.md) | Launcher and lab spec |
