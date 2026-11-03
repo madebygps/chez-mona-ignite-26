@@ -111,11 +111,12 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 - Planted issues in the PR:
   - Security (for code scanning and Autofix):
     ```js
-    db.all(`SELECT * FROM dishes WHERE name LIKE '%${req.query.q}%'`)
+    const term = req.query.q;
+    db.all(`SELECT * FROM dishes WHERE name LIKE '%${term}%'`, (err, rows) => {
     ```
-    Expected Autofix shape (confirm against the real output):
+    Autofix suggestion on the PR:
     ```js
-    db.all("SELECT * FROM dishes WHERE name LIKE ?", [`%${req.query.q}%`])
+    db.all('SELECT * FROM dishes WHERE name LIKE ?', [`%${term}%`], (err, rows) => {
     ```
   - Logic bug (for Copilot code review): `GET /dishes/search` is registered after `GET /dishes/:id`, so Express matches `search` as an ID and the new route always returns `404 Dish not found`. The new route also returns raw database error messages.
 - Preparation: request one Copilot code review on the PR before the event, using [Max effort](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review#review-effort-level) to show the Universe 2026 launch. Guests only read the existing comments, so no review runs per guest.
@@ -180,8 +181,8 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 
 ## To verify before the event
 
-- [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access
-- [ ] CodeQL flags the Dip search line (done: `js/sql-injection` on line 51) and Autofix produces a clear parameterized fix (not yet: no suggestion appeared)
+- [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access, and does not see **Commit suggestions** or **Dismiss alert**
+- [x] CodeQL flags the Dip search line (`js/sql-injection` on line 51) and Autofix suggests a parameterized fix
 - [ ] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
