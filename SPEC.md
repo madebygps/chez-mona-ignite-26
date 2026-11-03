@@ -107,7 +107,7 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 ### Dip: PR review
 
 - Learn: two kinds of AI review meet on one pull request. Code scanning finds a known vulnerability and Copilot Autofix suggests a fix; Copilot code review reviews the whole change and comments like a teammate.
-- Source: [`madebygps/chez-mona-dip`](https://github.com/madebygps/chez-mona-dip), a tiny public Chez Mona app (Express and SQLite) with one open PR, ["Add menu search"](https://github.com/madebygps/chez-mona-dip/pull/1). `main` is already rate limited so CodeQL comments only on the SQL injection. Public so CodeQL and Autofix need no Code Security license. Security pattern inspired by Lab 3 of `github-samples/securing-your-code`.
+- Source: [`madebygps/chez-mona-dip`](https://github.com/madebygps/chez-mona-dip), a tiny public Chez Mona app (Express and SQLite) with one open PR, ["Add menu search"](https://github.com/madebygps/chez-mona-dip/pull/2). `main` is already rate limited so CodeQL comments only on the SQL injection. Public so CodeQL and Autofix need no Code Security license. Security pattern inspired by Lab 3 of `github-samples/securing-your-code`.
 - Planted issues in the PR:
   - Security (for code scanning and Autofix):
     ```js
@@ -181,7 +181,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 ## To verify before the event
 
 - [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access
-- [ ] CodeQL flags the Dip search line (done: `js/sql-injection` on line 50) and Autofix produces a clear parameterized fix (not yet: no suggestion appeared)
+- [ ] CodeQL flags the Dip search line (done: `js/sql-injection` on line 51) and Autofix produces a clear parameterized fix (not yet: no suggestion appeared)
 - [ ] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
