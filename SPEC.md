@@ -28,7 +28,7 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 | Omelette | Canvas 101 | GitHub Copilot app | Booth repo with the repository scoped Chez Mona order ticket canvas |
 | Fried Chicken | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
 | Soup | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) triage workflow file, pinned to a commit |
-| Dip | Security | GitHub.com | Tiny booth owned Chez Mona repo with a SQL injection PR that already has a Copilot Autofix comment |
+| Dip | PR review | GitHub.com | Tiny booth owned Chez Mona repo with an "Add menu search" PR that already has code scanning, Copilot Autofix and Copilot code review comments |
 
 ## Booth repository
 
@@ -59,7 +59,7 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 | Omelette | Show instructions: open the Copilot app, select **chez-mona-ignite-26**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
 | Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
 | Soup | Open the pinned workflow file on GitHub.com (see Soup lab content) | Close the browser tabs |
-| Dip | Open the "Add menu search" PR on GitHub.com | Close the browser tabs |
+| Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
 
 ## Lab content
 
@@ -104,27 +104,30 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
   2. What does the agent do when unsure? Answer: leaves the item open.
 - Receipt QR: https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows
 
-### Dip: Security
+### Dip: PR review
 
-- Learn: code scanning finds a vulnerability, Copilot Autofix suggests a fix.
-- Source: a tiny booth owned Chez Mona app (Express and SQLite) with one open PR, "Add menu search". Pattern inspired by Lab 3 of `github-samples/securing-your-code`.
-- Vulnerable line in the PR:
-  ```js
-  db.all(`SELECT * FROM dishes WHERE name LIKE '%${req.query.q}%'`)
-  ```
-- Autofix suggestion (expected shape, confirm against the real output):
-  ```js
-  db.all("SELECT * FROM dishes WHERE name LIKE ?", [`%${req.query.q}%`])
-  ```
-- Why a PR: the Autofix comment stays on the PR and is visible to anyone who can see the PR, unlike generating a fix on the alert page.
+- Learn: two kinds of AI review meet on one pull request. Code scanning finds a known vulnerability and Copilot Autofix suggests a fix; Copilot code review reviews the whole change and comments like a teammate.
+- Source: a tiny booth owned Chez Mona app (Express and SQLite) with one open PR, "Add menu search". Security pattern inspired by Lab 3 of `github-samples/securing-your-code`.
+- Planted issues in the PR:
+  - Security (for code scanning and Autofix):
+    ```js
+    db.all(`SELECT * FROM dishes WHERE name LIKE '%${req.query.q}%'`)
+    ```
+    Expected Autofix shape (confirm against the real output):
+    ```js
+    db.all("SELECT * FROM dishes WHERE name LIKE ?", [`%${req.query.q}%`])
+    ```
+  - Logic bug (for Copilot code review), for example a search that returns `404` when nothing matches instead of an empty list. Pick one that code review reliably flags.
+- Preparation: request one Copilot code review on the PR before the event, using [Max effort](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review#review-effort-level) to show the Universe 2026 launch. Guests only read the existing comments, so no review runs per guest.
+- Why a PR: both the Autofix and code review comments stay on the PR and are visible to anyone who can see it.
 - Steps:
-  1. Open the PR.
-  2. Read the code scanning comment.
-  3. Compare the original line with the Autofix suggestion.
+  1. Open the PR's **Files changed** tab.
+  2. Read the code scanning comment and its Autofix suggestion on the query line.
+  3. Read Copilot code review's comments on the rest of the change.
 - Quiz:
   1. What did code scanning find? Answer: SQL injection. Other choices: exposed secret, outdated dependency, cross site scripting. Hint: user input ends up inside a database query.
-  2. How does the Autofix suggestion fix it? Answer: passes the search text as a parameter instead of pasting it into the SQL. Other choices: removes the search feature, escapes HTML, requires a login. Hint: compare the query lines and look for the `?`.
-- Receipt QR: Copilot Autofix docs (link to confirm).
+  2. Which reviewer looks at the whole change, not only known vulnerability patterns? Answer: Copilot code review. Other choices: code scanning, Copilot Autofix, the PR author. Hint: find the comment that is not about the SQL query.
+- Receipt QR: https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review
 
 ## Receipt
 
@@ -173,8 +176,9 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 
 ## To verify before the event
 
-- [ ] Booth account can see the code scanning and Autofix comments on Dip's PR with read only access
+- [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access
 - [ ] CodeQL flags the Dip search line and Autofix produces a clear parameterized fix
+- [ ] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
 - [ ] Whether the launcher can open the Copilot app directly
@@ -182,7 +186,6 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [ ] Shared account use is permitted, and quota is enough for booth traffic
 - [ ] Webcam scanning speed under booth lighting
 - [ ] Each lab fits in about 5 minutes on booth laptops
-- [ ] Docs link for Copilot Autofix
 - [ ] Final printer model, Windows driver and configured queue name
 - [ ] ESC/POS RAW printing, raster QR output and auto-cut on the selected printer
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper

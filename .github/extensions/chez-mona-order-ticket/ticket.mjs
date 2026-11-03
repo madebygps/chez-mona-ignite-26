@@ -9,7 +9,7 @@ export const menu = [
   { id: 'omelette', name: 'Omelette', lab: 'Canvas 101' },
   { id: 'fried-chicken', name: 'Fried Chicken', lab: 'Copilot SDK' },
   { id: 'soup', name: 'Soup', lab: 'Agentic Workflows' },
-  { id: 'dip', name: 'Dip', lab: 'Security' }
+  { id: 'dip', name: 'Dip', lab: 'PR review' }
 ];
 const assets = path.join(path.dirname(fileURLToPath(import.meta.url)), 'public');
 // The panel can only send these fixed lesson prompts to chat, never arbitrary text.
