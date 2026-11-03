@@ -27,7 +27,7 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 |---|---|---|---|
 | Omelette | Canvas 101 | GitHub Copilot app | Booth repo with the repository scoped Chez Mona order ticket canvas |
 | Fried Chicken | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
-| Soup | Agentic Workflows | GitHub.com | Booth owned copy of tailspin-toys with staged, already triaged sample issues |
+| Soup | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) weekly triage workflow and one of its pinned runs |
 | Dip | Security | GitHub.com | Tiny booth owned Chez Mona repo with a SQL injection PR that already has a Copilot Autofix comment |
 
 ## Booth repository
@@ -40,7 +40,7 @@ One private repo, [madebygps/chez-mona-ignite-26](https://github.com/madebygps/c
 | `copilot-sdk/` | Fried Chicken SDK starter |
 | `launcher/` | Local launcher web app (to build) |
 
-Soup and Dip use separate booth owned repos visited on GitHub.com, so they are not cloned.
+Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the upstream `tailspin-toys` repo; Dip needs a separate booth owned repo.
 
 ## Screen flow
 
@@ -58,7 +58,7 @@ Soup and Dip use separate booth owned repos visited on GitHub.com, so they are n
 |---|---|---|
 | Omelette | Show instructions: open the Copilot app, select **chez-mona-ignite-26**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
 | Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
-| Soup | Open the booth repo workflow file on GitHub.com | Close the browser tabs |
+| Soup | Open the [workflow file](https://github.com/github-samples/tailspin-toys/blob/main/.github/workflows/weekly-workshop-triage.md) on GitHub.com | Close the browser tabs |
 | Dip | Open the "Add menu search" PR on GitHub.com | Close the browser tabs |
 
 ## Lab content
@@ -92,13 +92,14 @@ Soup and Dip use separate booth owned repos visited on GitHub.com, so they are n
 ### Soup: Agentic Workflows
 
 - Learn: a workflow written in Markdown, run by an agent with guardrails.
-- Source: based on `github-samples/tailspin-toys` `.github/workflows/weekly-workshop-triage.md`.
-- Booth account: read only on the booth copy.
+- Source: upstream [`github-samples/tailspin-toys`](https://github.com/github-samples/tailspin-toys), [`.github/workflows/weekly-workshop-triage.md`](https://github.com/github-samples/tailspin-toys/blob/main/.github/workflows/weekly-workshop-triage.md). No booth copy; the repo is public, so guests only read it.
+- Pinned run: [Nov 2, 2026 scheduled run](https://github.com/github-samples/tailspin-toys/actions/runs/41411629806). The agent reviewed the two open issues, skipped #156 (maintainer author) and #152 (bot tracking issue), found nothing to close, and reported a no-op. The launcher links to this run, not the latest one, because new runs can fail or change.
+- Why not a closed sample issue: as of Nov 3, 2026, the agent has never closed an upstream issue or PR, so no item carries its closing comment.
 - Steps:
   1. Open the workflow file.
   2. Read the frontmatter: trigger, permissions, safe outputs.
-  3. Open one closed sample issue and read the agent's comment.
-  4. Open the run log.
+  3. Open the pinned run, open the **agent** job and read its summary: which items it skipped and why.
+  4. Compare the summary with the "Never close these" and "When in doubt, leave it open" rules in the workflow.
 - Quiz:
   1. What triggers it? Answer: a weekly schedule, or a manual run.
   2. What does the agent do when unsure? Answer: leaves the item open.
@@ -167,13 +168,14 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 
 ## Accidental change protection
 
-- Booth account has no write access to source or booth repos used in Soup and Dip.
+- Booth account has no write access to the Soup and Dip repos.
 - SDK starter is a fresh copy each time, with no `.git` and no push remote.
 - Booth account has read only access to the booth repo, so changes made on a laptop cannot be pushed.
 
 ## To verify before the event
 
 - [ ] Booth account can see the code scanning and Autofix comments on Dip's PR with read only access
+- [ ] Soup's pinned run log is still available at the event (GitHub keeps Actions logs for a limited retention period), and guests can find the agent summary within the time limit
 - [ ] CodeQL flags the Dip search line and Autofix produces a clear parameterized fix
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
