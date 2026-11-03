@@ -25,10 +25,22 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 
 | Dish | Lab | Explore surface | Prepared material |
 |---|---|---|---|
-| Omelette | Canvas 101 | GitHub Copilot app | Booth repo "Canvas demo" with a repository scoped Chez Mona order ticket canvas |
-| Fried Chicken | Copilot SDK | VS Code with Copilot Chat | Small Python starter based on the official SDK sample |
+| Omelette | Canvas 101 | GitHub Copilot app | Booth repo with the repository scoped Chez Mona order ticket canvas |
+| Fried Chicken | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
 | Soup | Agentic Workflows | GitHub.com | Booth owned copy of tailspin-toys with staged, already triaged sample issues |
 | Dip | Security | GitHub.com | Tiny booth owned Chez Mona repo with a SQL injection PR that already has a Copilot Autofix comment |
+
+## Booth repository
+
+One private repo, [madebygps/chez-mona-ignite-26](https://github.com/madebygps/chez-mona-ignite-26), cloned once on each laptop. It holds everything that runs locally:
+
+| Path | Contents |
+|---|---|
+| `.github/extensions/chez-mona-order-ticket/` | Omelette canvas, moved from [madebygps/canvas-101](https://github.com/madebygps/canvas-101) |
+| `copilot-sdk/` | Fried Chicken SDK starter (to build) |
+| `launcher/` | Local launcher web app (to build) |
+
+Soup and Dip use separate booth owned repos visited on GitHub.com, so they are not cloned.
 
 ## Screen flow
 
@@ -44,8 +56,8 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 
 | Dish | Start lab | Wrap up |
 |---|---|---|
-| Omelette | Show instructions: open the Copilot app, select **Canvas demo**, open a chat, ask "Open the Demo Canvas" | Delete the chat session (exact menu label to confirm) |
-| Fried Chicken | Copy the pristine starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
+| Omelette | Show instructions: open the Copilot app, select **chez-mona-ignite-26**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
+| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
 | Soup | Open the booth repo workflow file on GitHub.com | Close the browser tabs |
 | Dip | Open the "Add menu search" PR on GitHub.com | Close the browser tabs |
 
@@ -157,7 +169,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 
 - Booth account has no write access to source or booth repos used in Soup and Dip.
 - SDK starter is a fresh copy each time, with no `.git` and no push remote.
-- Canvas repo is local with no push remote.
+- Booth account has read only access to the booth repo, so changes made on a laptop cannot be pushed.
 
 ## To verify before the event
 
