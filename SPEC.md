@@ -40,7 +40,7 @@ One private repo, [madebygps/chez-mona-ignite-26](https://github.com/madebygps/c
 | `copilot-sdk/` | Fried Chicken SDK starter |
 | `launcher/` | Local launcher web app (to build) |
 
-Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the upstream `tailspin-toys` repo; Dip needs a separate booth owned repo.
+Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the upstream `tailspin-toys` repo; Dip uses the public booth owned repo `madebygps/chez-mona-dip`.
 
 ## Screen flow
 
@@ -107,7 +107,7 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 ### Dip: PR review
 
 - Learn: two kinds of AI review meet on one pull request. Code scanning finds a known vulnerability and Copilot Autofix suggests a fix; Copilot code review reviews the whole change and comments like a teammate.
-- Source: a tiny booth owned Chez Mona app (Express and SQLite) with one open PR, "Add menu search". Security pattern inspired by Lab 3 of `github-samples/securing-your-code`.
+- Source: [`madebygps/chez-mona-dip`](https://github.com/madebygps/chez-mona-dip), a tiny public Chez Mona app (Express and SQLite) with one open PR, ["Add menu search"](https://github.com/madebygps/chez-mona-dip/pull/1). `main` is already rate limited so CodeQL comments only on the SQL injection. Public so CodeQL and Autofix need no Code Security license. Security pattern inspired by Lab 3 of `github-samples/securing-your-code`.
 - Planted issues in the PR:
   - Security (for code scanning and Autofix):
     ```js
@@ -117,9 +117,13 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
     ```js
     db.all("SELECT * FROM dishes WHERE name LIKE ?", [`%${req.query.q}%`])
     ```
-  - Logic bug (for Copilot code review), for example a search that returns `404` when nothing matches instead of an empty list. Pick one that code review reliably flags.
+  - Logic bug (for Copilot code review): `GET /dishes/search` is registered after `GET /dishes/:id`, so Express matches `search` as an ID and the new route always returns `404 Dish not found`. The new route also returns raw database error messages.
 - Preparation: request one Copilot code review on the PR before the event, using [Max effort](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review#review-effort-level) to show the Universe 2026 launch. Guests only read the existing comments, so no review runs per guest.
 - Why a PR: both the Autofix and code review comments stay on the PR and are visible to anyone who can see it.
+- Freeze after preparation, so the PR never needs resetting:
+  - A ruleset blocks pushes to the PR branch and merges into `main`.
+  - Automatic Copilot code review stays off, so nothing reruns.
+  - Lock the PR conversation and leave every comment unresolved.
 - Steps:
   1. Open the PR's **Files changed** tab.
   2. Read the code scanning comment and its Autofix suggestion on the query line.
@@ -177,7 +181,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 ## To verify before the event
 
 - [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access
-- [ ] CodeQL flags the Dip search line and Autofix produces a clear parameterized fix
+- [ ] CodeQL flags the Dip search line (done: `js/sql-injection` on line 50) and Autofix produces a clear parameterized fix (not yet: no suggestion appeared)
 - [ ] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
