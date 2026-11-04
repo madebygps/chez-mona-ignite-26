@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from . import labs, printer, receipt
-from .config import LAUNCHER_DIR, StationConfig
+from .config import LAUNCHER_DIR, ROLES, StationConfig
 from .orders import OrderCounter
 from .sdk_session import SdkSessions, SessionError
 
@@ -180,18 +180,32 @@ def make_server(launcher: Launcher, port: int) -> ThreadingHTTPServer:
     return ThreadingHTTPServer(("127.0.0.1", port), handler)
 
 
-def main(argv: list[str] | None = None) -> None:
+def parse_args(argv: list[str] | None = None) -> tuple[StationConfig, int]:
     parser = argparse.ArgumentParser(description="Chez Mona lab launcher")
     parser.add_argument("--config", type=Path, help="station config file (default: station.json)")
     parser.add_argument("--port", type=int, help="override the configured port")
+    parser.add_argument("--role", choices=ROLES, help="override the configured role: station or fridge")
+    parser.add_argument("--fridge", type=int, choices=range(1, 100), metavar="N",
+                        help="fridge number printed on tickets (implies --role fridge)")
     args = parser.parse_args(argv)
     config = StationConfig.load(args.config)
+    if args.role:
+        config.role = args.role
+    if args.fridge is not None:
+        if args.role == "station":
+            parser.error("--fridge only applies to a fridge")
+        config.role = "fridge"
+        config.fridge_number = args.fridge
+    return config, args.port or config.port
+
+
+def main(argv: list[str] | None = None) -> None:
+    config, port = parse_args(argv)
     launcher = Launcher(config)
     if config.role == "station":
         removed = launcher.sessions.sweep()
         if removed:
             print(f"Removed {len(removed)} leftover starter folder(s).")
-    port = args.port or config.port
     server = make_server(launcher, port)
     mode = "dry run" if config.dry_run else f"printing to {config.printer_label()}"
     role = f"fridge {config.fridge_number}" if config.role == "fridge" else "cooking station"

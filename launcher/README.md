@@ -13,7 +13,7 @@ A small Python server listens on `localhost` only. It serves the page and does t
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
 | [`station.example.json`](station.example.json) | Default station settings, copied to `station.json` per laptop |
-| [`start.ps1`](start.ps1) | Starts the server and opens the page in an Edge app window |
+| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge 1`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
 
 ## Set up a laptop
@@ -27,7 +27,7 @@ Needs Windows, Python 3.12, [uv](https://docs.astral.sh/uv/), Microsoft Edge and
    uv sync
    ```
 
-2. Copy `station.example.json` to `station.json` and edit it for this laptop (see [Station settings](#station-settings)). `station.json` is gitignored. On the 2 fridge laptops set `"role": "fridge"` and `"fridge_number"` to `1` or `2`; they skip steps 3 to 5.
+2. Copy `station.example.json` to `station.json` and edit it for this laptop (see [Station settings](#station-settings)). `station.json` is gitignored. The 2 fridge laptops skip steps 3 to 5.
 3. Pre stage the Fried Chicken SDK runtime, as SPEC describes:
 
    ```powershell
@@ -41,22 +41,31 @@ Needs Windows, Python 3.12, [uv](https://docs.astral.sh/uv/), Microsoft Edge and
 
 ## Run
 
+Each laptop runs one of the two programs. On the 6 cooking stations:
+
 ```powershell
 cd launcher
-.\start.ps1
+.\start.ps1 station
 ```
 
-The script starts the server, waits for it, then opens `http://localhost:8765` in an Edge app window. Press Ctrl+C in the console to stop. On stop, the launcher closes any Fried Chicken VS Code window and deletes its folder.
+On the 2 fridge laptops, give the fridge number (`1` or `2`):
 
-To run the server alone: `uv run python -u -m chez_mona [--config path] [--port N]`.
+```powershell
+cd launcher
+.\start.ps1 fridge 1
+```
+
+The script starts the server, waits for it, then opens `http://localhost:8765` in an Edge app window. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port.
+
+To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--fridge N] [--config path] [--port N]`.
 
 ## Station settings
 
 | Setting | Default | Meaning |
 |---|---|---|
 | `port` | `8765` | Local port for the page |
-| `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets |
-| `fridge_number` | `1` | Fridge number printed on tickets |
+| `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument |
+| `fridge_number` | `1` | Fridge number printed on tickets. `start.ps1 fridge N` sets this |
 | `dry_run` | `true` | When true, nothing is printed. The page shows a preview, and the ESC/POS bytes and a PNG are saved in `out/` |
 | `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
 | `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |

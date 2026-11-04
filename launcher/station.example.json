@@ -1,7 +1,5 @@
 {
   "port": 8765,
-  "role": "station",
-  "fridge_number": 1,
   "dry_run": true,
   "printer_connection": "usb",
   "printer_usb_match": "",

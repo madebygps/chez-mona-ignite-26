@@ -53,7 +53,7 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Fridge wall
 
-The 2 fridge laptops run the same app with `"role": "fridge"` in their station settings. They are touch kiosks:
+The 2 fridge laptops run the same app, started with `.\start.ps1 fridge 1` or `.\start.ps1 fridge 2`; the cooking stations use `.\start.ps1 station`. They are touch kiosks:
 
 1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
 2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
