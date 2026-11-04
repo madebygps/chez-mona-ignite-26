@@ -181,7 +181,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 
 ## To verify before the event
 
-- [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access, and does not see **Commit suggestions** or **Dismiss alert**
+- [x] Dip's PR shows the code scanning comment, its Autofix diff and Copilot code review comments to readers without write access (checked signed out, Nov 4). **Dismiss alert** is disabled; **Commit suggestion** is shown but cannot commit (no write access, ruleset blocks pushes)
 - [x] CodeQL flags the Dip search line (`js/sql-injection` on line 51) and Autofix suggests a parameterized fix
 - [x] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit (Max effort, 4 comments of 200 to 300 characters)
 - [x] Dip PR frozen: ruleset "Freeze booth lab" restricts updates, deletion and force pushes on `main` and `menu-search`; conversation locked
