@@ -123,7 +123,7 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 - Why a PR: both the Autofix and code review comments stay on the PR and are visible to anyone who can see it.
 - Freeze after preparation, so the PR never needs resetting:
   - A ruleset blocks pushes to the PR branch and merges into `main`.
-  - Automatic Copilot code review stays off, so nothing reruns.
+  - No new review can start: automatic review only runs on open, first draft to open, or new pushes, and pushes are blocked.
   - Lock the PR conversation and leave every comment unresolved.
 - Steps:
   1. Open the PR's **Files changed** tab.
@@ -185,7 +185,6 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [x] CodeQL flags the Dip search line (`js/sql-injection` on line 51) and Autofix suggests a parameterized fix
 - [x] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit (Max effort, 4 comments of 200 to 300 characters)
 - [x] Dip PR frozen: ruleset "Freeze booth lab" restricts updates, deletion and force pushes on `main` and `menu-search`; conversation locked
-- [ ] Automatic Copilot code review is off in the PR author's personal Copilot settings
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
 - [ ] Whether the launcher can open the Copilot app directly
