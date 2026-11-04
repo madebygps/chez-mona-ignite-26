@@ -1,12 +1,10 @@
 """Send raw ESC/POS bytes to the receipt printer, directly over USB or through a
-Windows print queue, or save them in dry-run mode."""
+Windows print queue."""
 
 from __future__ import annotations
 
 import sys
 import threading
-import time
-from pathlib import Path
 
 
 class PrintError(RuntimeError):
@@ -139,14 +137,6 @@ def submit_raw(queue: str, data: bytes, document: str = "Chez Mona receipt") -> 
         return job
     finally:
         dll.ClosePrinter(handle)
-
-
-def save_dry_run(out_dir: Path, dish_id: str, data: bytes, png: bytes) -> Path:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    stem = out_dir / f"{time.strftime('%Y%m%d-%H%M%S')}-{dish_id}"
-    stem.with_suffix(".bin").write_bytes(data)
-    stem.with_suffix(".png").write_bytes(png)
-    return stem.with_suffix(".png")
 
 
 # ---------- Direct USB ----------

@@ -45,7 +45,6 @@ class ConfigTest(unittest.TestCase):
 
     def test_example_loads(self):
         config = StationConfig.load(labs.LAUNCHER_DIR / "station.example.json")
-        self.assertTrue(config.dry_run)
         self.assertEqual(config.print_width_dots, 576)
 
     def test_partial_idle_override(self):

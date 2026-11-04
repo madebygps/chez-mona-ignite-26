@@ -177,7 +177,6 @@ h2 { font-family: var(--serif); font-size: 1.8rem; margin: 0 0 0.5em; }
 .hint strong { color: var(--amber); }
 
 /* Print */
-.receipt-preview { max-width: 240px; max-height: 42vh; border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(43, 33, 28, 0.12); margin-top: 10px; }
 .status-ok { color: var(--green); }
 .status-error { color: var(--red); }
 pre.detail { white-space: pre-wrap; font-size: 0.8rem; color: var(--muted); }
@@ -197,7 +196,6 @@ pre.detail { white-space: pre-wrap; font-size: 0.8rem; color: var(--muted); }
 .staff-dishes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
 
 /* Fridge */
-.fridge-tag { font-size: 0.85rem; color: var(--muted); }
 .menu { text-align: center; }
 .menu .lede { margin: 0 auto; }
 .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 28px; }

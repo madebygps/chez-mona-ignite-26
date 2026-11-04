@@ -1,6 +1,11 @@
 # Starts the Chez Mona launcher and opens it in an Edge app window.
-# Usage: .\start.ps1 [-Port 8765] [-NoBrowser]
+# Usage: .\start.ps1 station
+#        .\start.ps1 fridge
+# Options: -Port N -NoBrowser (default port: 8765 station, 8766 fridge)
 param(
+    [Parameter(Mandatory, Position = 0)]
+    [ValidateSet('station', 'fridge')]
+    [string]$Role,
     [int]$Port,
     [switch]$NoBrowser
 )
@@ -11,19 +16,28 @@ if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     throw 'uv was not found. Install it from https://docs.astral.sh/uv/ and try again.'
 }
 
-if (-not $Port) {
-    $config = if (Test-Path station.json) { 'station.json' } else { 'station.example.json' }
-    $Port = (Get-Content $config -Raw | ConvertFrom-Json).port
-    if (-not $Port) { $Port = 8765 }
+if (-not $Port -and (Test-Path station.json)) {
+    $Port = (Get-Content station.json -Raw | ConvertFrom-Json).port
 }
+if (-not $Port) { $Port = @{ station = 8765; fridge = 8766 }[$Role] }
 $url = "http://localhost:$Port/"
 
-$server = Start-Process uv -ArgumentList 'run', 'python', '-u', '-m', 'chez_mona', '--port', $Port -NoNewWindow -PassThru
+function Test-PortBusy([int]$Port) {
+    $client = [Net.Sockets.TcpClient]::new()
+    try { return $client.ConnectAsync('127.0.0.1', $Port).Wait(500) } catch { return $false } finally { $client.Dispose() }
+}
+if (Test-PortBusy $Port) {
+    throw "Port $Port is already in use, probably by another Chez Mona window. Press Ctrl+C in that window first, or pass -Port."
+}
+
+$serverArgs = @('run', 'python', '-u', '-m', 'chez_mona', '--port', $Port, '--role', $Role)
+$server = Start-Process uv -ArgumentList $serverArgs -NoNewWindow -PassThru
 
 $ready = $false
 for ($i = 0; $i -lt 60 -and -not $server.HasExited; $i++) {
     try {
-        Invoke-WebRequest "$($url)api/labs" -UseBasicParsing -TimeoutSec 2 | Out-Null
+        $labs = Invoke-RestMethod "$($url)api/labs" -TimeoutSec 2
+        if ($labs.station.role -ne $Role) { throw "Port $Port is answered by a $($labs.station.role), not a $Role." }
         $ready = $true
         break
     } catch {
@@ -44,5 +58,5 @@ if (-not $NoBrowser) {
     Start-Process $edge -ArgumentList "--app=$url", '--start-maximized'
 }
 
-Write-Host "Launcher running on $url. Press Ctrl+C here to stop it."
+Write-Host "Chez Mona $Role running on $url. Press Ctrl+C here to stop it."
 Wait-Process -Id $server.Id

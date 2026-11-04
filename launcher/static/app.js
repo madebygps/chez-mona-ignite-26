@@ -11,7 +11,7 @@ const SCAN_COOLDOWN_MS = 4000;
 
 const state = {
   dishes: {},
-  station: { dry_run: true, idle_seconds: { default: 120, explore: 600, prompt: 30 } },
+  station: { idle_seconds: { default: 120, explore: 600, prompt: 30 } },
   screen: null,
   dish: null,
   question: 0,
@@ -391,14 +391,12 @@ async function renderPrint() {
       <h2>Printing your receipt…</h2>
     </section>`);
   try {
-    const result = await api("/api/print", { dish: dish.id });
-    const dry = result.status === "dry_run";
+    await api("/api/print", { dish: dish.id });
     show("print", `
       <section class="center">
         <p class="eyebrow">Well done</p>
-        <h2 class="status-ok">${dry ? "Receipt ready (dry run)" : "Your receipt is on its way"}</h2>
-        <p class="lede">${dry ? "Printing is off on this station, so here is a preview." : "Pick it up from the printer and scan the QR code to keep learning."}</p>
-        ${dry ? `<img class="receipt-preview" alt="Receipt preview" src="${result.preview}&t=${Date.now()}">` : ""}
+        <h2 class="status-ok">Your receipt is on its way</h2>
+        <p class="lede">Pick it up from the printer and scan the QR code to keep learning.</p>
         <div class="row" style="justify-content:center">
           <button class="primary" id="next">Continue</button>
         </div>
@@ -472,9 +470,7 @@ const staff = {
     line.textContent = "Checking printer…";
     try {
       const p = await api("/api/printer");
-      const mode = p.dry_run ? "Dry run (printing off)." : "Printing on.";
-      const queue = p.error ? p.error : `${p.printer}: ${p.problems.length ? p.problems.join(", ") : "ready"}.`;
-      line.textContent = `${mode} ${queue}`;
+      line.textContent = p.error ? p.error : `${p.printer}: ${p.problems.length ? p.problems.join(", ") : "ready"}.`;
     } catch (error) {
       line.textContent = error.message;
     }

@@ -3,24 +3,25 @@
 from __future__ import annotations
 
 import argparse
-import base64
 import json
 import mimetypes
+import socket
 import sys
 from datetime import datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
 from . import labs, printer, receipt
-from .config import LAUNCHER_DIR, StationConfig
+from .config import LAUNCHER_DIR, ROLES, StationConfig
 from .orders import OrderCounter
 from .sdk_session import SdkSessions, SessionError
 
 STATIC_DIR = LAUNCHER_DIR / "static"
 ALLOWED_HOSTS = {"localhost", "127.0.0.1"}
 HOME_PAGE = {"station": "index.html", "fridge": "fridge.html"}
+MAX_BODY = 64 * 1024
 
 
 class Launcher:
@@ -31,7 +32,7 @@ class Launcher:
         self.content = labs.load()
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions(code_path=config.code_path)
-        self.orders = OrderCounter(config.state_dir / f"fridge-{config.fridge_number}-order.txt")
+        self.orders = OrderCounter(config.state_dir / "fridge-order.txt")
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -48,14 +49,9 @@ class Launcher:
 
     def print_receipt(self, dish_id: str) -> dict:
         dish = self.dish(dish_id)
-        width = self.config.print_width_dots
-        data = receipt.escpos(dish, width)
-        preview = f"/api/receipt-preview?dish={dish_id}"
-        if self.config.dry_run:
-            saved = printer.save_dry_run(self.config.out_dir, dish_id, data, receipt.preview_png(dish, width))
-            return {"status": "dry_run", "saved": str(saved), "preview": preview}
+        data = receipt.escpos(dish, self.config.print_width_dots)
         job = self.send(data, f"Chez Mona receipt: {dish['dish']}")
-        return {"status": "sent", "job": job, "preview": preview}
+        return {"status": "sent", "job": job}
 
     def send(self, data: bytes, title: str):
         if self.config.printer_connection == "queue":
@@ -64,23 +60,17 @@ class Launcher:
 
     def print_ticket(self, dish_id: str) -> dict:
         dish = self.dish(dish_id)
-        width = self.config.print_width_dots
 
         def use(number: int) -> dict:
-            order = receipt.Order(self.config.fridge_number, number, datetime.now())
-            data = receipt.ticket_escpos(dish, order, width)
-            png = receipt.ticket_png(dish, order, width)
-            result = {"order": order.label(), "preview": "data:image/png;base64," + base64.b64encode(png).decode()}
-            if self.config.dry_run:
-                saved = printer.save_dry_run(self.config.out_dir, f"ticket-{dish_id}", data, png)
-                return {**result, "status": "dry_run", "saved": str(saved)}
+            order = receipt.Order(number, datetime.now())
+            data = receipt.ticket_escpos(dish, order, self.config.print_width_dots)
             job = self.send(data, f"Chez Mona ticket {order.label()}: {dish['dish']}")
-            return {**result, "status": "sent", "job": job}
+            return {"order": order.label(), "status": "sent", "job": job}
 
         return self.orders.issue(use)
 
     def printer_status(self) -> dict:
-        info = {"dry_run": self.config.dry_run, "printer": self.config.printer_label(), "problems": []}
+        info = {"printer": self.config.printer_label(), "problems": []}
         try:
             if self.config.printer_connection == "queue":
                 info.update(printer.queue_status(self.config.printer_queue))
@@ -125,14 +115,6 @@ class Handler(BaseHTTPRequestHandler):
             })
         if url.path == "/api/printer":
             return self._json(HTTPStatus.OK, self.launcher.printer_status())
-        if url.path == "/api/receipt-preview":
-            dish_id = parse_qs(url.query).get("dish", [""])[0]
-            try:
-                dish = self.launcher.dish(dish_id)
-            except LookupError as exc:
-                return self._json(HTTPStatus.NOT_FOUND, {"error": str(exc)})
-            png = receipt.preview_png(dish, self.launcher.config.print_width_dots)
-            return self._send(HTTPStatus.OK, png, "image/png")
         return self._static(url.path)
 
     def _static(self, path: str) -> None:
@@ -146,13 +128,16 @@ class Handler(BaseHTTPRequestHandler):
         self._send(HTTPStatus.OK, target.read_bytes(), content_type)
 
     def do_POST(self):
+        length = min(int(self.headers.get("Content-Length") or 0), MAX_BODY)
+        # Read the body even when rejecting, or Windows resets the connection
+        # before the client sees the response.
+        raw = self.rfile.read(length)
         # A JSON content type forces a CORS preflight, which this server never
         # answers, so other sites cannot drive these endpoints from a browser.
         if not self._host_ok() or not (self.headers.get("Content-Type") or "").startswith("application/json"):
             return self._json(HTTPStatus.FORBIDDEN, {"error": "Forbidden"})
-        length = int(self.headers.get("Content-Length") or 0)
         try:
-            body = json.loads(self.rfile.read(length) or b"{}")
+            body = json.loads(raw or b"{}")
         except json.JSONDecodeError:
             return self._json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON"})
         routes = {
@@ -175,27 +160,46 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": f"{type(exc).__name__}: {exc}"})
 
 
+class LauncherServer(ThreadingHTTPServer):
+    # On Windows, SO_REUSEADDR lets a second launcher share a busy port, so claim it exclusively.
+    allow_reuse_address = sys.platform != "win32"
+
+    def server_bind(self) -> None:
+        if sys.platform == "win32":
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
 def make_server(launcher: Launcher, port: int) -> ThreadingHTTPServer:
     handler = type("BoundHandler", (Handler,), {"launcher": launcher})
-    return ThreadingHTTPServer(("127.0.0.1", port), handler)
+    return LauncherServer(("127.0.0.1", port), handler)
 
 
-def main(argv: list[str] | None = None) -> None:
+def parse_args(argv: list[str] | None = None) -> tuple[StationConfig, int]:
     parser = argparse.ArgumentParser(description="Chez Mona lab launcher")
     parser.add_argument("--config", type=Path, help="station config file (default: station.json)")
     parser.add_argument("--port", type=int, help="override the configured port")
+    parser.add_argument("--role", choices=ROLES, help="override the configured role: station or fridge")
     args = parser.parse_args(argv)
     config = StationConfig.load(args.config)
+    if args.role:
+        config.role = args.role
+    return config, args.port or config.server_port()
+
+
+def main(argv: list[str] | None = None) -> None:
+    config, port = parse_args(argv)
     launcher = Launcher(config)
     if config.role == "station":
         removed = launcher.sessions.sweep()
         if removed:
             print(f"Removed {len(removed)} leftover starter folder(s).")
-    port = args.port or config.port
-    server = make_server(launcher, port)
-    mode = "dry run" if config.dry_run else f"printing to {config.printer_label()}"
-    role = f"fridge {config.fridge_number}" if config.role == "fridge" else "cooking station"
-    print(f"Chez Mona {role} on http://localhost:{port} ({mode}). Ctrl+C to stop.")
+    try:
+        server = make_server(launcher, port)
+    except OSError as exc:
+        sys.exit(f"Port {port} is already in use ({exc.strerror}). Close the other Chez Mona window first.")
+    role =  "fridge" if config.role == "fridge" else "cooking station"
+    print(f"Chez Mona {role} on http://localhost:{port} (printing to {config.printer_label()}). Ctrl+C to stop.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

@@ -12,6 +12,7 @@ REPO_DIR = LAUNCHER_DIR.parent
 STATION_FILE = LAUNCHER_DIR / "station.json"
 EXAMPLE_FILE = LAUNCHER_DIR / "station.example.json"
 ROLES = ("station", "fridge")
+DEFAULT_PORTS = {"station": 8765, "fridge": 8766}
 CONNECTIONS = ("usb", "queue")
 
 
@@ -21,10 +22,8 @@ def default_state_dir() -> Path:
 
 @dataclass
 class StationConfig:
-    port: int = 8765
+    port: int | None = None
     role: str = "station"
-    fridge_number: int = 1
-    dry_run: bool = True
     printer_connection: str = "usb"
     printer_usb_match: str = ""
     printer_queue: str = "Chez Mona Receipt"
@@ -34,7 +33,6 @@ class StationConfig:
     idle_seconds: dict = field(
         default_factory=lambda: {"default": 120, "explore": 600, "prompt": 30}
     )
-    out_dir: Path = LAUNCHER_DIR / "out"
     state_dir: Path = field(default_factory=default_state_dir)
 
     @classmethod
@@ -45,8 +43,8 @@ class StationConfig:
         for key, value in data.items():
             if key == "idle_seconds":
                 config.idle_seconds = {**config.idle_seconds, **value}
-            elif key in ("out_dir", "state_dir"):
-                setattr(config, key, Path(value))
+            elif key == "state_dir":
+                config.state_dir = Path(value)
             elif hasattr(config, key):
                 setattr(config, key, value)
             else:
@@ -59,6 +57,10 @@ class StationConfig:
             raise ValueError(f"printer_connection must be one of: {', '.join(CONNECTIONS)}")
         return config
 
+    def server_port(self) -> int:
+        """The configured port, or the role's own default so a station and a fridge never clash."""
+        return self.port or DEFAULT_PORTS[self.role]
+
     def printer_label(self) -> str:
         if self.printer_connection == "queue":
             return f"queue '{self.printer_queue}'"
@@ -68,7 +70,5 @@ class StationConfig:
         """Settings the browser page needs."""
         return {
             "role": self.role,
-            "fridge_number": self.fridge_number,
-            "dry_run": self.dry_run,
             "idle_seconds": self.idle_seconds,
         }
