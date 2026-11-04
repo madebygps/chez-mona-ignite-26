@@ -33,7 +33,7 @@ class ServerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
-        config = StationConfig(dry_run=True, out_dir=Path(cls.tmp.name))
+        config = StationConfig(dry_run=True, out_dir=Path(cls.tmp.name), state_dir=Path(cls.tmp.name))
         cls.sessions = FakeSessions()
         cls.server = make_server(Launcher(config, sessions=cls.sessions), 0)
         cls.port = cls.server.server_address[1]
@@ -91,6 +91,32 @@ class ServerTest(unittest.TestCase):
         self.assertTrue(saved.with_suffix(".png").is_file())
         status, content_type, _ = self.request("GET", result["preview"])
         self.assertEqual((status, content_type), (200, "image/png"))
+
+    def test_ticket_numbers_advance_only_on_success(self):
+        launcher = self.server.RequestHandlerClass.launcher
+        first = json.loads(self.request("POST", "/api/ticket", {"dish": "soup"})[2])
+        self.assertEqual(first["status"], "dry_run")
+        self.assertTrue(first["preview"].startswith("data:image/png;base64,"))
+        self.assertEqual(self.request("POST", "/api/ticket", {"dish": "pizza"})[0], 400)
+
+        def fail(number):
+            raise RuntimeError("printer off")
+
+        with self.assertRaises(RuntimeError):
+            launcher.orders.issue(fail)
+        second = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
+        self.assertEqual(int(second["order"]), int(first["order"]) + 1)
+
+    def test_fridge_role_serves_fridge_page(self):
+        launcher = self.server.RequestHandlerClass.launcher
+        launcher.config.role = "fridge"
+        try:
+            _, _, data = self.request("GET", "/")
+            self.assertIn(b"fridge.js", data)
+        finally:
+            launcher.config.role = "station"
+        _, _, data = self.request("GET", "/")
+        self.assertIn(b"app.js", data)
 
 
 if __name__ == "__main__":

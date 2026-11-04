@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import mimetypes
 import sys
+from datetime import datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -13,10 +15,12 @@ from urllib.parse import parse_qs, urlparse
 
 from . import labs, printer, receipt
 from .config import LAUNCHER_DIR, StationConfig
+from .orders import OrderCounter
 from .sdk_session import SdkSessions, SessionError
 
 STATIC_DIR = LAUNCHER_DIR / "static"
 ALLOWED_HOSTS = {"localhost", "127.0.0.1"}
+HOME_PAGE = {"station": "index.html", "fridge": "fridge.html"}
 
 
 class Launcher:
@@ -27,6 +31,7 @@ class Launcher:
         self.content = labs.load()
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions(code_path=config.code_path)
+        self.orders = OrderCounter(config.state_dir / f"fridge-{config.fridge_number}-order.txt")
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -51,6 +56,23 @@ class Launcher:
             return {"status": "dry_run", "saved": str(saved), "preview": preview}
         job = printer.submit_raw(self.config.printer_queue, data, f"Chez Mona receipt: {dish['dish']}")
         return {"status": "sent", "job": job, "preview": preview}
+
+    def print_ticket(self, dish_id: str) -> dict:
+        dish = self.dish(dish_id)
+        width = self.config.print_width_dots
+
+        def use(number: int) -> dict:
+            order = receipt.Order(self.config.fridge_number, number, datetime.now())
+            data = receipt.ticket_escpos(dish, order, width)
+            png = receipt.ticket_png(dish, order, width)
+            result = {"order": order.label(), "preview": "data:image/png;base64," + base64.b64encode(png).decode()}
+            if self.config.dry_run:
+                saved = printer.save_dry_run(self.config.out_dir, f"ticket-{dish_id}", data, png)
+                return {**result, "status": "dry_run", "saved": str(saved)}
+            job = printer.submit_raw(self.config.printer_queue, data, f"Chez Mona ticket {order.label()}: {dish['dish']}")
+            return {**result, "status": "sent", "job": job}
+
+        return self.orders.issue(use)
 
     def printer_status(self) -> dict:
         info = {"dry_run": self.config.dry_run, "queue": self.config.printer_queue}
@@ -106,7 +128,7 @@ class Handler(BaseHTTPRequestHandler):
         return self._static(url.path)
 
     def _static(self, path: str) -> None:
-        relative = "index.html" if path in ("/", "") else path.lstrip("/")
+        relative = HOME_PAGE[self.launcher.config.role] if path in ("/", "") else path.lstrip("/")
         target = (STATIC_DIR / relative).resolve()
         if not target.is_relative_to(STATIC_DIR.resolve()) or not target.is_file():
             return self._json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
@@ -130,6 +152,7 @@ class Handler(BaseHTTPRequestHandler):
             "/api/session/reopen": self.launcher.sessions.reopen,
             "/api/session/end": self.launcher.sessions.end,
             "/api/print": lambda: self.launcher.print_receipt(body.get("dish", "")),
+            "/api/ticket": lambda: self.launcher.print_ticket(body.get("dish", "")),
         }
         route = routes.get(urlparse(self.path).path)
         if not route:
@@ -156,13 +179,15 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     config = StationConfig.load(args.config)
     launcher = Launcher(config)
-    removed = launcher.sessions.sweep()
-    if removed:
-        print(f"Removed {len(removed)} leftover starter folder(s).")
+    if config.role == "station":
+        removed = launcher.sessions.sweep()
+        if removed:
+            print(f"Removed {len(removed)} leftover starter folder(s).")
     port = args.port or config.port
     server = make_server(launcher, port)
     mode = "dry run" if config.dry_run else f"printing to '{config.printer_queue}'"
-    print(f"Chez Mona launcher on http://localhost:{port} ({mode}). Ctrl+C to stop.")
+    role = f"fridge {config.fridge_number}" if config.role == "fridge" else "cooking station"
+    print(f"Chez Mona {role} on http://localhost:{port} ({mode}). Ctrl+C to stop.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

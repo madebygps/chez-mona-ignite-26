@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chez Mona Fridge</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body class="fridge">
+  <header class="topbar">
+    <div class="brand" title="Chez Mona">
+      <span class="brand-mark">CM</span>
+      <span class="brand-name">Chez Mona</span>
+    </div>
+    <span class="fridge-tag" id="fridge-tag"></span>
+  </header>
+
+  <main id="app" aria-live="polite"></main>
+
+  <div class="overlay" id="staff" hidden>
+    <div class="dialog wide" role="dialog" aria-labelledby="staff-title">
+      <h2 id="staff-title">Staff</h2>
+      <p class="muted small" id="staff-printer">Checking printer…</p>
+      <div class="row" style="justify-content: center">
+        <button id="staff-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/fridge.js"></script>
+</body>
+</html>

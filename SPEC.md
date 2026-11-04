@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: all four labs' material built. Launcher built in [`launcher/`](launcher/) and tested on a dev machine in dry run mode; VS Code and printer steps still need booth hardware (see [To verify before the event](#to-verify-before-the-event)).
+Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/) and tested on a dev machine in dry run mode; VS Code and printer steps still need booth hardware (see [To verify before the event](#to-verify-before-the-event)).
 
 ## Goal
 
@@ -50,6 +50,16 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 5. **Quiz.** Two multiple choice questions. Wrong answer shows a hint and allows retry.
 6. **Print.** Receipt prints. Screen confirms.
 7. **Wrap up.** Short cleanup instructions, **Next guest** returns to Scan.
+
+## Fridge wall
+
+The 2 fridge laptops run the same app with `"role": "fridge"` in their station settings. They are touch kiosks:
+
+1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
+2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
+3. **Ticket.** "Take your ticket" with the order number. Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
+
+The ticket shows Chez Mona, "Order ticket", the fridge number and order number, the date and time, the dish in large type, the lab name, a large QR code with the dish ID only, "Scan at any open cooking station" and Microsoft Ignite 2026. Order numbers count up per fridge from 001 to 999 and survive restarts. A failed print keeps its number for the next attempt.
 
 ## Per dish start and wrap up
 

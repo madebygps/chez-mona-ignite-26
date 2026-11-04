@@ -1,4 +1,4 @@
-"""Receipt layout as ESC/POS bytes and as a PNG preview."""
+"""Receipt and fridge ticket layouts as ESC/POS bytes and as PNG previews."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import io
 import re
 import textwrap
 from dataclasses import dataclass
+from datetime import datetime
 
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
@@ -13,8 +14,11 @@ from PIL import Image, ImageDraw, ImageFont
 HEADER = "Chez Mona"
 FOOTER = "Microsoft Ignite 2026"
 QR_CAPTION = "Scan to learn more"
+TICKET_TITLE = "Order ticket"
+TICKET_CAPTION = "Scan at any open cooking station"
 FONT_A_WIDTH = 12  # dots per character, Font A at normal size
 QR_TARGET_FRACTION = 0.55
+TICKET_QR_FRACTION = 0.6
 
 ESC, GS = b"\x1b", b"\x1d"
 
@@ -26,14 +30,23 @@ class Line:
     bold: bool = False
 
 
+@dataclass
+class Qr:
+    data: str
+    fraction: float = QR_TARGET_FRACTION
+
+
 def plain(text: str) -> str:
     """Strip the small Markdown subset used in content and keep printable ASCII."""
     text = re.sub(r"\*\*|`", "", text)
     return text.encode("ascii", "replace").decode("ascii")
 
 
-def layout(dish: dict) -> list[Line | str | None]:
-    """Receipt as a list of Lines, the string 'QR', and None for a blank line."""
+Item = Line | Qr | None
+
+
+def layout(dish: dict) -> list[Item]:
+    """Take-home receipt printed at a cooking station. None is a blank line."""
     return [
         Line(HEADER, big=True, bold=True),
         None,
@@ -41,20 +54,49 @@ def layout(dish: dict) -> list[Line | str | None]:
         Line(dish["lab"]),
         None,
         Line(dish["receipt"]["learned"]),
-        "QR",
+        Qr(dish["receipt"]["qr"]),
         Line(QR_CAPTION),
         None,
         Line(FOOTER),
     ]
 
 
-def qr_image(url: str, width_dots: int) -> Image.Image:
+@dataclass
+class Order:
+    fridge: int
+    number: int
+    at: datetime
+
+    def label(self) -> str:
+        return f"{self.number:03d}"
+
+
+def ticket_layout(dish: dict, order: Order) -> list[Item]:
+    """Fridge ticket. Its QR holds only the dish ID, which the stations scan."""
+    when = f"{order.at:%a %b} {order.at.day}, {order.at:%I:%M %p}".replace(" 0", " ")
+    return [
+        Line(HEADER, big=True, bold=True),
+        Line(TICKET_TITLE),
+        None,
+        Line(f"Fridge {order.fridge}   Order #{order.label()}"),
+        Line(when),
+        None,
+        Line(dish["dish"], big=True, bold=True),
+        Line(dish["lab"]),
+        Qr(dish["id"], TICKET_QR_FRACTION),
+        Line(TICKET_CAPTION, bold=True),
+        None,
+        Line(FOOTER),
+    ]
+
+
+def qr_image(data: str, width_dots: int, fraction: float = QR_TARGET_FRACTION) -> Image.Image:
     """Monochrome QR code centered on a strip exactly width_dots wide."""
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, border=0)
-    qr.add_data(url)
+    qr.add_data(data)
     qr.make(fit=True)
     modules = qr.modules_count
-    box = max(1, int(width_dots * QR_TARGET_FRACTION) // modules)
+    box = max(1, int(width_dots * fraction) // modules)
     code = qr.make_image(fill_color="black", back_color="white").get_image()
     code = code.convert("1").resize((modules * box, modules * box), Image.NEAREST)
     quiet = 4 * box
@@ -76,13 +118,21 @@ def raster(image: Image.Image) -> bytes:
 
 
 def escpos(dish: dict, width_dots: int) -> bytes:
+    return render_escpos(layout(dish), width_dots)
+
+
+def ticket_escpos(dish: dict, order: Order, width_dots: int) -> bytes:
+    return render_escpos(ticket_layout(dish, order), width_dots)
+
+
+def render_escpos(items: list[Item], width_dots: int) -> bytes:
     columns = width_dots // FONT_A_WIDTH
     out = bytearray(ESC + b"@" + ESC + b"a\x01")
-    for item in layout(dish):
+    for item in items:
         if item is None:
             out += b"\n"
-        elif item == "QR":
-            out += raster(qr_image(dish["receipt"]["qr"], width_dots))
+        elif isinstance(item, Qr):
+            out += raster(qr_image(item.data, width_dots, item.fraction))
             out += b"\n"
         else:
             size = b"\x11" if item.big else b"\x00"
@@ -97,17 +147,25 @@ def escpos(dish: dict, width_dots: int) -> bytes:
 
 
 def preview_png(dish: dict, width_dots: int) -> bytes:
-    """Approximate picture of the printed receipt, for dry runs and staff checks."""
+    return render_png(layout(dish), width_dots)
+
+
+def ticket_png(dish: dict, order: Order, width_dots: int) -> bytes:
+    return render_png(ticket_layout(dish, order), width_dots)
+
+
+def render_png(items: list[Item], width_dots: int) -> bytes:
+    """Approximate picture of the printed paper, for dry runs and staff checks."""
     columns = width_dots // FONT_A_WIDTH
     normal = ImageFont.load_default(size=22)
     big = ImageFont.load_default(size=44)
     margin, line_h, big_h = 24, 30, 58
     pieces: list[tuple[str, object]] = []
-    for item in layout(dish):
+    for item in items:
         if item is None:
             pieces.append(("blank", None))
-        elif item == "QR":
-            pieces.append(("image", qr_image(dish["receipt"]["qr"], width_dots)))
+        elif isinstance(item, Qr):
+            pieces.append(("image", qr_image(item.data, width_dots, item.fraction)))
         else:
             cols = columns // 2 if item.big else columns
             for line in textwrap.wrap(plain(item.text), cols) or [""]:
