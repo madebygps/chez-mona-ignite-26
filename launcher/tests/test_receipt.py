@@ -41,10 +41,10 @@ class ReceiptTest(unittest.TestCase):
         self.assertEqual(Image.open(io.BytesIO(png)).width, 576)
 
     def test_ticket_carries_order_and_dish_id_qr(self):
-        order = receipt.Order(2, 7, datetime(2026, 11, 18, 9, 5))
+        order = receipt.Order(7, datetime(2026, 11, 18, 9, 5))
         items = receipt.ticket_layout(DISHES["fried-chicken"], order)
         texts = [i.text for i in items if isinstance(i, receipt.Line)]
-        self.assertIn("Fridge 2   Order #007", texts)
+        self.assertIn("Order #007", texts)
         self.assertIn("Wed Nov 18, 9:05 AM", texts)
         self.assertEqual([i.data for i in items if isinstance(i, receipt.Qr)], ["fried-chicken"])
         data = receipt.ticket_escpos(DISHES["fried-chicken"], order, 576)

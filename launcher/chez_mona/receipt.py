@@ -63,7 +63,6 @@ def layout(dish: dict) -> list[Item]:
 
 @dataclass
 class Order:
-    fridge: int
     number: int
     at: datetime
 
@@ -78,7 +77,7 @@ def ticket_layout(dish: dict, order: Order) -> list[Item]:
         Line(HEADER, big=True, bold=True),
         Line(TICKET_TITLE),
         None,
-        Line(f"Fridge {order.fridge}   Order #{order.label()}"),
+        Line(f"Order #{order.label()}"),
         Line(when),
         None,
         Line(dish["dish"], big=True, bold=True),

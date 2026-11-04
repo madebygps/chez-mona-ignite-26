@@ -23,7 +23,6 @@ def default_state_dir() -> Path:
 class StationConfig:
     port: int = 8765
     role: str = "station"
-    fridge_number: int = 1
     dry_run: bool = True
     printer_connection: str = "usb"
     printer_usb_match: str = ""
@@ -68,7 +67,6 @@ class StationConfig:
         """Settings the browser page needs."""
         return {
             "role": self.role,
-            "fridge_number": self.fridge_number,
             "dry_run": self.dry_run,
             "idle_seconds": self.idle_seconds,
         }

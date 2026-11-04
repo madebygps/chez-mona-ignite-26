@@ -9,7 +9,7 @@ const DONE_SECONDS = 12;
 
 const state = {
   dishes: [],
-  station: { fridge_number: 1, dry_run: true },
+  station: { dry_run: true },
   screen: null,
   timer: null,
 };
@@ -166,8 +166,7 @@ window.addEventListener("keydown", (event) => {
     const data = await api("/api/labs");
     state.dishes = data.dishes;
     state.station = data.station;
-    document.getElementById("fridge-tag").textContent =
-      `Fridge ${state.station.fridge_number}${state.station.dry_run ? " · dry run" : ""}`;
+    document.getElementById("fridge-tag").textContent = state.station.dry_run ? "Dry run" : "";
     renderMenu();
   } catch (error) {
     show("error", `<section class="card center"><h1>Fridge is not ready</h1><pre class="detail">${escapeHtml(error.message)}</pre></section>`);

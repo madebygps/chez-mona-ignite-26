@@ -13,7 +13,7 @@ A small Python server listens on `localhost` only. It serves the page and does t
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
 | [`station.example.json`](station.example.json) | Default station settings, copied to `station.json` per laptop |
-| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge 1`) and opens it in an Edge app window |
+| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
 
 ## Set up a laptop
@@ -48,25 +48,23 @@ cd launcher
 .\start.ps1 station
 ```
 
-On the 2 fridge laptops, give the fridge number (`1` or `2`):
+On the 2 fridge laptops:
 
 ```powershell
 cd launcher
-.\start.ps1 fridge 1
+.\start.ps1 fridge
 ```
 
 The script starts the server, waits for it, then opens `http://localhost:8765` in an Edge app window. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port.
 
-To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--fridge N] [--config path] [--port N]`.
+To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--config path] [--port N]`.
 
 ## Station settings
 
 | Setting | Default | Meaning |
 |---|---|---|
 | `port` | `8765` | Local port for the page |
-| `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument |
-| `fridge_number` | `1` | Fridge number printed on tickets. `start.ps1 fridge N` sets this |
-| `dry_run` | `true` | When true, nothing is printed. The page shows a preview, and the ESC/POS bytes and a PNG are saved in `out/` |
+| `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument || `dry_run` | `true` | When true, nothing is printed. The page shows a preview, and the ESC/POS bytes and a PNG are saved in `out/` |
 | `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
 | `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |
 | `printer_queue` | `Chez Mona Receipt` | Windows print queue used when `printer_connection` is `queue` |
@@ -74,7 +72,7 @@ To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] 
 | `print_width_dots` | `576` | Printable width in dots, a multiple of 8. Use `384` for 58 mm paper |
 | `code_path` | empty | Full path to VS Code's `code.cmd`. When empty, the launcher checks `PATH` and the default install folders |
 | `idle_seconds` | `120`, `600`, `30` | Seconds before the "Still cooking?" prompt on most screens (`default`) and on Explore (`explore`), then the prompt countdown (`prompt`) |
-| `state_dir` | `%LOCALAPPDATA%\ChezMona` | Where a fridge keeps its last order number (`fridge-<n>-order.txt`). Delete the file to restart at 001 |
+| `state_dir` | `%LOCALAPPDATA%\ChezMona` | Where a fridge keeps its last order number (`fridge-order.txt`). Delete the file to restart at 001 |
 
 Unknown settings stop the launcher with an error, so typos show up at start.
 

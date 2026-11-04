@@ -1,26 +1,16 @@
 # Starts the Chez Mona launcher and opens it in an Edge app window.
 # Usage: .\start.ps1 station
-#        .\start.ps1 fridge 1
+#        .\start.ps1 fridge
 # Options: -Port 8765 -NoBrowser
 param(
     [Parameter(Mandatory, Position = 0)]
     [ValidateSet('station', 'fridge')]
     [string]$Role,
-    [Parameter(Position = 1)]
-    [ValidateRange(1, 99)]
-    [int]$Fridge,
     [int]$Port,
     [switch]$NoBrowser
 )
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
-
-if ($Role -eq 'fridge' -and -not $Fridge) {
-    throw 'Give the fridge number, for example: .\start.ps1 fridge 1'
-}
-if ($Role -eq 'station' -and $Fridge) {
-    throw 'A fridge number only applies to a fridge, for example: .\start.ps1 fridge 1'
-}
 
 if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     throw 'uv was not found. Install it from https://docs.astral.sh/uv/ and try again.'
@@ -34,7 +24,6 @@ if (-not $Port) {
 $url = "http://localhost:$Port/"
 
 $serverArgs = @('run', 'python', '-u', '-m', 'chez_mona', '--port', $Port, '--role', $Role)
-if ($Fridge) { $serverArgs += @('--fridge', $Fridge) }
 $server = Start-Process uv -ArgumentList $serverArgs -NoNewWindow -PassThru
 
 $ready = $false

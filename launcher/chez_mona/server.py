@@ -31,7 +31,7 @@ class Launcher:
         self.content = labs.load()
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions(code_path=config.code_path)
-        self.orders = OrderCounter(config.state_dir / f"fridge-{config.fridge_number}-order.txt")
+        self.orders = OrderCounter(config.state_dir / "fridge-order.txt")
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -67,7 +67,7 @@ class Launcher:
         width = self.config.print_width_dots
 
         def use(number: int) -> dict:
-            order = receipt.Order(self.config.fridge_number, number, datetime.now())
+            order = receipt.Order(number, datetime.now())
             data = receipt.ticket_escpos(dish, order, width)
             png = receipt.ticket_png(dish, order, width)
             result = {"order": order.label(), "preview": "data:image/png;base64," + base64.b64encode(png).decode()}
@@ -185,17 +185,10 @@ def parse_args(argv: list[str] | None = None) -> tuple[StationConfig, int]:
     parser.add_argument("--config", type=Path, help="station config file (default: station.json)")
     parser.add_argument("--port", type=int, help="override the configured port")
     parser.add_argument("--role", choices=ROLES, help="override the configured role: station or fridge")
-    parser.add_argument("--fridge", type=int, choices=range(1, 100), metavar="N",
-                        help="fridge number printed on tickets (implies --role fridge)")
     args = parser.parse_args(argv)
     config = StationConfig.load(args.config)
     if args.role:
         config.role = args.role
-    if args.fridge is not None:
-        if args.role == "station":
-            parser.error("--fridge only applies to a fridge")
-        config.role = "fridge"
-        config.fridge_number = args.fridge
     return config, args.port or config.port
 
 
@@ -208,7 +201,7 @@ def main(argv: list[str] | None = None) -> None:
             print(f"Removed {len(removed)} leftover starter folder(s).")
     server = make_server(launcher, port)
     mode = "dry run" if config.dry_run else f"printing to {config.printer_label()}"
-    role = f"fridge {config.fridge_number}" if config.role == "fridge" else "cooking station"
+    role = "fridge" if config.role == "fridge" else "cooking station"
     print(f"Chez Mona {role} on http://localhost:{port} ({mode}). Ctrl+C to stop.")
     try:
         server.serve_forever()
