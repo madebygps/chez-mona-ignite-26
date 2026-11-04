@@ -12,6 +12,7 @@ REPO_DIR = LAUNCHER_DIR.parent
 STATION_FILE = LAUNCHER_DIR / "station.json"
 EXAMPLE_FILE = LAUNCHER_DIR / "station.example.json"
 ROLES = ("station", "fridge")
+DEFAULT_PORTS = {"station": 8765, "fridge": 8766}
 CONNECTIONS = ("usb", "queue")
 
 
@@ -21,7 +22,7 @@ def default_state_dir() -> Path:
 
 @dataclass
 class StationConfig:
-    port: int = 8765
+    port: int | None = None
     role: str = "station"
     printer_connection: str = "usb"
     printer_usb_match: str = ""
@@ -55,6 +56,10 @@ class StationConfig:
         if config.printer_connection not in CONNECTIONS:
             raise ValueError(f"printer_connection must be one of: {', '.join(CONNECTIONS)}")
         return config
+
+    def server_port(self) -> int:
+        """The configured port, or the role's own default so a station and a fridge never clash."""
+        return self.port or DEFAULT_PORTS[self.role]
 
     def printer_label(self) -> str:
         if self.printer_connection == "queue":

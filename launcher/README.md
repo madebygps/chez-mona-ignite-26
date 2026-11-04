@@ -55,7 +55,7 @@ cd launcher
 .\start.ps1 fridge
 ```
 
-The script starts the server, waits for it, then opens `http://localhost:8765` in an Edge app window. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port. Only one launcher can use a port, so the script stops with an error if the port is already taken. Stop the other window with Ctrl+C first.
+The script starts the server, waits for it, then opens the page in an Edge app window: `http://localhost:8765` for a station and `http://localhost:8766` for a fridge, so both can run on one laptop for testing. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port. If the port is already taken, for example by a second station window, the script stops with an error.
 
 To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--config path] [--port N]`.
 
@@ -63,7 +63,7 @@ To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] 
 
 | Setting | Default | Meaning |
 |---|---|---|
-| `port` | `8765` | Local port for the page |
+| `port` | `8765` station, `8766` fridge | Local port for the page |
 | `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument |
 | `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
 | `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |

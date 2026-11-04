@@ -153,8 +153,10 @@ class ParseArgsTest(unittest.TestCase):
     def test_role_from_command_line(self):
         config, port = parse_args(["--role", "station", "--port", "9000"])
         self.assertEqual((config.role, port), ("station", 9000))
-        config, _ = parse_args(["--role", "fridge"])
-        self.assertEqual(config.role, "fridge")
+        config, port = parse_args(["--role", "fridge"])
+        self.assertEqual((config.role, port), ("fridge", 8766))
+        _, port = parse_args(["--role", "station"])
+        self.assertEqual(port, 8765)
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 parse_args(["--role", "oven"])

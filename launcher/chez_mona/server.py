@@ -184,7 +184,7 @@ def parse_args(argv: list[str] | None = None) -> tuple[StationConfig, int]:
     config = StationConfig.load(args.config)
     if args.role:
         config.role = args.role
-    return config, args.port or config.port
+    return config, args.port or config.server_port()
 
 
 def main(argv: list[str] | None = None) -> None:
