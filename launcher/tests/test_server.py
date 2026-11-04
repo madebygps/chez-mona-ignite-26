@@ -4,7 +4,9 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
+from unittest import mock
 
+from chez_mona import printer
 from chez_mona.config import StationConfig
 from chez_mona.server import Launcher, make_server
 
@@ -117,6 +119,27 @@ class ServerTest(unittest.TestCase):
             launcher.config.role = "station"
         _, _, data = self.request("GET", "/")
         self.assertIn(b"app.js", data)
+
+    def test_real_print_uses_configured_connection(self):
+        launcher = self.server.RequestHandlerClass.launcher
+        sent = []
+        with mock.patch.object(launcher.config, "dry_run", False), \
+                mock.patch.object(printer, "submit_usb", lambda data, match: sent.append(("usb", match)) or {}), \
+                mock.patch.object(printer, "submit_raw", lambda queue, data, title: sent.append(("queue", queue)) or 7):
+            self.assertEqual(json.loads(self.request("POST", "/api/print", {"dish": "dip"})[2])["status"], "sent")
+            with mock.patch.object(launcher.config, "printer_connection", "queue"):
+                result = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
+        self.assertEqual(result["job"], 7)
+        self.assertEqual(sent, [("usb", ""), ("queue", "Chez Mona Receipt")])
+
+    def test_printer_status_reports_errors(self):
+        def missing(match):
+            raise printer.PrintError("No USB receipt printer is connected.")
+
+        with mock.patch.object(printer, "usb_status", missing):
+            status = json.loads(self.request("GET", "/api/printer")[2])
+        self.assertEqual(status["printer"], "USB printer")
+        self.assertIn("No USB receipt printer", status["error"])
 
 
 if __name__ == "__main__":

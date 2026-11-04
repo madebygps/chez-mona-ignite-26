@@ -60,6 +60,13 @@ class ConfigTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             StationConfig.load(self.write({"print_width_dots": 570}))
 
+    def test_printer_connection(self):
+        self.assertEqual(StationConfig.load(self.write({})).printer_connection, "usb")
+        queue = StationConfig.load(self.write({"printer_connection": "queue"}))
+        self.assertEqual(queue.printer_label(), "queue 'Chez Mona Receipt'")
+        with self.assertRaises(ValueError):
+            StationConfig.load(self.write({"printer_connection": "bluetooth"}))
+
 
 if __name__ == "__main__":
     unittest.main()

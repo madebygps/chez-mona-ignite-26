@@ -12,6 +12,7 @@ REPO_DIR = LAUNCHER_DIR.parent
 STATION_FILE = LAUNCHER_DIR / "station.json"
 EXAMPLE_FILE = LAUNCHER_DIR / "station.example.json"
 ROLES = ("station", "fridge")
+CONNECTIONS = ("usb", "queue")
 
 
 def default_state_dir() -> Path:
@@ -24,6 +25,8 @@ class StationConfig:
     role: str = "station"
     fridge_number: int = 1
     dry_run: bool = True
+    printer_connection: str = "usb"
+    printer_usb_match: str = ""
     printer_queue: str = "Chez Mona Receipt"
     paper_mm: int = 80
     print_width_dots: int = 576
@@ -52,7 +55,14 @@ class StationConfig:
             raise ValueError("print_width_dots must be a multiple of 8")
         if config.role not in ROLES:
             raise ValueError(f"role must be one of: {', '.join(ROLES)}")
+        if config.printer_connection not in CONNECTIONS:
+            raise ValueError(f"printer_connection must be one of: {', '.join(CONNECTIONS)}")
         return config
+
+    def printer_label(self) -> str:
+        if self.printer_connection == "queue":
+            return f"queue '{self.printer_queue}'"
+        return "USB printer" + (f" matching '{self.printer_usb_match}'" if self.printer_usb_match else "")
 
     def public(self) -> dict:
         """Settings the browser page needs."""

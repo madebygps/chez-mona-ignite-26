@@ -54,8 +54,13 @@ class Launcher:
         if self.config.dry_run:
             saved = printer.save_dry_run(self.config.out_dir, dish_id, data, receipt.preview_png(dish, width))
             return {"status": "dry_run", "saved": str(saved), "preview": preview}
-        job = printer.submit_raw(self.config.printer_queue, data, f"Chez Mona receipt: {dish['dish']}")
+        job = self.send(data, f"Chez Mona receipt: {dish['dish']}")
         return {"status": "sent", "job": job, "preview": preview}
+
+    def send(self, data: bytes, title: str):
+        if self.config.printer_connection == "queue":
+            return printer.submit_raw(self.config.printer_queue, data, title)
+        return printer.submit_usb(data, self.config.printer_usb_match)
 
     def print_ticket(self, dish_id: str) -> dict:
         dish = self.dish(dish_id)
@@ -69,15 +74,18 @@ class Launcher:
             if self.config.dry_run:
                 saved = printer.save_dry_run(self.config.out_dir, f"ticket-{dish_id}", data, png)
                 return {**result, "status": "dry_run", "saved": str(saved)}
-            job = printer.submit_raw(self.config.printer_queue, data, f"Chez Mona ticket {order.label()}: {dish['dish']}")
+            job = self.send(data, f"Chez Mona ticket {order.label()}: {dish['dish']}")
             return {**result, "status": "sent", "job": job}
 
         return self.orders.issue(use)
 
     def printer_status(self) -> dict:
-        info = {"dry_run": self.config.dry_run, "queue": self.config.printer_queue}
+        info = {"dry_run": self.config.dry_run, "printer": self.config.printer_label(), "problems": []}
         try:
-            info.update(printer.queue_status(self.config.printer_queue))
+            if self.config.printer_connection == "queue":
+                info.update(printer.queue_status(self.config.printer_queue))
+            else:
+                info.update(printer.usb_status(self.config.printer_usb_match))
         except printer.PrintError as exc:
             info["error"] = str(exc)
         return info
@@ -185,7 +193,7 @@ def main(argv: list[str] | None = None) -> None:
             print(f"Removed {len(removed)} leftover starter folder(s).")
     port = args.port or config.port
     server = make_server(launcher, port)
-    mode = "dry run" if config.dry_run else f"printing to '{config.printer_queue}'"
+    mode = "dry run" if config.dry_run else f"printing to {config.printer_label()}"
     role = f"fridge {config.fridge_number}" if config.role == "fridge" else "cooking station"
     print(f"Chez Mona {role} on http://localhost:{port} ({mode}). Ctrl+C to stop.")
     try:

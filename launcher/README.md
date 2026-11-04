@@ -8,7 +8,7 @@ A small Python server listens on `localhost` only. It serves the page and does t
 
 | Path | Contents |
 |---|---|
-| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order numbers (`orders.py`), Windows printing (`printer.py`), station settings (`config.py`), content loader (`labs.py`) |
+| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order numbers (`orders.py`), USB and Windows queue printing (`printer.py`), station settings (`config.py`), content loader (`labs.py`) |
 | [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt line and QR link |
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
@@ -37,7 +37,7 @@ Needs Windows, Python 3.12, [uv](https://docs.astral.sh/uv/), Microsoft Edge and
 
 4. Start the launcher once and allow camera access for `localhost` when Edge asks. Edge remembers the choice.
 5. Start Fried Chicken from the staff panel and check that VS Code opens `main.py` with no Workspace Trust prompt. If the prompt appears, choose to trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
-6. Install the receipt printer driver and name its queue to match `printer_queue`. Print one receipt with `dry_run` off and check that the QR code scans and the paper cuts.
+6. Plug in the receipt printer. No driver is needed: the launcher writes to it directly over USB. Open the staff panel (**Ctrl+Shift+M**) and check the printer shows as ready, then print one receipt with `dry_run` off and check that the QR code scans and the paper cuts. If a printer only works through its vendor driver, install it, set `printer_connection` to `queue` and `printer_queue` to the queue name.
 
 ## Run
 
@@ -58,7 +58,9 @@ To run the server alone: `uv run python -u -m chez_mona [--config path] [--port 
 | `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets |
 | `fridge_number` | `1` | Fridge number printed on tickets |
 | `dry_run` | `true` | When true, nothing is printed. The page shows a preview, and the ESC/POS bytes and a PNG are saved in `out/` |
-| `printer_queue` | `Chez Mona Receipt` | Windows print queue that receives RAW ESC/POS bytes |
+| `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
+| `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |
+| `printer_queue` | `Chez Mona Receipt` | Windows print queue used when `printer_connection` is `queue` |
 | `paper_mm` | `80` | Paper width, for reference |
 | `print_width_dots` | `576` | Printable width in dots, a multiple of 8. Use `384` for 58 mm paper |
 | `code_path` | empty | Full path to VS Code's `code.cmd`. When empty, the launcher checks `PATH` and the default install folders |

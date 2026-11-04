@@ -140,7 +140,7 @@ const staff = {
     try {
       const p = await api("/api/printer");
       const mode = p.dry_run ? "Dry run (printing off)." : "Printing on.";
-      const queue = p.error ? p.error : `Queue '${p.queue}': ${p.problems.length ? p.problems.join(", ") : "ready"}.`;
+      const queue = p.error ? p.error : `${p.printer}: ${p.problems.length ? p.problems.join(", ") : "ready"}.`;
       line.textContent = `${mode} ${queue}`;
     } catch (error) {
       line.textContent = error.message;

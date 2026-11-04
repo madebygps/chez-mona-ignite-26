@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/) and tested on a dev machine in dry run mode; VS Code and printer steps still need booth hardware (see [To verify before the event](#to-verify-before-the-event)).
+Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/). The full flow (fridge ticket, scan, Fried Chicken in VS Code, quiz, receipt, wrap up) passed on one laptop with a real USB receipt printer; open items are in [To verify before the event](#to-verify-before-the-event).
 
 ## Goal
 
@@ -158,13 +158,14 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 Current working plan from the printers and networks discussion; the printer model is not final.
 
 - Each of the 8 laptops has its own USB receipt printer: 2 at the fridge wall and 6 at the cooking stations. No shared printer, network printer address or print server is required.
-- Assuming Windows laptops, install the selected printer's driver and use the same print queue name on every laptop.
-- The localhost server submits raw ESC/POS bytes to that laptop's configured Windows print queue, using the Windows spooler RAW datatype. The browser does not send printer commands directly.
+- No printer driver is needed. By default the localhost server writes raw ESC/POS bytes straight to the printer's USB printing interface, the same one the Windows spooler uses, without admin rights. The browser does not send printer commands directly.
+- Before each job the launcher asks the printer for its state (ESC/POS `DLE EOT`) and refuses to print if the cover is open or the paper is out. A write that does not finish within 20 seconds is cancelled and reported.
+- If a printer needs its vendor driver, set `printer_connection` to `queue`: the launcher then submits the bytes to a named Windows print queue with the spooler RAW datatype. Vendor POS drivers are often x64 only and may not install on ARM laptops, and Windows 11 no longer ships the "Generic / Text Only" driver.
 - Use native ESC/POS text and cut commands. Render the documentation QR code as a monochrome raster image because native QR command support is not confirmed.
 - Target 80 mm paper, with approximately 72 mm printable width (576 dots at 203 dpi), subject to verification on the selected model.
-- Current model candidates are Rongta RP820 and RP326. Driver compatibility, raster printing and cutting must be verified on the actual hardware.
-- Keep the queue name, paper width and printable dot width in station configuration so a model change or 58 mm fallback does not require code changes.
-- Show print submission errors explicitly. Spooler acceptance means "sent to printer", not proof that paper was printed. Do not automatically retry an uncertain submission and risk duplicate receipts.
+- Current model candidates are Rongta RP820 and RP326. A generic 80 mm USB printer (USB ID `0FE6:811E`, reported as "USB 80Series2") prints tickets and receipts correctly with the driverless USB connection on a Windows 11 ARM laptop.
+- Keep the connection, paper width and printable dot width in station configuration so a model change or 58 mm fallback does not require code changes.
+- Show print errors explicitly. A completed write means "sent to printer", not proof that paper was printed. Do not automatically retry an uncertain submission and risk duplicate receipts.
 
 ## Idle handling
 
@@ -202,13 +203,13 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [ ] Whether the launcher can open the Copilot app directly
 - [ ] Shared booth account works for Copilot Chat in VS Code and for the SDK
 - [ ] Shared account use is permitted, and quota is enough for booth traffic
-- [ ] Webcam scanning speed under booth lighting
+- [ ] Webcam scanning speed under booth lighting (a printed ticket scanned with the Surface front camera in Edge app mode, Nov 4)
 - [ ] Each lab fits in about 5 minutes on booth laptops
-- [ ] Final printer model, Windows driver and configured queue name
-- [ ] Receipt prints with RAW ESC/POS on the real printer: raster QR scans, text fits, paper cuts
-- [ ] `code --disable-workspace-trust` skips the Workspace Trust prompt when VS Code is already running; otherwise trust `%LOCALAPPDATA%\ChezMona\guests` once per laptop
-- [ ] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title)
+- [ ] Final printer model works with the driverless USB connection, or with its driver and `printer_connection: queue`
+- [x] Receipt and ticket print with RAW ESC/POS on a real printer: raster QR scans with a phone, text fits, paper cuts (generic 80 mm USB printer, Nov 4)
+- [x] `code --disable-workspace-trust` opened the guest folder on `main.py` with no Workspace Trust prompt (Nov 4)
+- [x] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title), and **Reopen in VS Code** brings it back after a guest closes it (Nov 4)
 - [ ] GitHub links from the launcher open in a normal browser window when the launcher runs in Edge app mode
-- [ ] ESC/POS RAW printing, raster QR output and auto-cut on the selected printer
+- [ ] ESC/POS RAW printing, raster QR output and auto-cut on the final printer model
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper
-- [ ] Missing printer, paper-out and uncertain print submission handling
+- [ ] Missing printer, paper-out and cover-open handling on the real printer (the status query works; failures not yet triggered on hardware)
