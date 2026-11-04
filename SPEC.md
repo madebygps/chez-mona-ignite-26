@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: draft, planning only, nothing built yet
+Status: all four labs' material built. Launcher not built yet.
 
 ## Goal
 
@@ -25,22 +25,21 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 
 | Dish | Lab | Explore surface | Prepared material |
 |---|---|---|---|
-| Omelette | Canvas 101 | GitHub Copilot app | Booth repo with the repository scoped Chez Mona order ticket canvas |
+| Omelette | Canvas 101 | GitHub Copilot app | Public guest repo [madebygps/canvas-101](https://github.com/madebygps/canvas-101) with the repository scoped Chez Mona order ticket canvas |
 | Fried Chicken | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
 | Soup | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) triage workflow file, pinned to a commit |
 | Dip | PR review | GitHub.com | Tiny booth owned Chez Mona repo with an "Add menu search" PR that already has code scanning, Copilot Autofix and Copilot code review comments |
 
-## Booth repository
+## Repositories
 
-One private repo, [madebygps/chez-mona-ignite-26](https://github.com/madebygps/chez-mona-ignite-26), cloned once on each laptop. It holds everything that runs locally:
+Guests never open the booth repo, so its spec, quiz answers and launcher code stay out of reach. Each laptop clones two repos:
 
-| Path | Contents |
-|---|---|
-| `.github/extensions/chez-mona-order-ticket/` | Omelette canvas, moved from [madebygps/canvas-101](https://github.com/madebygps/canvas-101) |
-| `copilot-sdk/` | Fried Chicken SDK starter |
-| `launcher/` | Local launcher web app (to build) |
+| Repo | Who opens it | Contents |
+|---|---|---|
+| [madebygps/chez-mona-ignite-26](https://github.com/madebygps/chez-mona-ignite-26) (private) | Staff and the launcher | `launcher/` (to build), `copilot-sdk/` Fried Chicken starter, this spec |
+| [madebygps/canvas-101](https://github.com/madebygps/canvas-101) (public) | Guests, in the Copilot app | Omelette canvas in `.github/extensions/chez-mona-order-ticket/` and a guest-safe `AGENTS.md` that keeps the agent from editing files |
 
-Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the upstream `tailspin-toys` repo; Dip uses the public booth owned repo `madebygps/chez-mona-dip`.
+The Fried Chicken starter needs no repo of its own: the launcher copies it into a temp folder for each guest. Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the upstream `tailspin-toys` repo; Dip uses the public booth owned repo `madebygps/chez-mona-dip`.
 
 ## Screen flow
 
@@ -56,7 +55,7 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 
 | Dish | Start lab | Wrap up |
 |---|---|---|
-| Omelette | Show instructions: open the Copilot app, select **chez-mona-ignite-26**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
+| Omelette | Show instructions: open the Copilot app, select **canvas-101**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
 | Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
 | Soup | Open the pinned workflow file on GitHub.com (see Soup lab content) | Close the browser tabs |
 | Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
@@ -123,7 +122,7 @@ Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the up
 - Why a PR: both the Autofix and code review comments stay on the PR and are visible to anyone who can see it.
 - Freeze after preparation, so the PR never needs resetting:
   - A ruleset blocks pushes to the PR branch and merges into `main`.
-  - Automatic Copilot code review stays off, so nothing reruns.
+  - No new review can start: automatic review only runs on open, first draft to open, or new pushes, and pushes are blocked.
   - Lock the PR conversation and leave every comment unresolved.
 - Steps:
   1. Open the PR's **Files changed** tab.
@@ -177,13 +176,15 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 
 - Booth account has no write access to the Soup and Dip repos.
 - SDK starter is a fresh copy each time, with no `.git` and no push remote.
-- Booth account has read only access to the booth repo, so changes made on a laptop cannot be pushed.
+- Booth account has read only access to the booth repo and `canvas-101`, so changes made on a laptop cannot be pushed.
+- `canvas-101`'s `AGENTS.md` tells the agent not to edit, commit or publish files during guest sessions.
 
 ## To verify before the event
 
-- [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access, and does not see **Commit suggestions** or **Dismiss alert**
+- [x] Dip's PR shows the code scanning comment, its Autofix diff and Copilot code review comments to readers without write access (checked signed out, Nov 4). **Dismiss alert** is disabled; **Commit suggestion** is shown but cannot commit (no write access, ruleset blocks pushes)
 - [x] CodeQL flags the Dip search line (`js/sql-injection` on line 51) and Autofix suggests a parameterized fix
-- [ ] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit
+- [x] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit (Max effort, 4 comments of 200 to 300 characters)
+- [x] Dip PR frozen: ruleset "Freeze booth lab" restricts updates, deletion and force pushes on `main` and `menu-search`; conversation locked
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
 - [ ] Whether the launcher can open the Copilot app directly
