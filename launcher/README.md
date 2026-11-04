@@ -12,7 +12,7 @@ A small Python server listens on `localhost` only. It serves the page and does t
 | [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt line and QR link |
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
-| [`station.example.json`](station.example.json) | Default station settings, copied to `station.json` per laptop |
+| [`station.example.json`](station.example.json) | Every station setting at its default. Copy it to `station.json` only on a laptop that needs to change one |
 | [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
 
@@ -27,7 +27,7 @@ Needs Windows, Python 3.12, [uv](https://docs.astral.sh/uv/), Microsoft Edge and
    uv sync
    ```
 
-2. Copy `station.example.json` to `station.json` and edit it for this laptop (see [Station settings](#station-settings)). `station.json` is gitignored. The 2 fridge laptops skip steps 3 to 5.
+2. The defaults suit the booth, so most laptops need no settings file. If one does (for example VS Code is not found), copy `station.example.json` to `station.json` and change only that setting (see [Station settings](#station-settings)). `station.json` is gitignored. The 2 fridge laptops skip steps 3 to 5.
 3. Pre stage the Fried Chicken SDK runtime, as SPEC describes:
 
    ```powershell
@@ -37,7 +37,7 @@ Needs Windows, Python 3.12, [uv](https://docs.astral.sh/uv/), Microsoft Edge and
 
 4. Start the launcher once and allow camera access for `localhost` when Edge asks. Edge remembers the choice.
 5. Start Fried Chicken from the staff panel and check that VS Code opens `main.py` with no Workspace Trust prompt. If the prompt appears, choose to trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
-6. Plug in the receipt printer. No driver is needed: the launcher writes to it directly over USB. Open the staff panel (**Ctrl+Shift+M**) and check the printer shows as ready, then print one receipt with `dry_run` off and check that the QR code scans and the paper cuts. If a printer only works through its vendor driver, install it, set `printer_connection` to `queue` and `printer_queue` to the queue name.
+6. Plug in the receipt printer. No driver is needed: the launcher writes to it directly over USB. Open the staff panel (**Ctrl+Shift+M**) and check the printer shows as ready, then print one receipt and check that the QR code scans and the paper cuts. If a printer only works through its vendor driver, install it, set `printer_connection` to `queue` and `printer_queue` to the queue name.
 
 ## Run
 
@@ -65,7 +65,6 @@ To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] 
 |---|---|---|
 | `port` | `8765` | Local port for the page |
 | `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument |
-| `dry_run` | `true` | When true, nothing is printed. The page shows a preview, and the ESC/POS bytes and a PNG are saved in `out/` |
 | `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
 | `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |
 | `printer_queue` | `Chez Mona Receipt` | Windows print queue used when `printer_connection` is `queue` |
@@ -102,4 +101,4 @@ cd launcher
 uv run python -m unittest discover -s tests
 ```
 
-The tests cover content validation, station settings, ESC/POS output for tickets and receipts, fridge order numbers, the Fried Chicken session with a fake VS Code, and the server endpoints in dry run.
+The tests cover content validation, station settings, ESC/POS output for tickets and receipts, fridge order numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.

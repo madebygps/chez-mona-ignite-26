@@ -37,7 +37,10 @@ class ServerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
-        config = StationConfig(dry_run=True, out_dir=Path(cls.tmp.name), state_dir=Path(cls.tmp.name))
+        # Never touch a real printer from the tests.
+        cls.printer_patch = mock.patch.object(printer, "submit_usb", lambda data, match: None)
+        cls.printer_patch.start()
+        config = StationConfig(state_dir=Path(cls.tmp.name))
         cls.sessions = FakeSessions()
         cls.server = make_server(Launcher(config, sessions=cls.sessions), 0)
         cls.port = cls.server.server_address[1]
@@ -47,6 +50,7 @@ class ServerTest(unittest.TestCase):
     def tearDownClass(cls):
         cls.server.shutdown()
         cls.server.server_close()
+        cls.printer_patch.stop()
         cls.tmp.cleanup()
 
     def request(self, method, path, body=None, headers=None):
@@ -85,22 +89,15 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(self.sessions.calls, ["start", "end"])
         self.assertEqual(self.request("POST", "/api/session/start", {"dish": "pizza"})[0], 400)
 
-    def test_print_dry_run_saves_files(self):
+    def test_print_sends_receipt(self):
         status, _, data = self.request("POST", "/api/print", {"dish": "omelette"})
-        self.assertEqual(status, 200)
-        result = json.loads(data)
-        self.assertEqual(result["status"], "dry_run")
-        saved = Path(result["saved"])
-        self.assertTrue(saved.is_file())
-        self.assertTrue(saved.with_suffix(".png").is_file())
-        status, content_type, _ = self.request("GET", result["preview"])
-        self.assertEqual((status, content_type), (200, "image/png"))
+        self.assertEqual((status, json.loads(data)["status"]), (200, "sent"))
+        self.assertEqual(self.request("POST", "/api/print", {"dish": "pizza"})[0], 400)
 
     def test_ticket_numbers_advance_only_on_success(self):
         launcher = self.server.RequestHandlerClass.launcher
         first = json.loads(self.request("POST", "/api/ticket", {"dish": "soup"})[2])
-        self.assertEqual(first["status"], "dry_run")
-        self.assertTrue(first["preview"].startswith("data:image/png;base64,"))
+        self.assertEqual(first["status"], "sent")
         self.assertEqual(self.request("POST", "/api/ticket", {"dish": "pizza"})[0], 400)
 
         def fail(number):
@@ -122,11 +119,10 @@ class ServerTest(unittest.TestCase):
         _, _, data = self.request("GET", "/")
         self.assertIn(b"app.js", data)
 
-    def test_real_print_uses_configured_connection(self):
+    def test_print_uses_configured_connection(self):
         launcher = self.server.RequestHandlerClass.launcher
         sent = []
-        with mock.patch.object(launcher.config, "dry_run", False), \
-                mock.patch.object(printer, "submit_usb", lambda data, match: sent.append(("usb", match)) or {}), \
+        with mock.patch.object(printer, "submit_usb", lambda data, match: sent.append(("usb", match)) or {}), \
                 mock.patch.object(printer, "submit_raw", lambda queue, data, title: sent.append(("queue", queue)) or 7):
             self.assertEqual(json.loads(self.request("POST", "/api/print", {"dish": "dip"})[2])["status"], "sent")
             with mock.patch.object(launcher.config, "printer_connection", "queue"):

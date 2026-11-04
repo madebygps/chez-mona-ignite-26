@@ -23,7 +23,6 @@ def default_state_dir() -> Path:
 class StationConfig:
     port: int = 8765
     role: str = "station"
-    dry_run: bool = True
     printer_connection: str = "usb"
     printer_usb_match: str = ""
     printer_queue: str = "Chez Mona Receipt"
@@ -33,7 +32,6 @@ class StationConfig:
     idle_seconds: dict = field(
         default_factory=lambda: {"default": 120, "explore": 600, "prompt": 30}
     )
-    out_dir: Path = LAUNCHER_DIR / "out"
     state_dir: Path = field(default_factory=default_state_dir)
 
     @classmethod
@@ -44,8 +42,8 @@ class StationConfig:
         for key, value in data.items():
             if key == "idle_seconds":
                 config.idle_seconds = {**config.idle_seconds, **value}
-            elif key in ("out_dir", "state_dir"):
-                setattr(config, key, Path(value))
+            elif key == "state_dir":
+                config.state_dir = Path(value)
             elif hasattr(config, key):
                 setattr(config, key, value)
             else:
@@ -67,6 +65,5 @@ class StationConfig:
         """Settings the browser page needs."""
         return {
             "role": self.role,
-            "dry_run": self.dry_run,
             "idle_seconds": self.idle_seconds,
         }

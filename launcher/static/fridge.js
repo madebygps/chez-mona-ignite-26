@@ -9,7 +9,6 @@ const DONE_SECONDS = 12;
 
 const state = {
   dishes: [],
-  station: { dry_run: true },
   screen: null,
   timer: null,
 };
@@ -98,16 +97,11 @@ async function printTicket(id) {
     </section>`);
   try {
     const result = await api("/api/ticket", { dish: id });
-    const preview = result.status === "dry_run"
-      ? `<p class="muted small">Dry run: nothing was printed. This is the ticket.</p>
-         <img class="receipt-preview" src="${result.preview}" alt="Ticket preview">`
-      : "";
     show("done", `
       <section class="card center">
         <p class="eyebrow">Order #${escapeHtml(result.order)}</p>
         <h1>Take your ticket</h1>
         <p class="lede">Scan it at any open cooking station to cook <strong>${escapeHtml(d.dish)}</strong>.</p>
-        ${preview}
         <div class="row" style="justify-content: center">
           <button class="primary" id="next">Done</button>
         </div>
@@ -139,9 +133,7 @@ const staff = {
     line.textContent = "Checking printer…";
     try {
       const p = await api("/api/printer");
-      const mode = p.dry_run ? "Dry run (printing off)." : "Printing on.";
-      const queue = p.error ? p.error : `${p.printer}: ${p.problems.length ? p.problems.join(", ") : "ready"}.`;
-      line.textContent = `${mode} ${queue}`;
+      line.textContent = p.error ? p.error : `${p.printer}: ${p.problems.length ? p.problems.join(", ") : "ready"}.`;
     } catch (error) {
       line.textContent = error.message;
     }
@@ -165,8 +157,6 @@ window.addEventListener("keydown", (event) => {
   try {
     const data = await api("/api/labs");
     state.dishes = data.dishes;
-    state.station = data.station;
-    document.getElementById("fridge-tag").textContent = state.station.dry_run ? "Dry run" : "";
     renderMenu();
   } catch (error) {
     show("error", `<section class="card center"><h1>Fridge is not ready</h1><pre class="detail">${escapeHtml(error.message)}</pre></section>`);

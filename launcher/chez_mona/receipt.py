@@ -1,15 +1,14 @@
-"""Receipt and fridge ticket layouts as ESC/POS bytes and as PNG previews."""
+"""Receipt and fridge ticket layouts as ESC/POS bytes."""
 
 from __future__ import annotations
 
-import io
 import re
 import textwrap
 from dataclasses import dataclass
 from datetime import datetime
 
 import qrcode
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 HEADER = "Chez Mona"
 FOOTER = "Microsoft Ignite 2026"
@@ -143,51 +142,3 @@ def render_escpos(items: list[Item], width_dots: int) -> bytes:
     # Feed past the cutter, then partial cut.
     out += ESC + b"d\x04" + GS + b"V\x42\x00"
     return bytes(out)
-
-
-def preview_png(dish: dict, width_dots: int) -> bytes:
-    return render_png(layout(dish), width_dots)
-
-
-def ticket_png(dish: dict, order: Order, width_dots: int) -> bytes:
-    return render_png(ticket_layout(dish, order), width_dots)
-
-
-def render_png(items: list[Item], width_dots: int) -> bytes:
-    """Approximate picture of the printed paper, for dry runs and staff checks."""
-    columns = width_dots // FONT_A_WIDTH
-    normal = ImageFont.load_default(size=22)
-    big = ImageFont.load_default(size=44)
-    margin, line_h, big_h = 24, 30, 58
-    pieces: list[tuple[str, object]] = []
-    for item in items:
-        if item is None:
-            pieces.append(("blank", None))
-        elif isinstance(item, Qr):
-            pieces.append(("image", qr_image(item.data, width_dots, item.fraction)))
-        else:
-            cols = columns // 2 if item.big else columns
-            for line in textwrap.wrap(plain(item.text), cols) or [""]:
-                pieces.append(("big" if item.big else "bold" if item.bold else "text", line))
-    height = margin * 2 + sum(
-        p.height if kind == "image" else big_h if kind == "big" else line_h
-        for kind, p in pieces
-    )
-    canvas = Image.new("L", (width_dots, height), 255)
-    draw = ImageDraw.Draw(canvas)
-    y = margin
-    for kind, piece in pieces:
-        if kind == "image":
-            canvas.paste(piece.convert("L"), (0, y))
-            y += piece.height
-        elif kind == "blank":
-            y += line_h
-        else:
-            font = big if kind == "big" else normal
-            stroke = 0 if kind == "text" else 1
-            w = draw.textlength(piece, font=font)
-            draw.text(((width_dots - w) / 2, y), piece, font=font, fill=0, stroke_width=stroke, stroke_fill=0)
-            y += big_h if kind == "big" else line_h
-    buffer = io.BytesIO()
-    canvas.save(buffer, format="PNG")
-    return buffer.getvalue()
