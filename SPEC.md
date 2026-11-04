@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: all four labs' material built. Launcher not built yet.
+Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/). The full flow (fridge ticket, scan, Fried Chicken in VS Code, quiz, receipt, wrap up) passed on one laptop with a real USB receipt printer; open items are in [To verify before the event](#to-verify-before-the-event).
 
 ## Goal
 
@@ -36,7 +36,7 @@ Guests never open the booth repo, so its spec, quiz answers and launcher code st
 
 | Repo | Who opens it | Contents |
 |---|---|---|
-| [madebygps/chez-mona-ignite-26](https://github.com/madebygps/chez-mona-ignite-26) (private) | Staff and the launcher | `launcher/` (to build), `copilot-sdk/` Fried Chicken starter, this spec |
+| [madebygps/chez-mona-ignite-26](https://github.com/madebygps/chez-mona-ignite-26) (private) | Staff and the launcher | `launcher/`, `copilot-sdk/` Fried Chicken starter, this spec |
 | [madebygps/canvas-101](https://github.com/madebygps/canvas-101) (public) | Guests, in the Copilot app | Omelette canvas in `.github/extensions/chez-mona-order-ticket/` and a guest-safe `AGENTS.md` that keeps the agent from editing files |
 
 The Fried Chicken starter needs no repo of its own: the launcher copies it into a temp folder for each guest. Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the upstream `tailspin-toys` repo; Dip uses the public booth owned repo `madebygps/chez-mona-dip`.
@@ -51,16 +51,28 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 6. **Print.** Receipt prints. Screen confirms.
 7. **Wrap up.** Short cleanup instructions, **Next guest** returns to Scan.
 
+## Fridge wall
+
+The 2 fridge laptops run the same app with `"role": "fridge"` in their station settings. They are touch kiosks:
+
+1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
+2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
+3. **Ticket.** "Take your ticket" with the order number. Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
+
+The ticket shows Chez Mona, "Order ticket", the fridge number and order number, the date and time, the dish in large type, the lab name, a large QR code with the dish ID only, "Scan at any open cooking station" and Microsoft Ignite 2026. Order numbers count up per fridge from 001 to 999 and survive restarts. A failed print keeps its number for the next attempt.
+
 ## Per dish start and wrap up
 
 | Dish | Start lab | Wrap up |
 |---|---|---|
 | Omelette | Show instructions: open the Copilot app, select **canvas-101**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
-| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
-| Soup | Open the pinned workflow file on GitHub.com (see Soup lab content) | Close the browser tabs |
+| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>`. Explore has a **Reopen in VS Code** button in case the guest closes the window | Launcher closes the VS Code window it opened and deletes the temp folder |
+| Soup | Nothing to open yet: the concept steps come first, and step 3 has an **Open workflow file** button for the pinned file on GitHub.com | Close the browser tabs |
 | Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
 
 ## Lab content
+
+The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). The quiz answers below are the source; the other choices and hints are drafted there.
 
 ### Omelette: Canvas 101
 
@@ -138,21 +150,20 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 - Header: Chez Mona
 - Dish name and lab name
 - One line on what you learned
-- QR code to the dish's docs link
+- QR code to the dish's docs link, captioned "Scan to learn more"
 - Footer: Microsoft Ignite 2026
 
 ### Printer integration
 
-Current working plan from the printers and networks discussion; the printer model is not final.
-
+- Printer: [Rongta RP326](https://www.amazon.com/dp/B0CNT2F4Q5), 80 mm with auto cutter and USB, serial and Ethernet ports. Over USB it reports as "USB 80Series2" (USB ID `0FE6:811E`). It prints tickets and receipts correctly with the driverless USB connection on a Windows 11 ARM laptop.
 - Each of the 8 laptops has its own USB receipt printer: 2 at the fridge wall and 6 at the cooking stations. No shared printer, network printer address or print server is required.
-- Assuming Windows laptops, install the selected printer's driver and use the same print queue name on every laptop.
-- The localhost server submits raw ESC/POS bytes to that laptop's configured Windows print queue, using the Windows spooler RAW datatype. The browser does not send printer commands directly.
+- No printer driver is needed. By default the localhost server writes raw ESC/POS bytes straight to the printer's USB printing interface, the same one the Windows spooler uses, without admin rights. The browser does not send printer commands directly.
+- Before each job the launcher asks the printer for its state (ESC/POS `DLE EOT`) and refuses to print if the cover is open or the paper is out. A write that does not finish within 20 seconds is cancelled and reported.
+- If a printer needs its vendor driver, set `printer_connection` to `queue`: the launcher then submits the bytes to a named Windows print queue with the spooler RAW datatype. Vendor POS drivers are often x64 only and may not install on ARM laptops, and Windows 11 no longer ships the "Generic / Text Only" driver.
 - Use native ESC/POS text and cut commands. Render the documentation QR code as a monochrome raster image because native QR command support is not confirmed.
-- Target 80 mm paper, with approximately 72 mm printable width (576 dots at 203 dpi), subject to verification on the selected model.
-- Current model candidates are Rongta RP820 and RP326. Driver compatibility, raster printing and cutting must be verified on the actual hardware.
-- Keep the queue name, paper width and printable dot width in station configuration so a model change or 58 mm fallback does not require code changes.
-- Show print submission errors explicitly. Spooler acceptance means "sent to printer", not proof that paper was printed. Do not automatically retry an uncertain submission and risk duplicate receipts.
+- 80 mm paper, with 72 mm printable width (576 dots at 203 dpi).
+- Keep the connection, paper width and printable dot width in station configuration so a model change or 58 mm fallback does not require code changes.
+- Show print errors explicitly. A completed write means "sent to printer", not proof that paper was printed. Do not automatically retry an uncertain submission and risk duplicate receipts.
 
 ## Idle handling
 
@@ -190,9 +201,13 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [ ] Whether the launcher can open the Copilot app directly
 - [ ] Shared booth account works for Copilot Chat in VS Code and for the SDK
 - [ ] Shared account use is permitted, and quota is enough for booth traffic
-- [ ] Webcam scanning speed under booth lighting
+- [ ] Webcam scanning speed under booth lighting (a printed ticket scanned with the Surface front camera in Edge app mode, Nov 4)
 - [ ] Each lab fits in about 5 minutes on booth laptops
-- [ ] Final printer model, Windows driver and configured queue name
-- [ ] ESC/POS RAW printing, raster QR output and auto-cut on the selected printer
+- [x] Printer model chosen: Rongta RP326, works with the driverless USB connection (Nov 4)
+- [x] Receipt and ticket print with RAW ESC/POS on the RP326: raster QR scans with a phone, text fits, paper cuts (Nov 4)
+- [x] `code --disable-workspace-trust` opened the guest folder on `main.py` with no Workspace Trust prompt (Nov 4)
+- [x] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title), and **Reopen in VS Code** brings it back after a guest closes it (Nov 4)
+- [ ] GitHub links from the launcher open in a normal browser window when the launcher runs in Edge app mode
+- [ ] The other 7 RP326 units print the same way on their laptops
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper
-- [ ] Missing printer, paper-out and uncertain print submission handling
+- [ ] Missing printer, paper-out and cover-open handling on the real printer (the status query works; failures not yet triggered on hardware)

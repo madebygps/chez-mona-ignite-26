@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chez Mona</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" id="brand" title="Chez Mona">
+      <span class="brand-mark">CM</span>
+      <span class="brand-name">Chez Mona</span>
+    </div>
+    <ol class="progress" id="progress" aria-label="Lab progress">
+      <li data-step="intro">Order</li>
+      <li data-step="explore">Cook</li>
+      <li data-step="quiz">Taste</li>
+      <li data-step="print">Receipt</li>
+    </ol>
+  </header>
+
+  <main id="app" aria-live="polite"></main>
+
+  <div class="overlay" id="idle" hidden>
+    <div class="dialog" role="alertdialog" aria-labelledby="idle-title">
+      <h2 id="idle-title">Still cooking?</h2>
+      <p>This station resets in <strong id="idle-count">30</strong> seconds.</p>
+      <button class="primary" id="idle-keep">Keep cooking</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="staff" hidden>
+    <div class="dialog wide" role="dialog" aria-labelledby="staff-title">
+      <h2 id="staff-title">Staff</h2>
+      <p class="muted">Pick a dish without scanning.</p>
+      <div class="staff-dishes" id="staff-dishes"></div>
+      <p class="muted small" id="staff-printer">Checking printer…</p>
+      <div class="row">
+        <button id="staff-scan">Back to Scan</button>
+        <button id="staff-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/jsQR.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
