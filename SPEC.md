@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: all four labs' material built. Launcher not built yet.
+Status: all four labs' material built. Launcher built in [`launcher/`](launcher/) and tested on a dev machine in dry run mode; VS Code and printer steps still need booth hardware (see [To verify before the event](#to-verify-before-the-event)).
 
 ## Goal
 
@@ -36,7 +36,7 @@ Guests never open the booth repo, so its spec, quiz answers and launcher code st
 
 | Repo | Who opens it | Contents |
 |---|---|---|
-| [madebygps/chez-mona-ignite-26](https://github.com/madebygps/chez-mona-ignite-26) (private) | Staff and the launcher | `launcher/` (to build), `copilot-sdk/` Fried Chicken starter, this spec |
+| [madebygps/chez-mona-ignite-26](https://github.com/madebygps/chez-mona-ignite-26) (private) | Staff and the launcher | `launcher/`, `copilot-sdk/` Fried Chicken starter, this spec |
 | [madebygps/canvas-101](https://github.com/madebygps/canvas-101) (public) | Guests, in the Copilot app | Omelette canvas in `.github/extensions/chez-mona-order-ticket/` and a guest-safe `AGENTS.md` that keeps the agent from editing files |
 
 The Fried Chicken starter needs no repo of its own: the launcher copies it into a temp folder for each guest. Soup and Dip are visited on GitHub.com, so they are not cloned. Soup uses the upstream `tailspin-toys` repo; Dip uses the public booth owned repo `madebygps/chez-mona-dip`.
@@ -56,11 +56,13 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 | Dish | Start lab | Wrap up |
 |---|---|---|
 | Omelette | Show instructions: open the Copilot app, select **canvas-101**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
-| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>` | Launcher closes the VS Code window it opened and deletes the temp folder |
-| Soup | Open the pinned workflow file on GitHub.com (see Soup lab content) | Close the browser tabs |
+| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>`. Explore has a **Reopen in VS Code** button in case the guest closes the window | Launcher closes the VS Code window it opened and deletes the temp folder |
+| Soup | Nothing to open yet: the concept steps come first, and step 3 has an **Open workflow file** button for the pinned file on GitHub.com | Close the browser tabs |
 | Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
 
 ## Lab content
+
+The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). The quiz answers below are the source; the other choices and hints are drafted there.
 
 ### Omelette: Canvas 101
 
@@ -138,7 +140,7 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 - Header: Chez Mona
 - Dish name and lab name
 - One line on what you learned
-- QR code to the dish's docs link
+- QR code to the dish's docs link, captioned "Scan to learn more"
 - Footer: Microsoft Ignite 2026
 
 ### Printer integration
@@ -193,6 +195,10 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [ ] Webcam scanning speed under booth lighting
 - [ ] Each lab fits in about 5 minutes on booth laptops
 - [ ] Final printer model, Windows driver and configured queue name
+- [ ] Receipt prints with RAW ESC/POS on the real printer: raster QR scans, text fits, paper cuts
+- [ ] `code --disable-workspace-trust` skips the Workspace Trust prompt when VS Code is already running; otherwise trust `%LOCALAPPDATA%\ChezMona\guests` once per laptop
+- [ ] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title)
+- [ ] GitHub links from the launcher open in a normal browser window when the launcher runs in Edge app mode
 - [ ] ESC/POS RAW printing, raster QR output and auto-cut on the selected printer
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper
 - [ ] Missing printer, paper-out and uncertain print submission handling

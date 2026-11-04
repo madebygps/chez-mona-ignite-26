@@ -1,0 +1,1 @@
+"""Chez Mona lab launcher."""

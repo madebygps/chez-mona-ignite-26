@@ -1,0 +1,184 @@
+{
+  "dishes": [
+    {
+      "id": "omelette",
+      "dish": "Omelette",
+      "lab": "Canvas 101",
+      "learn": "Canvases are interactive panels that you and the agent both drive.",
+      "start": { "type": "none" },
+      "steps": [
+        {
+          "text": "Open the canvas.",
+          "details": [
+            "Open the **GitHub Copilot app**.",
+            "Select the **canvas-101** repository.",
+            "Open a new chat.",
+            "Ask: **Open the Chez Mona Order Ticket canvas**"
+          ]
+        },
+        { "text": "Click to add a dish to the ticket." },
+        { "text": "Ask the agent to add or remove a dish, and watch the ticket update." }
+      ],
+      "quiz": [
+        {
+          "question": "Who can change a canvas?",
+          "answer": "You and the agent",
+          "others": [
+            "Only you, by clicking",
+            "Only the agent, through chat",
+            "Only the repository owner"
+          ],
+          "hint": "In step 3 you asked the agent to change the ticket you had already clicked."
+        },
+        {
+          "question": "Where does a repository scoped canvas live?",
+          "answer": "`.github/extensions/`",
+          "others": ["`.vscode/`", "`.github/workflows/`", "`AGENTS.md`"],
+          "hint": "A canvas is an extension stored in the repository's `.github` folder."
+        }
+      ],
+      "wrap_up": ["In the Copilot app, delete the chat you used for this lab."],
+      "receipt": {
+        "learned": "Canvases are interactive panels that you and the agent both drive.",
+        "qr": "https://docs.github.com/en/copilot/how-tos/github-copilot-app/working-with-canvas-extensions"
+      }
+    },
+    {
+      "id": "fried-chicken",
+      "dish": "Fried Chicken",
+      "lab": "Copilot SDK",
+      "learn": "The SDK lets your app run a Copilot agent with your own tools.",
+      "start": { "type": "sdk" },
+      "steps": [
+        {
+          "text": "Open the starter in VS Code.",
+          "details": ["The launcher opened it for you, with `main.py` showing."],
+          "action": { "type": "reopen_vscode", "label": "Reopen in VS Code" }
+        },
+        {
+          "text": "Ask Copilot Chat two questions.",
+          "details": ["What does `define_tool` do?", "How does the agent get the menu?"]
+        },
+        {
+          "text": "Optional: run the sample.",
+          "details": ["In the VS Code terminal, run `python main.py`."]
+        }
+      ],
+      "quiz": [
+        {
+          "question": "How do you give the agent a custom tool?",
+          "answer": "Decorate a function with `define_tool`, then pass it in `tools=[...]`",
+          "others": [
+            "Describe the function in the prompt, then ask the agent to call it",
+            "Install it as a VS Code extension, then enable it in Copilot Chat",
+            "Name the function `tool_menu`, then import it in `main.py`"
+          ],
+          "hint": "Look at the line above `get_menu`, and at `create_session`."
+        },
+        {
+          "question": "Which call sends a prompt and waits for the reply?",
+          "answer": "`send_and_wait`",
+          "others": ["`create_session`", "`define_tool`", "`asyncio.run`"],
+          "hint": "Find the line that asks the vegetarian question."
+        }
+      ],
+      "wrap_up": ["The launcher closes the VS Code window and deletes your copy of the starter."],
+      "receipt": {
+        "learned": "The SDK lets your app run a Copilot agent with your own tools.",
+        "qr": "https://github.com/github/copilot-sdk/blob/main/python/README.md"
+      }
+    },
+    {
+      "id": "soup",
+      "dish": "Soup",
+      "lab": "Agentic Workflows",
+      "learn": "An agentic workflow is a GitHub Actions workflow written in Markdown.",
+      "start": { "type": "none" },
+      "steps": [
+        { "text": "What is an agentic workflow?", "markdown": "soup/01-what-is-an-agentic-workflow.md" },
+        { "text": "How it works", "markdown": "soup/02-how-it-works.md" },
+        {
+          "text": "Open the workflow file and read it.",
+          "details": [
+            "First the frontmatter: the trigger, the permissions and the safe outputs.",
+            "Then the instructions for the agent."
+          ],
+          "action": {
+            "type": "open_url",
+            "label": "Open workflow file",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md"
+          }
+        },
+        { "text": "Come back here for the quiz." }
+      ],
+      "quiz": [
+        {
+          "question": "When does the workflow run?",
+          "answer": "Every Monday on a schedule, or manually on demand",
+          "others": [
+            "Whenever a new issue or pull request is opened",
+            "On every push to `main`, or when a pull request is merged",
+            "Once a day at midnight, or when a maintainer adds a label"
+          ],
+          "hint": "Read the `on:` section at the top of the frontmatter."
+        },
+        {
+          "question": "What does the agent do when it is unsure about an item?",
+          "answer": "Leaves the item open",
+          "others": [
+            "Closes it with a polite comment",
+            "Adds a label for a maintainer",
+            "Asks the author a question"
+          ],
+          "hint": "Search the instructions for \"When in doubt\"."
+        }
+      ],
+      "wrap_up": ["Close the GitHub tabs you opened."],
+      "receipt": {
+        "learned": "An agentic workflow is a GitHub Actions workflow written in Markdown.",
+        "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows"
+      }
+    },
+    {
+      "id": "dip",
+      "dish": "Dip",
+      "lab": "PR review",
+      "learn": "Code scanning, Copilot Autofix and Copilot code review work together on one pull request.",
+      "start": {
+        "type": "open_url",
+        "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files"
+      },
+      "steps": [
+        {
+          "text": "Open the pull request's **Files changed** tab.",
+          "action": {
+            "type": "open_url",
+            "label": "Open pull request",
+            "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files"
+          }
+        },
+        { "text": "Read the code scanning comment and its Autofix suggestion on the query line." },
+        { "text": "Read Copilot code review's comments on the rest of the change." }
+      ],
+      "quiz": [
+        {
+          "question": "What did code scanning find?",
+          "answer": "SQL injection",
+          "others": ["Exposed secret", "Outdated dependency", "Cross site scripting"],
+          "hint": "User input ends up inside a database query."
+        },
+        {
+          "question": "Which reviewer looks at the whole change, not only known vulnerability patterns?",
+          "answer": "Copilot code review",
+          "others": ["Code scanning", "Copilot Autofix", "The PR author"],
+          "hint": "Find the comment that is not about the SQL query."
+        }
+      ],
+      "wrap_up": ["Close the GitHub tabs you opened."],
+      "receipt": {
+        "learned": "Code scanning, Copilot Autofix and Copilot code review work together on one pull request.",
+        "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review"
+      }
+    }
+  ]
+}

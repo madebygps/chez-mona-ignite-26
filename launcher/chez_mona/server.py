@@ -1,0 +1,176 @@
+"""Local HTTP server for the launcher page. Binds to 127.0.0.1 only."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import mimetypes
+import sys
+from http import HTTPStatus
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
+
+from . import labs, printer, receipt
+from .config import LAUNCHER_DIR, StationConfig
+from .sdk_session import SdkSessions, SessionError
+
+STATIC_DIR = LAUNCHER_DIR / "static"
+ALLOWED_HOSTS = {"localhost", "127.0.0.1"}
+
+
+class Launcher:
+    """Everything the request handler needs, shared across threads."""
+
+    def __init__(self, config: StationConfig, sessions: SdkSessions | None = None):
+        self.config = config
+        self.content = labs.load()
+        self.dishes = labs.by_id(self.content)
+        self.sessions = sessions or SdkSessions(code_path=config.code_path)
+
+    def dish(self, dish_id: str) -> dict:
+        if dish_id not in self.dishes:
+            raise LookupError(f"Unknown dish: {dish_id}")
+        return self.dishes[dish_id]
+
+    def start(self, dish_id: str) -> dict:
+        dish = self.dish(dish_id)
+        if dish["start"]["type"] == "sdk":
+            return self.sessions.start()
+        # Another dish starting means any earlier starter folder is abandoned.
+        self.sessions.end()
+        return {}
+
+    def print_receipt(self, dish_id: str) -> dict:
+        dish = self.dish(dish_id)
+        width = self.config.print_width_dots
+        data = receipt.escpos(dish, width)
+        preview = f"/api/receipt-preview?dish={dish_id}"
+        if self.config.dry_run:
+            saved = printer.save_dry_run(self.config.out_dir, dish_id, data, receipt.preview_png(dish, width))
+            return {"status": "dry_run", "saved": str(saved), "preview": preview}
+        job = printer.submit_raw(self.config.printer_queue, data, f"Chez Mona receipt: {dish['dish']}")
+        return {"status": "sent", "job": job, "preview": preview}
+
+    def printer_status(self) -> dict:
+        info = {"dry_run": self.config.dry_run, "queue": self.config.printer_queue}
+        try:
+            info.update(printer.queue_status(self.config.printer_queue))
+        except printer.PrintError as exc:
+            info["error"] = str(exc)
+        return info
+
+
+class Handler(BaseHTTPRequestHandler):
+    launcher: Launcher
+    server_version = "ChezMona/1"
+
+    def log_message(self, fmt, *args):
+        if self.path.startswith("/api/") and self.command == "POST":
+            sys.stderr.write(f"{self.command} {self.path} {args[1] if len(args) > 1 else ''}\n")
+
+    def _host_ok(self) -> bool:
+        host = (self.headers.get("Host") or "").rsplit(":", 1)[0]
+        return host in ALLOWED_HOSTS
+
+    def _send(self, status: int, body: bytes, content_type: str) -> None:
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _json(self, status: int, payload: dict) -> None:
+        self._send(status, json.dumps(payload).encode("utf-8"), "application/json")
+
+    def do_GET(self):
+        if not self._host_ok():
+            return self._json(HTTPStatus.FORBIDDEN, {"error": "Forbidden host"})
+        url = urlparse(self.path)
+        if url.path == "/api/labs":
+            return self._json(HTTPStatus.OK, {
+                "dishes": self.launcher.content["dishes"],
+                "station": self.launcher.config.public(),
+            })
+        if url.path == "/api/printer":
+            return self._json(HTTPStatus.OK, self.launcher.printer_status())
+        if url.path == "/api/receipt-preview":
+            dish_id = parse_qs(url.query).get("dish", [""])[0]
+            try:
+                dish = self.launcher.dish(dish_id)
+            except LookupError as exc:
+                return self._json(HTTPStatus.NOT_FOUND, {"error": str(exc)})
+            png = receipt.preview_png(dish, self.launcher.config.print_width_dots)
+            return self._send(HTTPStatus.OK, png, "image/png")
+        return self._static(url.path)
+
+    def _static(self, path: str) -> None:
+        relative = "index.html" if path in ("/", "") else path.lstrip("/")
+        target = (STATIC_DIR / relative).resolve()
+        if not target.is_relative_to(STATIC_DIR.resolve()) or not target.is_file():
+            return self._json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
+        content_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+        if content_type.startswith("text/") or content_type.endswith("javascript"):
+            content_type += "; charset=utf-8"
+        self._send(HTTPStatus.OK, target.read_bytes(), content_type)
+
+    def do_POST(self):
+        # A JSON content type forces a CORS preflight, which this server never
+        # answers, so other sites cannot drive these endpoints from a browser.
+        if not self._host_ok() or not (self.headers.get("Content-Type") or "").startswith("application/json"):
+            return self._json(HTTPStatus.FORBIDDEN, {"error": "Forbidden"})
+        length = int(self.headers.get("Content-Length") or 0)
+        try:
+            body = json.loads(self.rfile.read(length) or b"{}")
+        except json.JSONDecodeError:
+            return self._json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON"})
+        routes = {
+            "/api/session/start": lambda: self.launcher.start(body.get("dish", "")),
+            "/api/session/reopen": self.launcher.sessions.reopen,
+            "/api/session/end": self.launcher.sessions.end,
+            "/api/print": lambda: self.launcher.print_receipt(body.get("dish", "")),
+        }
+        route = routes.get(urlparse(self.path).path)
+        if not route:
+            return self._json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
+        try:
+            return self._json(HTTPStatus.OK, route())
+        except LookupError as exc:
+            return self._json(HTTPStatus.BAD_REQUEST, {"error": str(exc)})
+        except (SessionError, printer.PrintError) as exc:
+            return self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(exc)})
+        except Exception as exc:  # Surface anything unexpected to staff instead of hanging.
+            return self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": f"{type(exc).__name__}: {exc}"})
+
+
+def make_server(launcher: Launcher, port: int) -> ThreadingHTTPServer:
+    handler = type("BoundHandler", (Handler,), {"launcher": launcher})
+    return ThreadingHTTPServer(("127.0.0.1", port), handler)
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description="Chez Mona lab launcher")
+    parser.add_argument("--config", type=Path, help="station config file (default: station.json)")
+    parser.add_argument("--port", type=int, help="override the configured port")
+    args = parser.parse_args(argv)
+    config = StationConfig.load(args.config)
+    launcher = Launcher(config)
+    removed = launcher.sessions.sweep()
+    if removed:
+        print(f"Removed {len(removed)} leftover starter folder(s).")
+    port = args.port or config.port
+    server = make_server(launcher, port)
+    mode = "dry run" if config.dry_run else f"printing to '{config.printer_queue}'"
+    print(f"Chez Mona launcher on http://localhost:{port} ({mode}). Ctrl+C to stop.")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        launcher.sessions.end()
+        server.server_close()
+
+
+if __name__ == "__main__":
+    main()
