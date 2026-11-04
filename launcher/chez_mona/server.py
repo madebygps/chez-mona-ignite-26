@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import socket
 import sys
 from datetime import datetime
 from http import HTTPStatus
@@ -159,9 +160,19 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": f"{type(exc).__name__}: {exc}"})
 
 
+class LauncherServer(ThreadingHTTPServer):
+    # On Windows, SO_REUSEADDR lets a second launcher share a busy port, so claim it exclusively.
+    allow_reuse_address = sys.platform != "win32"
+
+    def server_bind(self) -> None:
+        if sys.platform == "win32":
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
 def make_server(launcher: Launcher, port: int) -> ThreadingHTTPServer:
     handler = type("BoundHandler", (Handler,), {"launcher": launcher})
-    return ThreadingHTTPServer(("127.0.0.1", port), handler)
+    return LauncherServer(("127.0.0.1", port), handler)
 
 
 def parse_args(argv: list[str] | None = None) -> tuple[StationConfig, int]:
@@ -183,8 +194,11 @@ def main(argv: list[str] | None = None) -> None:
         removed = launcher.sessions.sweep()
         if removed:
             print(f"Removed {len(removed)} leftover starter folder(s).")
-    server = make_server(launcher, port)
-    role = "fridge" if config.role == "fridge" else "cooking station"
+    try:
+        server = make_server(launcher, port)
+    except OSError as exc:
+        sys.exit(f"Port {port} is already in use ({exc.strerror}). Close the other Chez Mona window first.")
+    role =  "fridge" if config.role == "fridge" else "cooking station"
     print(f"Chez Mona {role} on http://localhost:{port} (printing to {config.printer_label()}). Ctrl+C to stop.")
     try:
         server.serve_forever()

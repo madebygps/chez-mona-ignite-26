@@ -55,7 +55,7 @@ cd launcher
 .\start.ps1 fridge
 ```
 
-The script starts the server, waits for it, then opens `http://localhost:8765` in an Edge app window. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port.
+The script starts the server, waits for it, then opens `http://localhost:8765` in an Edge app window. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port. Only one launcher can use a port, so the script stops with an error if the port is already taken. Stop the other window with Ctrl+C first.
 
 To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--config path] [--port N]`.
 

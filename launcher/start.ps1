@@ -23,13 +23,22 @@ if (-not $Port) {
 }
 $url = "http://localhost:$Port/"
 
+function Test-PortBusy([int]$Port) {
+    $client = [Net.Sockets.TcpClient]::new()
+    try { return $client.ConnectAsync('127.0.0.1', $Port).Wait(500) } catch { return $false } finally { $client.Dispose() }
+}
+if (Test-PortBusy $Port) {
+    throw "Port $Port is already in use, probably by another Chez Mona window. Press Ctrl+C in that window first, or pass -Port."
+}
+
 $serverArgs = @('run', 'python', '-u', '-m', 'chez_mona', '--port', $Port, '--role', $Role)
 $server = Start-Process uv -ArgumentList $serverArgs -NoNewWindow -PassThru
 
 $ready = $false
 for ($i = 0; $i -lt 60 -and -not $server.HasExited; $i++) {
     try {
-        Invoke-WebRequest "$($url)api/labs" -UseBasicParsing -TimeoutSec 2 | Out-Null
+        $labs = Invoke-RestMethod "$($url)api/labs" -TimeoutSec 2
+        if ($labs.station.role -ne $Role) { throw "Port $Port is answered by a $($labs.station.role), not a $Role." }
         $ready = $true
         break
     } catch {

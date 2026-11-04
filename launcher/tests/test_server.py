@@ -66,6 +66,11 @@ class ServerTest(unittest.TestCase):
         conn.close()
         return response.status, response.getheader("Content-Type"), data
 
+    def test_port_in_use_is_refused(self):
+        config = StationConfig(state_dir=Path(self.tmp.name), role="fridge")
+        with self.assertRaises(OSError):
+            make_server(Launcher(config, sessions=FakeSessions()), self.port).server_close()
+
     def test_labs_and_static(self):
         status, _, data = self.request("GET", "/api/labs")
         self.assertEqual(status, 200)
