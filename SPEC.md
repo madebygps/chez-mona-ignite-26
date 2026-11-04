@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: draft, planning only, nothing built yet
+Status: Omelette, Fried Chicken and Soup lab material built. Dip needs its Copilot code review and freeze. Launcher not built yet.
 
 ## Goal
 
