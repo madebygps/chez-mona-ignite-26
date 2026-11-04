@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: Omelette, Fried Chicken and Soup lab material built. Dip needs its Copilot code review and freeze. Launcher not built yet.
+Status: all four labs' material built. Launcher not built yet.
 
 ## Goal
 
@@ -183,7 +183,9 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 
 - [ ] Booth account can see the code scanning, Autofix and Copilot code review comments on Dip's PR with read only access, and does not see **Commit suggestions** or **Dismiss alert**
 - [x] CodeQL flags the Dip search line (`js/sql-injection` on line 51) and Autofix suggests a parameterized fix
-- [ ] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit
+- [x] Copilot code review flags the planted logic bug, and its comments are short enough to read within the time limit (Max effort, 4 comments of 200 to 300 characters)
+- [x] Dip PR frozen: ruleset "Freeze booth lab" restricts updates, deletion and force pushes on `main` and `menu-search`; conversation locked
+- [ ] Automatic Copilot code review is off in the PR author's personal Copilot settings
 - [ ] Canvas opens with an empty ticket each time, and loads quickly
 - [ ] Exact label for deleting a chat in the Copilot app
 - [ ] Whether the launcher can open the Copilot app directly
