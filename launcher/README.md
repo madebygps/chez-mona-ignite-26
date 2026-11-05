@@ -40,13 +40,13 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all on Windows. Ea
    ```
 
 5. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Omelette uses it.
-6. Name the station, so its name prints on receipts. Create `launcher\station.json` with:
+6. Name the station, so its name and number prefix print on receipts. Create `launcher\station.json` with:
 
    ```json
-   { "station_name": "Station 3" }
+   { "station_name": "Station 3", "number_prefix": "3" }
    ```
 
-   Every other setting already suits the booth. `station.json` is gitignored, so each laptop keeps its own.
+   Give each station its own prefix, `1` to `6`, so guest checks read `3-042` and no two stations print the same number. Every other setting already suits the booth. `station.json` is gitignored, so each laptop keeps its own.
 7. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
 8. Start the station:
 
@@ -76,17 +76,24 @@ Fridges only print tickets, so they skip VS Code, the SDK runtime, the Copilot a
    uv sync
    ```
 
-3. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings.
-4. Start the fridge:
+3. Give the fridge its number prefix, so its tickets read `A-042` and never match the other fridge's. Create `launcher\station.json` with:
+
+   ```json
+   { "number_prefix": "A" }
+   ```
+
+   Use `B` on the second fridge.
+4. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings.
+5. Start the fridge:
 
    ```powershell
    .\start.ps1 fridge
    ```
 
-5. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
-6. Tap a dish, then **Print my ticket**. A ticket should print and cut.
-7. Scan that ticket at a cooking station. The station should open the same dish.
-8. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\fridge-order.txt` so order numbers start at 001 again after the test tickets.
+6. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
+7. Tap a dish, then **Print my ticket**. A ticket should print and cut, with its order number starting with the prefix.
+8. Scan that ticket at a cooking station. The station should open the same dish.
+9. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\fridge-order.txt` so order numbers start at 001 again after the test tickets.
 
 If a printer only works through its vendor driver, install the driver, then set `printer_connection` to `queue` and `printer_queue` to the print queue name in `station.json`.
 
@@ -117,6 +124,7 @@ To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] 
 | `port` | `8765` station, `8766` fridge | Local port for the page |
 | `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument |
 | `station_name` | empty | Name printed on the receipt's guest check, for example `Station 3`. Leave empty to print none |
+| `number_prefix` | empty | Up to 3 letters or digits put before this laptop's order or guest check numbers, for example `A` prints `A-042`. Use `A` and `B` on the fridges and `1` to `6` on the stations so no two laptops print the same number. Leave empty to print `042` |
 | `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
 | `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |
 | `printer_queue` | `Chez Mona Receipt` | Windows print queue used when `printer_connection` is `queue` |

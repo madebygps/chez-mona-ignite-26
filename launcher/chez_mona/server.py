@@ -64,7 +64,8 @@ class Launcher:
         hints = check_hints(hints, len(dish["quiz"]))
 
         def use(number: int) -> dict:
-            check = receipt.Check(number, datetime.now(), self.config.station_name, hints)
+            check = receipt.Check(number, datetime.now(), self.config.station_name, hints,
+                                  self.config.number_prefix)
             data = receipt.escpos(dish, check, self.config.print_width_dots)
             job = self.send(data, f"Chez Mona receipt {check.label()}: {dish['dish']}")
             return {"check": check.label(), "status": "sent", "job": job}
@@ -80,7 +81,7 @@ class Launcher:
         dish = self.dish(dish_id)
 
         def use(number: int) -> dict:
-            order = receipt.Order(number, datetime.now())
+            order = receipt.Order(number, datetime.now(), self.config.number_prefix)
             data = receipt.ticket_escpos(dish, order, self.config.print_width_dots)
             job = self.send(data, f"Chez Mona ticket {order.label()}: {dish['dish']}")
             return {"order": order.label(), "status": "sent", "job": job}

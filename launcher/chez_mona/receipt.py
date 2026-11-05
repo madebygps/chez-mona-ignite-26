@@ -87,15 +87,21 @@ def plain(text: str) -> str:
     return text.encode("ascii", "replace").decode("ascii")
 
 
+def number_label(prefix: str, number: int) -> str:
+    """Each laptop counts on its own, so its prefix keeps numbers apart: A-042."""
+    return f"{prefix}-{number:03d}" if prefix else f"{number:03d}"
+
+
 # ---------- Fridge ticket ----------
 
 @dataclass
 class Order:
     number: int
     at: datetime
+    prefix: str = ""
 
     def label(self) -> str:
-        return f"{self.number:03d}"
+        return number_label(self.prefix, self.number)
 
 
 def ticket_layout(dish: dict, order: Order) -> list[Item]:
@@ -127,9 +133,10 @@ class Check:
     at: datetime
     station: str = ""
     hints: list[int] | None = None
+    prefix: str = ""
 
     def label(self) -> str:
-        return f"{self.number:03d}"
+        return number_label(self.prefix, self.number)
 
     def perfect(self) -> bool:
         return self.hints is not None and not any(self.hints)

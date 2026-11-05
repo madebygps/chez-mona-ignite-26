@@ -118,6 +118,12 @@ class ServerTest(unittest.TestCase):
             launcher.orders.issue(fail)
         second = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
         self.assertEqual(int(second["order"]), int(first["order"]) + 1)
+        launcher.config.number_prefix = "B"
+        try:
+            third = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
+        finally:
+            launcher.config.number_prefix = ""
+        self.assertEqual(third["order"], f"B-{int(second['order']) + 1:03d}")
 
     def test_fridge_role_serves_fridge_page(self):
         launcher = self.server.RequestHandlerClass.launcher

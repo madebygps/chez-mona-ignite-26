@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -25,6 +26,7 @@ class StationConfig:
     port: int | None = None
     role: str = "station"
     station_name: str = ""
+    number_prefix: str = ""
     printer_connection: str = "usb"
     printer_usb_match: str = ""
     printer_queue: str = "Chez Mona Receipt"
@@ -56,6 +58,9 @@ class StationConfig:
             raise ValueError(f"role must be one of: {', '.join(ROLES)}")
         if config.printer_connection not in CONNECTIONS:
             raise ValueError(f"printer_connection must be one of: {', '.join(CONNECTIONS)}")
+        config.number_prefix = str(config.number_prefix).strip().upper()
+        if not re.fullmatch(r"[A-Z0-9]{0,3}", config.number_prefix):
+            raise ValueError("number_prefix must be up to 3 letters or digits, for example A or 3")
         return config
 
     def server_port(self) -> int:

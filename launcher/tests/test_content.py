@@ -70,6 +70,13 @@ class ConfigTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             StationConfig.load(self.write({"printer_connection": "bluetooth"}))
 
+    def test_number_prefix(self):
+        self.assertEqual(StationConfig.load(self.write({})).number_prefix, "")
+        self.assertEqual(StationConfig.load(self.write({"number_prefix": " a "})).number_prefix, "A")
+        for bad in ("A-1", "ABCD", "é"):
+            with self.assertRaises(ValueError, msg=bad):
+                StationConfig.load(self.write({"number_prefix": bad}))
+
 
 if __name__ == "__main__":
     unittest.main()
