@@ -1,15 +1,15 @@
 # Starts the Chez Mona launcher and opens it in an Edge app window.
-# Usage: .\start.ps1 station 3   (stations 1 to 6)
-#        .\start.ps1 fridge A    (fridges A and B)
-# Leave out the number and the script asks for it. The number prints on
-# receipts and tickets so no two laptops print the same order number.
+# Usage: .\start.ps1 station    (all 6 cooking stations)
+#        .\start.ps1 fridge A   (fridges A and B)
+# Leave out the fridge letter and the script asks for it. It prefixes the
+# fridge's order numbers so the two fridges never print the same one.
 # Options: -Port N -NoBrowser (default port: 8765 station, 8766 fridge)
 param(
     [Parameter(Mandatory, Position = 0)]
     [ValidateSet('station', 'fridge')]
     [string]$Role,
     [Parameter(Position = 1)]
-    [string]$Number,
+    [string]$Letter,
     [int]$Port,
     [switch]$NoBrowser
 )
@@ -20,12 +20,15 @@ if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     throw 'uv was not found. Install it from https://docs.astral.sh/uv/ and try again.'
 }
 
-$question = @{ station = 'Which station is this laptop? Type its number, 1 to 6'; fridge = 'Which fridge is this laptop? Type A or B' }[$Role]
-while ($Number -notmatch '^[A-Za-z0-9]{1,3}$') {
-    if ($Number) { Write-Host "'$Number' is not a station number or fridge letter." }
-    $Number = (Read-Host $question).Trim()
+if ($Role -eq 'station') {
+    if ($Letter) { throw "Stations don't take a number or letter. Run .\start.ps1 station" }
+} else {
+    while ($Letter -notmatch '^[A-Za-z]$') {
+        if ($Letter) { Write-Host "'$Letter' is not a fridge letter." }
+        $Letter = (Read-Host 'Which fridge is this laptop? Type A or B').Trim()
+    }
+    $Letter = $Letter.ToUpper()
 }
-$Number = $Number.ToUpper()
 
 if (-not $Port) { $Port = @{ station = 8765; fridge = 8766 }[$Role] }
 $url = "http://localhost:$Port/"
@@ -38,7 +41,8 @@ if (Test-PortBusy $Port) {
     throw "Port $Port is already in use, probably by another Chez Mona window. Press Ctrl+C in that window first, or pass -Port."
 }
 
-$serverArgs = @('run', 'python', '-u', '-m', 'chez_mona', '--port', $Port, '--role', $Role, '--number', $Number)
+$serverArgs = @('run', 'python', '-u', '-m', 'chez_mona', '--port', $Port, '--role', $Role)
+if ($Letter) { $serverArgs += @('--letter', $Letter) }
 $server = Start-Process uv -ArgumentList $serverArgs -NoNewWindow -PassThru
 
 $ready = $false
@@ -66,5 +70,5 @@ if (-not $NoBrowser) {
     Start-Process $edge -ArgumentList "--app=$url", '--start-maximized'
 }
 
-Write-Host "Chez Mona $Role $Number running on $url. Press Ctrl+C here to stop it."
+Write-Host "Chez Mona $("$Role $Letter".Trim()) running on $url. Press Ctrl+C here to stop it."
 Wait-Process -Id $server.Id

@@ -21,6 +21,7 @@ HEADER = "Chez Mona"
 TAGLINE = "Cuisine agentique"
 EVENT = "Microsoft Ignite 2026"
 SERVED_BY = "GitHub Copilot"
+STATION = "Cooking station"
 QR_CAPTION = "Scan to continue learning"
 THANKS = "Merci! Have a nice day"
 THANKS_LINE = "Thank you for cooking at Chez Mona"
@@ -88,21 +89,17 @@ def plain(text: str) -> str:
     return text.encode("ascii", "replace").decode("ascii")
 
 
-def number_label(prefix: str, number: int) -> str:
-    """Each laptop counts on its own, so its prefix keeps numbers apart: A-042."""
-    return f"{prefix}-{number:03d}" if prefix else f"{number:03d}"
-
-
 # ---------- Fridge ticket ----------
 
 @dataclass
 class Order:
+    """A fridge ticket. The fridge's letter keeps the two fridges' numbers apart: A-042."""
     number: int
     at: datetime
     prefix: str = ""
 
     def label(self) -> str:
-        return number_label(self.prefix, self.number)
+        return f"{self.prefix}-{self.number:03d}" if self.prefix else f"{self.number:03d}"
 
 
 def ticket_layout(dish: dict, order: Order) -> list[Item]:
@@ -130,14 +127,8 @@ def ticket_layout(dish: dict, order: Order) -> list[Item]:
 @dataclass
 class Check:
     """One printed receipt. hints holds wrong answers per question, or None if unknown."""
-    number: int
     at: datetime
-    station: str = ""
     hints: list[int] | None = None
-    prefix: str = ""
-
-    def label(self) -> str:
-        return number_label(self.prefix, self.number)
 
     def perfect(self) -> bool:
         return self.hints is not None and not any(self.hints)
@@ -155,8 +146,8 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Line(EVENT),
         None,
         Rule("="),
-        Row("GUEST CHECK", f"No. {check.label()}", bold=True),
-        Row(check.station, f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
+        Line("GUEST CHECK", align="left", bold=True),
+        Row(STATION, f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
         Row("Served by", SERVED_BY),
         Rule("="),
         None,

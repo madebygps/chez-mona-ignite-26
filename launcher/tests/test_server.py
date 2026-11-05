@@ -96,12 +96,9 @@ class ServerTest(unittest.TestCase):
 
     def test_print_sends_receipt(self):
         status, _, data = self.request("POST", "/api/print", {"dish": "omelette"})
-        first = json.loads(data)
-        self.assertEqual((status, first["status"]), (200, "sent"))
+        self.assertEqual((status, json.loads(data)["status"]), (200, "sent"))
         self.assertEqual(self.request("POST", "/api/print", {"dish": "pizza"})[0], 400)
-        status, _, data = self.request("POST", "/api/print", {"dish": "soup", "hints": [0, 2]})
-        self.assertEqual(status, 200)
-        self.assertEqual(int(json.loads(data)["check"]), int(first["check"]) + 1)
+        self.assertEqual(self.request("POST", "/api/print", {"dish": "soup", "hints": [0, 2]})[0], 200)
         for hints in ([0], [0, -1], [0, 9], [0, "1"], [True, 0], "0,0"):
             self.assertEqual(self.request("POST", "/api/print", {"dish": "soup", "hints": hints})[0], 400, hints)
 
@@ -118,11 +115,11 @@ class ServerTest(unittest.TestCase):
             launcher.orders.issue(fail)
         second = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
         self.assertEqual(int(second["order"]), int(first["order"]) + 1)
-        launcher.config.number = "B"
+        launcher.config.letter = "B"
         try:
             third = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
         finally:
-            launcher.config.number = ""
+            launcher.config.letter = ""
         self.assertEqual(third["order"], f"B-{int(second['order']) + 1:03d}")
 
     def test_fridge_role_serves_fridge_page(self):
@@ -136,18 +133,13 @@ class ServerTest(unittest.TestCase):
         _, _, data = self.request("GET", "/")
         self.assertIn(b"app.js", data)
 
-    def test_print_names_the_station(self):
-        launcher = self.server.RequestHandlerClass.launcher
+    def test_print_says_cooking_station(self):
         sent = []
-        launcher.config.number = "3"
-        try:
-            with mock.patch.object(printer, "submit_usb", lambda data: sent.append(data) or {}):
-                result = json.loads(self.request("POST", "/api/print", {"dish": "dip"})[2])
-        finally:
-            launcher.config.number = ""
-        self.assertTrue(result["check"].startswith("3-"))
-        self.assertIn(b"Station 3", sent[0])
-        self.assertIn(f"No. {result['check']}".encode(), sent[0])
+        with mock.patch.object(printer, "submit_usb", lambda data: sent.append(data) or {}):
+            result = json.loads(self.request("POST", "/api/print", {"dish": "dip"})[2])
+        self.assertNotIn("check", result)
+        self.assertIn(b"Cooking station", sent[0])
+        self.assertNotIn(b"No.", sent[0])
 
     def test_printer_status_reports_errors(self):
         def missing():
@@ -165,13 +157,13 @@ if __name__ == "__main__":
 
 class ParseArgsTest(unittest.TestCase):
     def test_role_from_command_line(self):
-        config, port = parse_args(["--role", "station", "--number", "3", "--port", "9000"])
-        self.assertEqual((config.role, config.number, port), ("station", "3", 9000))
-        config, port = parse_args(["--role", "fridge", "--number", "b"])
-        self.assertEqual((config.role, config.number, port), ("fridge", "B", 8766))
+        config, port = parse_args(["--role", "station", "--port", "9000"])
+        self.assertEqual((config.role, config.letter, port), ("station", "", 9000))
+        config, port = parse_args(["--role", "fridge", "--letter", "b"])
+        self.assertEqual((config.role, config.letter, port), ("fridge", "B", 8766))
         _, port = parse_args(["--role", "station"])
         self.assertEqual(port, 8765)
         with contextlib.redirect_stderr(io.StringIO()):
-            for bad in (["--role", "oven"], ["--number", "A-1"]):
+            for bad in (["--role", "oven"], ["--role", "fridge", "--letter", "A-1"], ["--letter", "A"]):
                 with self.assertRaises(SystemExit, msg=bad):
                     parse_args(bad)

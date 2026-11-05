@@ -43,7 +43,6 @@ class Launcher:
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions()
         self.orders = OrderCounter(config.state_dir / "fridge-order.txt")
-        self.checks = OrderCounter(config.state_dir / "guest-check.txt")
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -61,19 +60,14 @@ class Launcher:
     def print_receipt(self, dish_id: str, hints=None) -> dict:
         dish = self.dish(dish_id)
         hints = check_hints(hints, len(dish["quiz"]))
-
-        def use(number: int) -> dict:
-            check = receipt.Check(number, datetime.now(), self.config.station_name(), hints, self.config.number)
-            job = printer.submit_usb(receipt.escpos(dish, check))
-            return {"check": check.label(), "status": "sent", "job": job}
-
-        return self.checks.issue(use)
+        job = printer.submit_usb(receipt.escpos(dish, receipt.Check(datetime.now(), hints)))
+        return {"status": "sent", "job": job}
 
     def print_ticket(self, dish_id: str) -> dict:
         dish = self.dish(dish_id)
 
         def use(number: int) -> dict:
-            order = receipt.Order(number, datetime.now(), self.config.number)
+            order = receipt.Order(number, datetime.now(), self.config.letter)
             job = printer.submit_usb(receipt.ticket_escpos(dish, order))
             return {"order": order.label(), "status": "sent", "job": job}
 
@@ -185,11 +179,11 @@ def make_server(launcher: Launcher, port: int) -> ThreadingHTTPServer:
 def parse_args(argv: list[str] | None = None) -> tuple[StationConfig, int]:
     parser = argparse.ArgumentParser(description="Chez Mona lab launcher")
     parser.add_argument("--role", choices=ROLES, default="station", help="station or fridge")
-    parser.add_argument("--number", default="", help="this laptop's number: 1 to 6 for a station, A or B for a fridge")
+    parser.add_argument("--letter", default="", help="a fridge's letter, A or B")
     parser.add_argument("--port", type=int, help="override the role's default port")
     args = parser.parse_args(argv)
     try:
-        config = StationConfig(role=args.role, number=args.number)
+        config = StationConfig(role=args.role, letter=args.letter)
     except ValueError as exc:
         parser.error(str(exc))
     return config, args.port or config.server_port()
@@ -207,7 +201,7 @@ def main(argv: list[str] | None = None) -> None:
     except OSError as exc:
         sys.exit(f"Port {port} is already in use ({exc.strerror}). Close the other Chez Mona window first.")
     role = "fridge" if config.role == "fridge" else "cooking station"
-    number = f" {config.number}" if config.number else ""
+    number = f" {config.letter}" if config.letter else ""
     print(f"Chez Mona {role}{number} on http://localhost:{port}, printing to the USB printer. Ctrl+C to stop.")
     try:
         server.serve_forever()

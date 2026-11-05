@@ -1,4 +1,4 @@
-"""Station configuration: the role and number given on the command line."""
+"""Station configuration: the role, and a fridge's letter, given on the command line."""
 
 from __future__ import annotations
 
@@ -17,18 +17,18 @@ def default_state_dir() -> Path:
     return Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "ChezMona"
 
 
-def clean_number(number: str) -> str:
-    """The laptop's number, 1 to 6 for a station or A or B for a fridge."""
-    number = str(number).strip().upper()
-    if not re.fullmatch(r"[A-Z0-9]{0,3}", number):
-        raise ValueError("The number must be up to 3 letters or digits, for example 3 or A")
-    return number
+def clean_letter(letter: str) -> str:
+    """A fridge's letter, A or B, which prefixes its order numbers."""
+    letter = str(letter).strip().upper()
+    if not re.fullmatch(r"[A-Z]?", letter):
+        raise ValueError("The fridge letter must be one letter, for example A")
+    return letter
 
 
 @dataclass
 class StationConfig:
     role: str = "station"
-    number: str = ""
+    letter: str = ""
     idle_seconds: dict = field(
         default_factory=lambda: {"default": 120, "explore": 600, "prompt": 30}
     )
@@ -37,11 +37,9 @@ class StationConfig:
     def __post_init__(self):
         if self.role not in ROLES:
             raise ValueError(f"role must be one of: {', '.join(ROLES)}")
-        self.number = clean_number(self.number)
-
-    def station_name(self) -> str:
-        """Printed on the receipt's guest check."""
-        return f"Station {self.number}" if self.role == "station" and self.number else ""
+        self.letter = clean_letter(self.letter)
+        if self.letter and self.role != "fridge":
+            raise ValueError("Only fridges take a letter")
 
     def server_port(self) -> int:
         """The role's own port, so a station and a fridge never clash on one laptop."""

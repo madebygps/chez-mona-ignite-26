@@ -8,16 +8,16 @@ A small Python server listens on `localhost` only. It serves the page and does t
 
 | Path | Contents |
 |---|---|
-| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order and guest check numbers (`orders.py`), USB printing (`printer.py`), station role and number (`config.py`), content loader (`labs.py`) |
+| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order numbers (`orders.py`), USB printing (`printer.py`), station role and fridge letter (`config.py`), content loader (`labs.py`) |
 | [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt takeaways (`receipt.learned`, 1 to 4 short points) and QR link |
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
-| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station 3`) or a fridge kiosk (`.\start.ps1 fridge A`) and opens it in an Edge app window |
+| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge A`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
 
 ## Set up a laptop
 
-The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. There is nothing to configure: each laptop only needs its number, given when it starts. Stations are `1` to `6` and fridges are `A` and `B`.
+The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. There is nothing to configure. All 6 stations start the same way; each fridge only needs its letter, `A` or `B`, given when it starts.
 
 ### Cooking station
 
@@ -40,13 +40,12 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
 
 5. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Omelette uses it.
 6. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
-7. Start the station with its number, here station 3:
+7. Start the station:
 
    ```powershell
-   .\start.ps1 station 3
+   .\start.ps1 station
    ```
 
-   Receipts then say "Station 3" and number guest checks `3-001`, `3-002` and so on, so no two stations print the same number. Leave out the number and the script asks for it.
 8. When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
 9. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
 10. Scan a fridge ticket. The station should open that dish's intro.
@@ -54,7 +53,6 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
 12. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
 13. Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
 14. Wrap up, then check that the Fried Chicken VS Code window closed.
-15. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\guest-check.txt` so guest checks start at 001 again after the test receipts.
 
 ### Fridge laptop
 
@@ -84,11 +82,11 @@ Fridges only print tickets, so they skip VS Code, the SDK runtime, the Copilot a
 
 ## Run
 
-Each laptop runs one of the two programs, with its number. On the 6 cooking stations, `1` to `6`:
+Each laptop runs one of the two programs. On the 6 cooking stations:
 
 ```powershell
 cd launcher
-.\start.ps1 station 3
+.\start.ps1 station
 ```
 
 On the 2 fridge laptops, `A` and `B`:
@@ -100,9 +98,9 @@ cd launcher
 
 The script starts the server, waits for it, then opens the page in an Edge app window: `http://localhost:8765` for a station and `http://localhost:8766` for a fridge, so both can run on one laptop for testing. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port. If the port is already taken, for example by a second station window, the script stops with an error.
 
-To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--number N] [--port N]`.
+To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--letter A] [--port N]`.
 
-Everything else is fixed for the booth hardware: the one attached USB printer, 80 mm paper (576 printable dots), VS Code from `PATH` or its default install folder, and order and guest check numbers kept in `%LOCALAPPDATA%\ChezMona` (`fridge-order.txt` and `guest-check.txt`). Delete a number file to restart at 001.
+Everything else is fixed for the booth hardware: the one attached USB printer, 80 mm paper (576 printable dots), VS Code from `PATH` or its default install folder, and fridge order numbers kept in `%LOCALAPPDATA%\ChezMona\fridge-order.txt`. Delete that file to restart at 001.
 
 ## Staff controls
 
@@ -129,4 +127,4 @@ cd launcher
 uv run python -m unittest discover -s tests
 ```
 
-The tests cover content validation, the station role and number, ESC/POS output for tickets and receipts, order and guest check numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.
+The tests cover content validation, the station role and fridge letter, ESC/POS output for tickets and receipts, fridge order numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.

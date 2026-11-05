@@ -53,7 +53,7 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Fridge wall
 
-The 2 fridge laptops run the same app with `.\start.ps1 fridge A` and `.\start.ps1 fridge B`; the cooking stations use `.\start.ps1 station 1` to `.\start.ps1 station 6`. The number or letter is the only per laptop setup. They are touch kiosks:
+The 2 fridge laptops run the same app with `.\start.ps1 fridge A` and `.\start.ps1 fridge B`; the cooking stations all use `.\start.ps1 station`. The fridge letter is the only per laptop setup. They are touch kiosks:
 
 1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
 2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
@@ -150,7 +150,7 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 The receipt is a keepsake guest check, designed to look different from the fridge ticket. From top to bottom:
 
 - Gingham band, chef hat and the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
-- **Guest check** with its number, the station name ("Station 3", from the station's number), the date and time, and "Served by GitHub Copilot"
+- **Guest check**, then "Cooking station" with the date and time, and "Served by GitHub Copilot". The guest check has no number: stations don't share a counter, so a number could repeat.
 - The dish and lab as one line item
 - **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
@@ -158,7 +158,7 @@ The receipt is a keepsake guest check, designed to look different from the fridg
 - QR code to the dish's docs link, captioned "Scan to continue learning"
 - "Merci! Have a nice day" and a closing gingham band
 
-Each cooking station counts its own guest check numbers from 001 to 999, kept across restarts, behind its own prefix (`3-042` at station 3), so no two stations print the same number. The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
+The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
 
 ### Printer integration
 
