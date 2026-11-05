@@ -65,7 +65,7 @@
         },
         {
           "text": "Optional: run the sample.",
-          "details": ["In the VS Code terminal, run `python main.py`."]
+          "details": ["In the VS Code terminal, run `uv run main.py`."]
         }
       ],
       "quiz": [

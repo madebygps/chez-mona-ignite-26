@@ -96,10 +96,9 @@ async function printTicket(id) {
       <p class="lede">${escapeHtml(d.dish)}</p>
     </section>`);
   try {
-    const result = await api("/api/ticket", { dish: id });
+    await api("/api/ticket", { dish: id });
     show("done", `
       <section class="card center">
-        <p class="eyebrow">Order #${escapeHtml(result.order)}</p>
         <h1>Take your ticket</h1>
         <p class="lede">Scan it at any open cooking station to cook <strong>${escapeHtml(d.dish)}</strong>.</p>
         <div class="row" style="justify-content: center">

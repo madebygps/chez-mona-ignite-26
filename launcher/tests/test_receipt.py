@@ -24,15 +24,16 @@ def printed_lines(items, width):
 class ReceiptTest(unittest.TestCase):
     def test_escpos_frame(self):
         for width in (384, 576):
-            data = receipt.escpos(DISHES["dip"], receipt.Check(42, AT, "Station 3", [0, 1]), width)
+            data = receipt.escpos(DISHES["dip"], receipt.Check(AT, [0, 1]), width)
             self.assertTrue(data.startswith(b"\x1b@\x1ba\x01"))
             self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
-            for text in (b"Thank you for cooking", b"DIP", b"No. 042", b"Station 3", b"PRICELESS", b"Scan to continue learning"):
+            for text in (b"Thank you for cooking", b"DIP", b"GUEST CHECK", b"Cooking station", b"PRICELESS", b"Scan to continue learning"):
                 self.assertIn(text, data)
+            self.assertNotIn(b"No.", data)
 
     def test_receipt_lists_what_you_learned_not_the_questions(self):
         dish = DISHES["omelette"]
-        texts = [line for line, _ in printed_lines(receipt.layout(dish, receipt.Check(1, AT)), 576)]
+        texts = [line for line, _ in printed_lines(receipt.layout(dish, receipt.Check(AT)), 576)]
         self.assertIn(" - A canvas is an interactive panel in the", texts)
         self.assertIn("   Copilot app.", texts)
         self.assertFalse(any(dish["quiz"][0]["question"] in t for t in texts))
@@ -41,24 +42,23 @@ class ReceiptTest(unittest.TestCase):
         def rows(check):
             return [i.left for i in receipt.layout(DISHES["soup"], check) if isinstance(i, receipt.Row)]
 
-        self.assertTrue(receipt.Check(1, AT, hints=[0, 0]).perfect())
-        self.assertFalse(receipt.Check(1, AT, hints=[0, 2]).perfect())
-        self.assertFalse(receipt.Check(1, AT).perfect())
-        self.assertIn("HINTS USED", rows(receipt.Check(1, AT, hints=[0, 2])))
-        self.assertNotIn("HINTS USED", rows(receipt.Check(1, AT)))
+        self.assertTrue(receipt.Check(AT, hints=[0, 0]).perfect())
+        self.assertFalse(receipt.Check(AT, hints=[0, 2]).perfect())
+        self.assertFalse(receipt.Check(AT).perfect())
+        self.assertIn("HINTS USED", rows(receipt.Check(AT, hints=[0, 2])))
+        self.assertNotIn("HINTS USED", rows(receipt.Check(AT)))
 
     def test_text_fits_the_paper(self):
-        order = receipt.Order(7, AT)
         for width in (384, 576):
             for dish in DISHES.values():
-                for items in (receipt.layout(dish, receipt.Check(999, AT, "Fridge side station 6", [3, 3])),
-                              receipt.ticket_layout(dish, order)):
+                for items in (receipt.layout(dish, receipt.Check(AT, [3, 3])),
+                              receipt.ticket_layout(dish, AT)):
                     for line, columns in printed_lines(items, width):
                         self.assertLessEqual(len(line), columns, line)
 
     def test_pictures_span_the_paper(self):
         for width in (384, 576):
-            for item in receipt.layout(DISHES["dip"], receipt.Check(1, AT, hints=[0, 0])):
+            for item in receipt.layout(DISHES["dip"], receipt.Check(AT, hints=[0, 0])):
                 if isinstance(item, receipt.Picture):
                     image = item.draw(width)
                     self.assertEqual(image.width, width, item.name)
@@ -82,13 +82,13 @@ class ReceiptTest(unittest.TestCase):
     def test_plain_strips_markup_and_non_ascii(self):
         self.assertEqual(receipt.plain("Use `send_and_wait` **now** \u2713"), "Use send_and_wait now ?")
 
-    def test_ticket_carries_order_and_dish_id_qr(self):
-        order = receipt.Order(7, datetime(2026, 11, 18, 9, 5))
-        items = receipt.ticket_layout(DISHES["fried-chicken"], order)
-        self.assertIn("#007", [i.text for i in items if isinstance(i, receipt.Line)])
+    def test_ticket_carries_dish_id_qr_and_no_number(self):
+        at = datetime(2026, 11, 18, 9, 5)
+        items = receipt.ticket_layout(DISHES["fried-chicken"], at)
+        self.assertFalse(any(i.text.startswith("#") for i in items if isinstance(i, receipt.Line)))
         self.assertIn(("Wed Nov 18", "9:05 AM"), [(i.left, i.right) for i in items if isinstance(i, receipt.Row)])
         self.assertEqual([i.data for i in items if isinstance(i, receipt.Qr)], ["fried-chicken"])
-        data = receipt.ticket_escpos(DISHES["fried-chicken"], order, 576)
+        data = receipt.ticket_escpos(DISHES["fried-chicken"], at, 576)
         self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
         self.assertIn(b"1x FRIED CHICKEN", data)
 

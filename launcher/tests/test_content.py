@@ -1,8 +1,6 @@
 import copy
 import json
-import tempfile
 import unittest
-from pathlib import Path
 
 from chez_mona import labs
 from chez_mona.config import StationConfig
@@ -40,35 +38,14 @@ class LabsTest(unittest.TestCase):
 
 
 class ConfigTest(unittest.TestCase):
-    def write(self, data):
-        handle = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8")
-        json.dump(data, handle)
-        handle.close()
-        self.addCleanup(Path(handle.name).unlink)
-        return Path(handle.name)
+    def test_defaults(self):
+        config = StationConfig()
+        self.assertEqual((config.role, config.server_port()), ("station", 8765))
+        self.assertEqual(config.idle_seconds, {"default": 120, "explore": 600, "prompt": 30})
 
-    def test_example_loads(self):
-        config = StationConfig.load(labs.LAUNCHER_DIR / "station.example.json")
-        self.assertEqual(config.print_width_dots, 576)
-
-    def test_partial_idle_override(self):
-        config = StationConfig.load(self.write({"idle_seconds": {"prompt": 10}}))
-        self.assertEqual(config.idle_seconds, {"default": 120, "explore": 600, "prompt": 10})
-
-    def test_rejects_unknown_key(self):
+    def test_rejects_unknown_role(self):
         with self.assertRaises(ValueError):
-            StationConfig.load(self.write({"printer": "x"}))
-
-    def test_rejects_bad_width(self):
-        with self.assertRaises(ValueError):
-            StationConfig.load(self.write({"print_width_dots": 570}))
-
-    def test_printer_connection(self):
-        self.assertEqual(StationConfig.load(self.write({})).printer_connection, "usb")
-        queue = StationConfig.load(self.write({"printer_connection": "queue"}))
-        self.assertEqual(queue.printer_label(), "queue 'Chez Mona Receipt'")
-        with self.assertRaises(ValueError):
-            StationConfig.load(self.write({"printer_connection": "bluetooth"}))
+            StationConfig(role="oven")
 
 
 if __name__ == "__main__":

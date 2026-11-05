@@ -21,6 +21,7 @@ HEADER = "Chez Mona"
 TAGLINE = "Cuisine agentique"
 EVENT = "Microsoft Ignite 2026"
 SERVED_BY = "GitHub Copilot"
+STATION = "Cooking station"
 QR_CAPTION = "Scan to continue learning"
 THANKS = "Merci! Have a nice day"
 THANKS_LINE = "Thank you for cooking at Chez Mona"
@@ -28,6 +29,7 @@ TICKET_BAR = "Chez Mona  *  Kitchen ticket"
 TICKET_CAPTION = ">> Scan at any open station <<"
 TICKET_DURATION = "about 5 min"
 FONT_A_WIDTH = 12  # dots per character, Font A at normal size
+WIDTH_DOTS = 576  # RP326 printable width: 72 mm of 80 mm paper at 203 dpi
 QR_TARGET_FRACTION = 0.45
 TICKET_QR_FRACTION = 0.6
 FONT_DIR = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
@@ -89,22 +91,12 @@ def plain(text: str) -> str:
 
 # ---------- Fridge ticket ----------
 
-@dataclass
-class Order:
-    number: int
-    at: datetime
-
-    def label(self) -> str:
-        return f"{self.number:03d}"
-
-
-def ticket_layout(dish: dict, order: Order) -> list[Item]:
+def ticket_layout(dish: dict, at: datetime) -> list[Item]:
     """Fridge ticket. Its QR holds only the dish ID, which the stations scan."""
     return [
         Line(TICKET_BAR.upper(), bold=True, invert=True),
         None,
-        Line(f"#{order.label()}", width=3, height=3, bold=True),
-        Row(f"{order.at:%a %b} {order.at.day}", clock(order.at)),
+        Row(f"{at:%a %b} {at.day}", clock(at)),
         Rule(spaced=True),
         None,
         Line(f"1x {dish['dish'].upper()}", width=2, height=2, bold=True),
@@ -123,13 +115,8 @@ def ticket_layout(dish: dict, order: Order) -> list[Item]:
 @dataclass
 class Check:
     """One printed receipt. hints holds wrong answers per question, or None if unknown."""
-    number: int
     at: datetime
-    station: str = ""
     hints: list[int] | None = None
-
-    def label(self) -> str:
-        return f"{self.number:03d}"
 
     def perfect(self) -> bool:
         return self.hints is not None and not any(self.hints)
@@ -147,8 +134,8 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Line(EVENT),
         None,
         Rule("="),
-        Row("GUEST CHECK", f"No. {check.label()}", bold=True),
-        Row(check.station, f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
+        Line("GUEST CHECK", align="left", bold=True),
+        Row(STATION, f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
         Row("Served by", SERVED_BY),
         Rule("="),
         None,
@@ -293,12 +280,12 @@ def raster(image: Image.Image) -> bytes:
 
 # ---------- ESC/POS ----------
 
-def escpos(dish: dict, check: Check, width_dots: int) -> bytes:
+def escpos(dish: dict, check: Check, width_dots: int = WIDTH_DOTS) -> bytes:
     return render_escpos(layout(dish, check), width_dots)
 
 
-def ticket_escpos(dish: dict, order: Order, width_dots: int) -> bytes:
-    return render_escpos(ticket_layout(dish, order), width_dots)
+def ticket_escpos(dish: dict, at: datetime, width_dots: int = WIDTH_DOTS) -> bytes:
+    return render_escpos(ticket_layout(dish, at), width_dots)
 
 
 ALIGN = {"left": 0, "center": 1, "right": 2}

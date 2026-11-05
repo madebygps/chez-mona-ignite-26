@@ -1,6 +1,6 @@
 # Starts the Chez Mona launcher and opens it in an Edge app window.
-# Usage: .\start.ps1 station
-#        .\start.ps1 fridge
+# Usage: .\start.ps1 station   (the 6 cooking stations)
+#        .\start.ps1 fridge    (the 2 fridges)
 # Options: -Port N -NoBrowser (default port: 8765 station, 8766 fridge)
 param(
     [Parameter(Mandatory, Position = 0)]
@@ -16,9 +16,6 @@ if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     throw 'uv was not found. Install it from https://docs.astral.sh/uv/ and try again.'
 }
 
-if (-not $Port -and (Test-Path station.json)) {
-    $Port = (Get-Content station.json -Raw | ConvertFrom-Json).port
-}
 if (-not $Port) { $Port = @{ station = 8765; fridge = 8766 }[$Role] }
 $url = "http://localhost:$Port/"
 

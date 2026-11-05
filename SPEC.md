@@ -53,13 +53,13 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Fridge wall
 
-The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking stations use `.\start.ps1 station`. They are touch kiosks:
+The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking stations use `.\start.ps1 station`. No laptop needs its own setup. They are touch kiosks:
 
 1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
 2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
-3. **Ticket.** "Take your ticket" with the order number. Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
+3. **Ticket.** "Take your ticket". Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
 
-The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the order number in large type, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", a large QR code with the dish ID only, an inverted "Scan at any open station" bar and Microsoft Ignite 2026. Each fridge counts its own order numbers from 001 to 999, kept across restarts, so the two fridges can print the same number; nothing reads it. A failed print keeps its number for the next attempt.
+The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", a large QR code with the dish ID only, an inverted "Scan at any open station" bar and Microsoft Ignite 2026. It has no order number, since nothing reads one.
 
 ## Per dish start and wrap up
 
@@ -150,7 +150,7 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 The receipt is a keepsake guest check, designed to look different from the fridge ticket. From top to bottom:
 
 - Gingham band, chef hat and the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
-- **Guest check** with its number, the station name, the date and time, and "Served by GitHub Copilot"
+- **Guest check**, then "Cooking station" with the date and time, and "Served by GitHub Copilot". The guest check has no number: stations don't share a counter, so a number could repeat.
 - The dish and lab as one line item
 - **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
@@ -158,18 +158,17 @@ The receipt is a keepsake guest check, designed to look different from the fridg
 - QR code to the dish's docs link, captioned "Scan to continue learning"
 - "Merci! Have a nice day" and a closing gingham band
 
-Each cooking station counts its own guest check numbers from 001 to 999, kept across restarts. The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
+The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
 
 ### Printer integration
 
 - Printer: [Rongta RP326](https://www.amazon.com/dp/B0CNT2F4Q5), 80 mm with auto cutter and USB, serial and Ethernet ports. Over USB it reports as "USB 80Series2" (USB ID `0FE6:811E`). It prints tickets and receipts correctly with the driverless USB connection on a Windows 11 ARM laptop.
 - Each of the 8 laptops has its own USB receipt printer: 2 at the fridge wall and 6 at the cooking stations. No shared printer, network printer address or print server is required.
-- No printer driver is needed. By default the localhost server writes raw ESC/POS bytes straight to the printer's USB printing interface, the same one the Windows spooler uses, without admin rights. The browser does not send printer commands directly.
+- No printer driver is needed. The localhost server writes raw ESC/POS bytes straight to the printer's USB printing interface, the same one the Windows spooler uses, without admin rights. The browser does not send printer commands directly.
 - Before each job the launcher asks the printer for its state (ESC/POS `DLE EOT`) and refuses to print if the cover is open or the paper is out. A write that does not finish within 20 seconds is cancelled and reported.
-- If a printer needs its vendor driver, set `printer_connection` to `queue`: the launcher then submits the bytes to a named Windows print queue with the spooler RAW datatype. Vendor POS drivers are often x64 only and may not install on ARM laptops, and Windows 11 no longer ships the "Generic / Text Only" driver.
+- Direct USB is the only connection. There is no Windows print queue fallback: all 8 laptops are the same Surface model as the one tested, vendor POS drivers are often x64 only and may not install on ARM laptops, and Windows 11 no longer ships the "Generic / Text Only" driver.
 - Use native ESC/POS text and cut commands. Render the documentation QR code as a monochrome raster image because native QR command support is not confirmed.
-- 80 mm paper, with 72 mm printable width (576 dots at 203 dpi).
-- Keep the connection, paper width and printable dot width in station configuration so a model change or 58 mm fallback does not require code changes.
+- 80 mm paper, with 72 mm printable width (576 dots at 203 dpi), fixed in code.
 - Show print errors explicitly. A completed write means "sent to printer", not proof that paper was printed. Do not automatically retry an uncertain submission and risk duplicate receipts.
 
 ## Idle handling
@@ -187,7 +186,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - Use a JavaScript QR library (for example ZXing or jsQR). The built in `BarcodeDetector` is not available in Chrome on Windows.
 - Use large, matte QR codes on tickets to cope with booth lighting.
 - The local server prepares the SDK starter and launches VS Code. A hosted site could not do this.
-- Pre stage the SDK runtime on each laptop: `pip install -r copilot-sdk/requirements.txt`, then `python -m copilot download-runtime`. Requires Python 3.11 or later.
+- Pre stage the SDK runtime on each laptop: `uv run --with github-copilot-sdk==1.0.28 python -m copilot download-runtime` from `launcher/`. It caches the runtime per user in `%LOCALAPPDATA%\github-copilot-sdk`, so no system Python is needed.
 - Install and update the launcher on all laptops with a script, possibly extending `octobooth-demos/machine-setup`.
 
 ## Accidental change protection
