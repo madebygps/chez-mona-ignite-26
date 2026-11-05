@@ -14,4 +14,4 @@ The Canvas 101 lab lives in the public guest repo [madebygps/canvas-101](https:/
 
 ## Set up the booth laptops
 
-Follow the [cooking station](launcher/README.md#cooking-station-checklist) and [fridge laptop](launcher/README.md#fridge-laptop-checklist) checklists in the launcher README.
+Follow the [cooking station](launcher/README.md#cooking-station) and [fridge laptop](launcher/README.md#fridge-laptop) steps in the launcher README.

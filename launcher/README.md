@@ -18,93 +18,77 @@ A small Python server listens on `localhost` only. It serves the page and does t
 
 ## Set up a laptop
 
-The booth has 6 cooking station laptops and 2 fridge laptops. Each laptop has its own Rongta RP326 receipt printer, connected by USB. Every laptop runs Windows.
+The booth has 6 cooking station laptops and 2 fridge laptops, all on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB.
 
-The defaults suit the booth, so most laptops need no settings file. If a laptop does need one (for example, VS Code is not found), copy `station.example.json` to `station.json` and change only that setting (see [Station settings](#station-settings)). `station.json` is gitignored.
+### Cooking station
 
-The printer needs no driver and no settings. The launcher uses the one USB printer it finds. Wi-Fi printers, network printers and virtual printers like "Microsoft Print to PDF" do not affect it.
+1. Install Git, Python 3.12, [uv](https://docs.astral.sh/uv/), Microsoft Edge, VS Code and the GitHub Copilot app.
+2. Sign in with the shared booth account in Edge (GitHub.com), VS Code (Copilot Chat) and the Copilot app.
+3. Clone this repo and install the launcher's packages:
 
-### Cooking station checklist
+   ```powershell
+   git clone https://github.com/madebygps/chez-mona-ignite-26.git
+   cd chez-mona-ignite-26\launcher
+   uv sync
+   ```
 
-Install and sign in:
+4. Stage the Fried Chicken SDK runtime:
 
-- [ ] Install Git, Python 3.12, [uv](https://docs.astral.sh/uv/), Microsoft Edge, VS Code and the GitHub Copilot app.
-- [ ] Sign in with the shared booth account in Edge (GitHub.com), VS Code (Copilot Chat) and the Copilot app.
-- [ ] Clone this repo, then install the launcher's packages:
+   ```powershell
+   pip install -r ..\copilot-sdk\requirements.txt
+   python -m copilot download-runtime
+   ```
 
-  ```powershell
-  git clone https://github.com/madebygps/chez-mona-ignite-26.git
-  cd chez-mona-ignite-26\launcher
-  uv sync
-  ```
+5. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Omelette uses it.
+6. Name the station, so its name prints on receipts. Create `launcher\station.json` with:
 
-- [ ] Stage the Fried Chicken SDK runtime:
+   ```json
+   { "station_name": "Station 3" }
+   ```
 
-  ```powershell
-  pip install -r ..\copilot-sdk\requirements.txt
-  python -m copilot download-runtime
-  ```
+   Every other setting already suits the booth. `station.json` is gitignored, so each laptop keeps its own.
+7. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
+8. Start the station:
 
-- [ ] Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app for Omelette.
-- [ ] Optional: to print the station name on receipts, create `station.json` with `{ "station_name": "Station 3" }`.
+   ```powershell
+   .\start.ps1 station
+   ```
 
-Connect and start:
+9. When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
+10. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
+11. Scan a fridge ticket. The station should open that dish's intro.
+12. In the staff panel, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it. If VS Code does not open, add its `code.cmd` path to `station.json` as `code_path`.
+13. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
+14. Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
+15. Wrap up, then check that the Fried Chicken VS Code window closed.
+16. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\guest-check.txt` so guest checks start at 001 again after the test receipts.
 
-- [ ] Plug in the receipt printer by USB, load paper and turn it on.
-- [ ] Start the station:
+### Fridge laptop
 
-  ```powershell
-  .\start.ps1 station
-  ```
+Fridges only print tickets, so they skip VS Code, the SDK runtime, the Copilot app and the camera.
 
-- [ ] When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
+1. Install Git, Python 3.12, [uv](https://docs.astral.sh/uv/) and Microsoft Edge.
+2. Clone this repo and install the launcher's packages:
 
-Check:
+   ```powershell
+   git clone https://github.com/madebygps/chez-mona-ignite-26.git
+   cd chez-mona-ignite-26\launcher
+   uv sync
+   ```
 
-- [ ] Press **Ctrl+Shift+M**, and check the staff panel shows the printer as ready.
-- [ ] Scan a fridge ticket. The station should open that dish's intro.
-- [ ] In the staff panel, start Fried Chicken. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
-- [ ] In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
-- [ ] Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
-- [ ] Wrap up, then check that the Fried Chicken VS Code window closed.
-- [ ] Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\guest-check.txt` so guest checks start at 001.
+3. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings.
+4. Start the fridge:
 
-### Fridge laptop checklist
+   ```powershell
+   .\start.ps1 fridge
+   ```
 
-Fridges only print tickets, so they need no VS Code, SDK runtime, Copilot app, camera or GitHub sign in beyond cloning this repo.
+5. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
+6. Tap a dish, then **Print my ticket**. A ticket should print and cut.
+7. Scan that ticket at a cooking station. The station should open the same dish.
+8. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\fridge-order.txt` so order numbers start at 001 again after the test tickets.
 
-Install:
-
-- [ ] Install Git, Python 3.12, [uv](https://docs.astral.sh/uv/) and Microsoft Edge.
-- [ ] Clone this repo, then install the launcher's packages:
-
-  ```powershell
-  git clone https://github.com/madebygps/chez-mona-ignite-26.git
-  cd chez-mona-ignite-26\launcher
-  uv sync
-  ```
-
-Connect and start:
-
-- [ ] Plug in the receipt printer by USB, load paper and turn it on.
-- [ ] Start the fridge:
-
-  ```powershell
-  .\start.ps1 fridge
-  ```
-
-Check:
-
-- [ ] Press **Ctrl+Shift+M**, and check the staff panel shows the printer as ready.
-- [ ] Tap a dish, then **Print my ticket**. A ticket should print and cut.
-- [ ] Scan that ticket at a cooking station. The station should open the same dish.
-- [ ] Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\fridge-order.txt` so order numbers start at 001.
-
-### If the printer is not ready
-
-- Check that the USB cable is connected and the printer is on, that the cover is closed and that the printer has paper.
-- Close any other program that is using the printer.
-- If a printer only works through its vendor driver, install the driver. Then set `printer_connection` to `queue` and `printer_queue` to the name of the print queue.
+If a printer only works through its vendor driver, install the driver, then set `printer_connection` to `queue` and `printer_queue` to the print queue name in `station.json`.
 
 ## Run
 
