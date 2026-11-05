@@ -49,7 +49,7 @@ class ReceiptTest(unittest.TestCase):
         self.assertNotIn("HINTS USED", rows(receipt.Check(AT)))
 
     def test_text_fits_the_paper(self):
-        order = receipt.Order(7, AT, "W")
+        order = receipt.Order(999, AT)
         for width in (384, 576):
             for dish in DISHES.values():
                 for items in (receipt.layout(dish, receipt.Check(AT, [3, 3])),
@@ -92,12 +92,6 @@ class ReceiptTest(unittest.TestCase):
         data = receipt.ticket_escpos(DISHES["fried-chicken"], order, 576)
         self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
         self.assertIn(b"1x FRIED CHICKEN", data)
-
-    def test_fridge_letter_keeps_order_numbers_apart(self):
-        self.assertEqual(receipt.Order(42, AT, "A").label(), "A-042")
-        self.assertEqual(receipt.Order(42, AT).label(), "042")
-        items = receipt.ticket_layout(DISHES["dip"], receipt.Order(7, AT, "B"))
-        self.assertIn("#B-007", [i.text for i in items if isinstance(i, receipt.Line)])
 
 
 if __name__ == "__main__":

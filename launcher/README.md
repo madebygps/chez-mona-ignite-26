@@ -8,16 +8,16 @@ A small Python server listens on `localhost` only. It serves the page and does t
 
 | Path | Contents |
 |---|---|
-| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order numbers (`orders.py`), USB printing (`printer.py`), station role and fridge letter (`config.py`), content loader (`labs.py`) |
+| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order numbers (`orders.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`) |
 | [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt takeaways (`receipt.learned`, 1 to 4 short points) and QR link |
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
-| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge A`) and opens it in an Edge app window |
+| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
 
 ## Set up a laptop
 
-The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. There is nothing to configure. All 6 stations start the same way; each fridge only needs its letter, `A` or `B`, given when it starts.
+The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. There is nothing to configure: every station starts the same way, and so does every fridge.
 
 ### Cooking station
 
@@ -68,13 +68,12 @@ Fridges only print tickets, so they skip VS Code, the SDK runtime, the Copilot a
    ```
 
 3. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings.
-4. Start the fridge with its letter, here fridge A:
+4. Start the fridge:
 
    ```powershell
-   .\start.ps1 fridge A
+   .\start.ps1 fridge
    ```
 
-   Tickets are then numbered `A-001`, `A-002` and so on, so they never match the other fridge's. Use `B` on the second fridge. Leave out the letter and the script asks for it.
 5. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
 6. Tap a dish, then **Print my ticket**. A ticket should print and cut.
 7. Scan that ticket at a cooking station. The station should open the same dish.
@@ -89,16 +88,16 @@ cd launcher
 .\start.ps1 station
 ```
 
-On the 2 fridge laptops, `A` and `B`:
+On the 2 fridge laptops:
 
 ```powershell
 cd launcher
-.\start.ps1 fridge A
+.\start.ps1 fridge
 ```
 
 The script starts the server, waits for it, then opens the page in an Edge app window: `http://localhost:8765` for a station and `http://localhost:8766` for a fridge, so both can run on one laptop for testing. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port. If the port is already taken, for example by a second station window, the script stops with an error.
 
-To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--letter A] [--port N]`.
+To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--port N]`.
 
 Everything else is fixed for the booth hardware: the one attached USB printer, 80 mm paper (576 printable dots), VS Code from `PATH` or its default install folder, and fridge order numbers kept in `%LOCALAPPDATA%\ChezMona\fridge-order.txt`. Delete that file to restart at 001.
 
@@ -127,4 +126,4 @@ cd launcher
 uv run python -m unittest discover -s tests
 ```
 
-The tests cover content validation, the station role and fridge letter, ESC/POS output for tickets and receipts, fridge order numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.
+The tests cover content validation, the station role, ESC/POS output for tickets and receipts, fridge order numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.

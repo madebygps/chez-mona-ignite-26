@@ -93,13 +93,12 @@ def plain(text: str) -> str:
 
 @dataclass
 class Order:
-    """A fridge ticket. The fridge's letter keeps the two fridges' numbers apart: A-042."""
+    """A fridge ticket. Each fridge counts on its own, so the two can print the same number."""
     number: int
     at: datetime
-    prefix: str = ""
 
     def label(self) -> str:
-        return f"{self.prefix}-{self.number:03d}" if self.prefix else f"{self.number:03d}"
+        return f"{self.number:03d}"
 
 
 def ticket_layout(dish: dict, order: Order) -> list[Item]:

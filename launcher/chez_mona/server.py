@@ -67,7 +67,7 @@ class Launcher:
         dish = self.dish(dish_id)
 
         def use(number: int) -> dict:
-            order = receipt.Order(number, datetime.now(), self.config.letter)
+            order = receipt.Order(number, datetime.now())
             job = printer.submit_usb(receipt.ticket_escpos(dish, order))
             return {"order": order.label(), "status": "sent", "job": job}
 
@@ -179,13 +179,9 @@ def make_server(launcher: Launcher, port: int) -> ThreadingHTTPServer:
 def parse_args(argv: list[str] | None = None) -> tuple[StationConfig, int]:
     parser = argparse.ArgumentParser(description="Chez Mona lab launcher")
     parser.add_argument("--role", choices=ROLES, default="station", help="station or fridge")
-    parser.add_argument("--letter", default="", help="a fridge's letter, A or B")
     parser.add_argument("--port", type=int, help="override the role's default port")
     args = parser.parse_args(argv)
-    try:
-        config = StationConfig(role=args.role, letter=args.letter)
-    except ValueError as exc:
-        parser.error(str(exc))
+    config = StationConfig(role=args.role)
     return config, args.port or config.server_port()
 
 
@@ -201,8 +197,7 @@ def main(argv: list[str] | None = None) -> None:
     except OSError as exc:
         sys.exit(f"Port {port} is already in use ({exc.strerror}). Close the other Chez Mona window first.")
     role = "fridge" if config.role == "fridge" else "cooking station"
-    number = f" {config.letter}" if config.letter else ""
-    print(f"Chez Mona {role}{number} on http://localhost:{port}, printing to the USB printer. Ctrl+C to stop.")
+    print(f"Chez Mona {role} on http://localhost:{port}, printing to the USB printer. Ctrl+C to stop.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

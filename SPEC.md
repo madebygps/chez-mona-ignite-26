@@ -53,13 +53,13 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Fridge wall
 
-The 2 fridge laptops run the same app with `.\start.ps1 fridge A` and `.\start.ps1 fridge B`; the cooking stations all use `.\start.ps1 station`. The fridge letter is the only per laptop setup. They are touch kiosks:
+The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking stations use `.\start.ps1 station`. No laptop needs its own setup. They are touch kiosks:
 
 1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
 2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
 3. **Ticket.** "Take your ticket" with the order number. Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
 
-The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the order number in large type, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", a large QR code with the dish ID only, an inverted "Scan at any open station" bar and Microsoft Ignite 2026. Each fridge counts its own order numbers from 001 to 999, kept across restarts, behind its own prefix (`A-042` on fridge A, `B-042` on fridge B), so the two fridges never print the same number; nothing reads it. A failed print keeps its number for the next attempt.
+The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the order number in large type, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", a large QR code with the dish ID only, an inverted "Scan at any open station" bar and Microsoft Ignite 2026. Each fridge counts its own order numbers from 001 to 999, kept across restarts; the two fridges can print the same number, which is fine because nothing reads it. A failed print keeps its number for the next attempt.
 
 ## Per dish start and wrap up
 

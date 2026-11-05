@@ -40,20 +40,12 @@ class LabsTest(unittest.TestCase):
 class ConfigTest(unittest.TestCase):
     def test_defaults(self):
         config = StationConfig()
-        self.assertEqual((config.role, config.letter, config.server_port()), ("station", "", 8765))
+        self.assertEqual((config.role, config.server_port()), ("station", 8765))
         self.assertEqual(config.idle_seconds, {"default": 120, "explore": 600, "prompt": 30})
 
     def test_rejects_unknown_role(self):
         with self.assertRaises(ValueError):
             StationConfig(role="oven")
-
-    def test_only_fridges_take_a_letter(self):
-        self.assertEqual(StationConfig(role="fridge", letter=" a ").letter, "A")
-        for bad in ("AB", "1", "-", "é"):
-            with self.assertRaises(ValueError, msg=bad):
-                StationConfig(role="fridge", letter=bad)
-        with self.assertRaises(ValueError):
-            StationConfig(letter="A")
 
 
 if __name__ == "__main__":

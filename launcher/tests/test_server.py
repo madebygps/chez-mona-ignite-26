@@ -115,12 +115,6 @@ class ServerTest(unittest.TestCase):
             launcher.orders.issue(fail)
         second = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
         self.assertEqual(int(second["order"]), int(first["order"]) + 1)
-        launcher.config.letter = "B"
-        try:
-            third = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
-        finally:
-            launcher.config.letter = ""
-        self.assertEqual(third["order"], f"B-{int(second['order']) + 1:03d}")
 
     def test_fridge_role_serves_fridge_page(self):
         launcher = self.server.RequestHandlerClass.launcher
@@ -158,12 +152,12 @@ if __name__ == "__main__":
 class ParseArgsTest(unittest.TestCase):
     def test_role_from_command_line(self):
         config, port = parse_args(["--role", "station", "--port", "9000"])
-        self.assertEqual((config.role, config.letter, port), ("station", "", 9000))
-        config, port = parse_args(["--role", "fridge", "--letter", "b"])
-        self.assertEqual((config.role, config.letter, port), ("fridge", "B", 8766))
+        self.assertEqual((config.role, port), ("station", 9000))
+        config, port = parse_args(["--role", "fridge"])
+        self.assertEqual((config.role, port), ("fridge", 8766))
         _, port = parse_args(["--role", "station"])
         self.assertEqual(port, 8765)
         with contextlib.redirect_stderr(io.StringIO()):
-            for bad in (["--role", "oven"], ["--role", "fridge", "--letter", "A-1"], ["--letter", "A"]):
+            for bad in (["--role", "oven"],):
                 with self.assertRaises(SystemExit, msg=bad):
                     parse_args(bad)
