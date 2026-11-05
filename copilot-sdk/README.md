@@ -8,7 +8,7 @@ The Copilot SDK lets your app run a Copilot agent with your own tools. In [`main
 4. Optional: run the sample.
 
    ```powershell
-   python main.py
+   uv run main.py
    ```
 
 Learn more: [Copilot SDK for Python](https://github.com/github/copilot-sdk/blob/main/python/README.md)
