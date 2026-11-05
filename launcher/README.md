@@ -8,17 +8,16 @@ A small Python server listens on `localhost` only. It serves the page and does t
 
 | Path | Contents |
 |---|---|
-| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order and guest check numbers (`orders.py`), USB and Windows queue printing (`printer.py`), station settings (`config.py`), content loader (`labs.py`) |
+| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order and guest check numbers (`orders.py`), USB printing (`printer.py`), station role and number (`config.py`), content loader (`labs.py`) |
 | [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt takeaways (`receipt.learned`, 1 to 4 short points) and QR link |
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
-| [`station.example.json`](station.example.json) | Every station setting at its default. Copy it to `station.json` only on a laptop that needs to change one |
-| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge`) and opens it in an Edge app window |
+| [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station 3`) or a fridge kiosk (`.\start.ps1 fridge A`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
 
 ## Set up a laptop
 
-The booth has 6 cooking station laptops and 2 fridge laptops, all on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB.
+The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. There is nothing to configure: each laptop only needs its number, given when it starts. Stations are `1` to `6` and fridges are `A` and `B`.
 
 ### Cooking station
 
@@ -40,28 +39,22 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all on Windows. Ea
    ```
 
 5. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Omelette uses it.
-6. Name the station, so its name and number prefix print on receipts. Create `launcher\station.json` with:
-
-   ```json
-   { "station_name": "Station 3", "number_prefix": "3" }
-   ```
-
-   Give each station its own prefix, `1` to `6`, so guest checks read `3-042` and no two stations print the same number. Every other setting already suits the booth. `station.json` is gitignored, so each laptop keeps its own.
-7. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
-8. Start the station:
+6. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
+7. Start the station with its number, here station 3:
 
    ```powershell
-   .\start.ps1 station
+   .\start.ps1 station 3
    ```
 
-9. When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
-10. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
-11. Scan a fridge ticket. The station should open that dish's intro.
-12. In the staff panel, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it. If VS Code does not open, add its `code.cmd` path to `station.json` as `code_path`.
-13. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
-14. Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
-15. Wrap up, then check that the Fried Chicken VS Code window closed.
-16. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\guest-check.txt` so guest checks start at 001 again after the test receipts.
+   Receipts then say "Station 3" and number guest checks `3-001`, `3-002` and so on, so no two stations print the same number. Leave out the number and the script asks for it.
+8. When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
+9. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
+10. Scan a fridge ticket. The station should open that dish's intro.
+11. In the staff panel, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
+12. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
+13. Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
+14. Wrap up, then check that the Fried Chicken VS Code window closed.
+15. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\guest-check.txt` so guest checks start at 001 again after the test receipts.
 
 ### Fridge laptop
 
@@ -76,65 +69,40 @@ Fridges only print tickets, so they skip VS Code, the SDK runtime, the Copilot a
    uv sync
    ```
 
-3. Give the fridge its number prefix, so its tickets read `A-042` and never match the other fridge's. Create `launcher\station.json` with:
-
-   ```json
-   { "number_prefix": "A" }
-   ```
-
-   Use `B` on the second fridge.
-4. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings.
-5. Start the fridge:
+3. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings.
+4. Start the fridge with its letter, here fridge A:
 
    ```powershell
-   .\start.ps1 fridge
+   .\start.ps1 fridge A
    ```
 
-6. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
-7. Tap a dish, then **Print my ticket**. A ticket should print and cut, with its order number starting with the prefix.
-8. Scan that ticket at a cooking station. The station should open the same dish.
-9. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\fridge-order.txt` so order numbers start at 001 again after the test tickets.
-
-If a printer only works through its vendor driver, install the driver, then set `printer_connection` to `queue` and `printer_queue` to the print queue name in `station.json`.
+   Tickets are then numbered `A-001`, `A-002` and so on, so they never match the other fridge's. Use `B` on the second fridge. Leave out the letter and the script asks for it.
+5. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
+6. Tap a dish, then **Print my ticket**. A ticket should print and cut.
+7. Scan that ticket at a cooking station. The station should open the same dish.
+8. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\fridge-order.txt` so order numbers start at 001 again after the test tickets.
 
 ## Run
 
-Each laptop runs one of the two programs. On the 6 cooking stations:
+Each laptop runs one of the two programs, with its number. On the 6 cooking stations, `1` to `6`:
 
 ```powershell
 cd launcher
-.\start.ps1 station
+.\start.ps1 station 3
 ```
 
-On the 2 fridge laptops:
+On the 2 fridge laptops, `A` and `B`:
 
 ```powershell
 cd launcher
-.\start.ps1 fridge
+.\start.ps1 fridge A
 ```
 
 The script starts the server, waits for it, then opens the page in an Edge app window: `http://localhost:8765` for a station and `http://localhost:8766` for a fridge, so both can run on one laptop for testing. Press Ctrl+C in the console to stop. On stop, a cooking station closes any Fried Chicken VS Code window and deletes its folder. Add `-NoBrowser` to skip the Edge window, or `-Port N` to use another port. If the port is already taken, for example by a second station window, the script stops with an error.
 
-To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--config path] [--port N]`.
+To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--number N] [--port N]`.
 
-## Station settings
-
-| Setting | Default | Meaning |
-|---|---|---|
-| `port` | `8765` station, `8766` fridge | Local port for the page |
-| `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument |
-| `station_name` | empty | Name printed on the receipt's guest check, for example `Station 3`. Leave empty to print none |
-| `number_prefix` | empty | Up to 3 letters or digits put before this laptop's order or guest check numbers, for example `A` prints `A-042`. Use `A` and `B` on the fridges and `1` to `6` on the stations so no two laptops print the same number. Leave empty to print `042` |
-| `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
-| `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |
-| `printer_queue` | `Chez Mona Receipt` | Windows print queue used when `printer_connection` is `queue` |
-| `paper_mm` | `80` | Paper width, for reference |
-| `print_width_dots` | `576` | Printable width in dots, a multiple of 8. Use `384` for 58 mm paper |
-| `code_path` | empty | Full path to VS Code's `code.cmd`. When empty, the launcher checks `PATH` and the default install folders |
-| `idle_seconds` | `120`, `600`, `30` | Seconds before the "Still cooking?" prompt on most screens (`default`) and on Explore (`explore`), then the prompt countdown (`prompt`) |
-| `state_dir` | `%LOCALAPPDATA%\ChezMona` | Where a fridge keeps its last order number (`fridge-order.txt`) and a station its last guest check number (`guest-check.txt`). Delete a file to restart at 001 |
-
-Unknown settings stop the launcher with an error, so typos show up at start.
+Everything else is fixed for the booth hardware: the one attached USB printer, 80 mm paper (576 printable dots), VS Code from `PATH` or its default install folder, and order and guest check numbers kept in `%LOCALAPPDATA%\ChezMona` (`fridge-order.txt` and `guest-check.txt`). Delete a number file to restart at 001.
 
 ## Staff controls
 
@@ -161,4 +129,4 @@ cd launcher
 uv run python -m unittest discover -s tests
 ```
 
-The tests cover content validation, station settings, ESC/POS output for tickets and receipts, order and guest check numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.
+The tests cover content validation, the station role and number, ESC/POS output for tickets and receipts, order and guest check numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.

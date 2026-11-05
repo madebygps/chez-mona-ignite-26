@@ -53,7 +53,7 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Fridge wall
 
-The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking stations use `.\start.ps1 station`. They are touch kiosks:
+The 2 fridge laptops run the same app with `.\start.ps1 fridge A` and `.\start.ps1 fridge B`; the cooking stations use `.\start.ps1 station 1` to `.\start.ps1 station 6`. The number or letter is the only per laptop setup. They are touch kiosks:
 
 1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
 2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
@@ -150,7 +150,7 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 The receipt is a keepsake guest check, designed to look different from the fridge ticket. From top to bottom:
 
 - Gingham band, chef hat and the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
-- **Guest check** with its number, the station name, the date and time, and "Served by GitHub Copilot"
+- **Guest check** with its number, the station name ("Station 3", from the station's number), the date and time, and "Served by GitHub Copilot"
 - The dish and lab as one line item
 - **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
@@ -164,12 +164,11 @@ Each cooking station counts its own guest check numbers from 001 to 999, kept ac
 
 - Printer: [Rongta RP326](https://www.amazon.com/dp/B0CNT2F4Q5), 80 mm with auto cutter and USB, serial and Ethernet ports. Over USB it reports as "USB 80Series2" (USB ID `0FE6:811E`). It prints tickets and receipts correctly with the driverless USB connection on a Windows 11 ARM laptop.
 - Each of the 8 laptops has its own USB receipt printer: 2 at the fridge wall and 6 at the cooking stations. No shared printer, network printer address or print server is required.
-- No printer driver is needed. By default the localhost server writes raw ESC/POS bytes straight to the printer's USB printing interface, the same one the Windows spooler uses, without admin rights. The browser does not send printer commands directly.
+- No printer driver is needed. The localhost server writes raw ESC/POS bytes straight to the printer's USB printing interface, the same one the Windows spooler uses, without admin rights. The browser does not send printer commands directly.
 - Before each job the launcher asks the printer for its state (ESC/POS `DLE EOT`) and refuses to print if the cover is open or the paper is out. A write that does not finish within 20 seconds is cancelled and reported.
-- If a printer needs its vendor driver, set `printer_connection` to `queue`: the launcher then submits the bytes to a named Windows print queue with the spooler RAW datatype. Vendor POS drivers are often x64 only and may not install on ARM laptops, and Windows 11 no longer ships the "Generic / Text Only" driver.
+- Direct USB is the only connection. There is no Windows print queue fallback: all 8 laptops are the same Surface model as the one tested, vendor POS drivers are often x64 only and may not install on ARM laptops, and Windows 11 no longer ships the "Generic / Text Only" driver.
 - Use native ESC/POS text and cut commands. Render the documentation QR code as a monochrome raster image because native QR command support is not confirmed.
-- 80 mm paper, with 72 mm printable width (576 dots at 203 dpi).
-- Keep the connection, paper width and printable dot width in station configuration so a model change or 58 mm fallback does not require code changes.
+- 80 mm paper, with 72 mm printable width (576 dots at 203 dpi), fixed in code.
 - Show print errors explicitly. A completed write means "sent to printer", not proof that paper was printed. Do not automatically retry an uncertain submission and risk duplicate receipts.
 
 ## Idle handling

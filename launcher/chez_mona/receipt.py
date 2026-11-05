@@ -28,6 +28,7 @@ TICKET_BAR = "Chez Mona  *  Kitchen ticket"
 TICKET_CAPTION = ">> Scan at any open station <<"
 TICKET_DURATION = "about 5 min"
 FONT_A_WIDTH = 12  # dots per character, Font A at normal size
+WIDTH_DOTS = 576  # RP326 printable width: 72 mm of 80 mm paper at 203 dpi
 QR_TARGET_FRACTION = 0.45
 TICKET_QR_FRACTION = 0.6
 FONT_DIR = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
@@ -300,11 +301,11 @@ def raster(image: Image.Image) -> bytes:
 
 # ---------- ESC/POS ----------
 
-def escpos(dish: dict, check: Check, width_dots: int) -> bytes:
+def escpos(dish: dict, check: Check, width_dots: int = WIDTH_DOTS) -> bytes:
     return render_escpos(layout(dish, check), width_dots)
 
 
-def ticket_escpos(dish: dict, order: Order, width_dots: int) -> bytes:
+def ticket_escpos(dish: dict, order: Order, width_dots: int = WIDTH_DOTS) -> bytes:
     return render_escpos(ticket_layout(dish, order), width_dots)
 
 

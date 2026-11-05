@@ -38,7 +38,7 @@ class ServerTest(unittest.TestCase):
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
         # Never touch a real printer from the tests.
-        cls.printer_patch = mock.patch.object(printer, "submit_usb", lambda data, match: None)
+        cls.printer_patch = mock.patch.object(printer, "submit_usb", lambda data: None)
         cls.printer_patch.start()
         config = StationConfig(state_dir=Path(cls.tmp.name))
         cls.sessions = FakeSessions()
@@ -81,7 +81,7 @@ class ServerTest(unittest.TestCase):
     def test_rejects_other_hosts_and_traversal(self):
         self.assertEqual(self.request("GET", "/api/labs", headers={"Host": "evil.example"})[0], 403)
         self.assertEqual(self.request("GET", "/../chez_mona/server.py")[0], 404)
-        self.assertEqual(self.request("GET", "/%2e%2e/station.example.json")[0], 404)
+        self.assertEqual(self.request("GET", "/%2e%2e/pyproject.toml")[0], 404)
 
     def test_post_requires_json(self):
         status, _, _ = self.request("POST", "/api/session/end", "{}", {"Content-Type": "text/plain"})
@@ -118,11 +118,11 @@ class ServerTest(unittest.TestCase):
             launcher.orders.issue(fail)
         second = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
         self.assertEqual(int(second["order"]), int(first["order"]) + 1)
-        launcher.config.number_prefix = "B"
+        launcher.config.number = "B"
         try:
             third = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
         finally:
-            launcher.config.number_prefix = ""
+            launcher.config.number = ""
         self.assertEqual(third["order"], f"B-{int(second['order']) + 1:03d}")
 
     def test_fridge_role_serves_fridge_page(self):
@@ -136,19 +136,21 @@ class ServerTest(unittest.TestCase):
         _, _, data = self.request("GET", "/")
         self.assertIn(b"app.js", data)
 
-    def test_print_uses_configured_connection(self):
+    def test_print_names_the_station(self):
         launcher = self.server.RequestHandlerClass.launcher
         sent = []
-        with mock.patch.object(printer, "submit_usb", lambda data, match: sent.append(("usb", match)) or {}), \
-                mock.patch.object(printer, "submit_raw", lambda queue, data, title: sent.append(("queue", queue)) or 7):
-            self.assertEqual(json.loads(self.request("POST", "/api/print", {"dish": "dip"})[2])["status"], "sent")
-            with mock.patch.object(launcher.config, "printer_connection", "queue"):
-                result = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
-        self.assertEqual(result["job"], 7)
-        self.assertEqual(sent, [("usb", ""), ("queue", "Chez Mona Receipt")])
+        launcher.config.number = "3"
+        try:
+            with mock.patch.object(printer, "submit_usb", lambda data: sent.append(data) or {}):
+                result = json.loads(self.request("POST", "/api/print", {"dish": "dip"})[2])
+        finally:
+            launcher.config.number = ""
+        self.assertTrue(result["check"].startswith("3-"))
+        self.assertIn(b"Station 3", sent[0])
+        self.assertIn(f"No. {result['check']}".encode(), sent[0])
 
     def test_printer_status_reports_errors(self):
-        def missing(match):
+        def missing():
             raise printer.PrintError("No USB receipt printer is connected.")
 
         with mock.patch.object(printer, "usb_status", missing):
@@ -163,12 +165,13 @@ if __name__ == "__main__":
 
 class ParseArgsTest(unittest.TestCase):
     def test_role_from_command_line(self):
-        config, port = parse_args(["--role", "station", "--port", "9000"])
-        self.assertEqual((config.role, port), ("station", 9000))
-        config, port = parse_args(["--role", "fridge"])
-        self.assertEqual((config.role, port), ("fridge", 8766))
+        config, port = parse_args(["--role", "station", "--number", "3", "--port", "9000"])
+        self.assertEqual((config.role, config.number, port), ("station", "3", 9000))
+        config, port = parse_args(["--role", "fridge", "--number", "b"])
+        self.assertEqual((config.role, config.number, port), ("fridge", "B", 8766))
         _, port = parse_args(["--role", "station"])
         self.assertEqual(port, 8765)
         with contextlib.redirect_stderr(io.StringIO()):
-            with self.assertRaises(SystemExit):
-                parse_args(["--role", "oven"])
+            for bad in (["--role", "oven"], ["--number", "A-1"]):
+                with self.assertRaises(SystemExit, msg=bad):
+                    parse_args(bad)

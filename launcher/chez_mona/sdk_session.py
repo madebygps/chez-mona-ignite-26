@@ -46,7 +46,7 @@ def find_code(configured: str = "") -> str:
     for candidate in candidates:
         if candidate and os.path.isfile(candidate):
             return candidate
-    raise SessionError("VS Code was not found. Set code_path in station.json.")
+    raise SessionError("VS Code was not found. Install it, then restart the launcher.")
 
 
 def launch_code(code: str, folder: Path, new_window: bool = True) -> None:

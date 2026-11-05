@@ -1,8 +1,7 @@
-"""Station configuration: per-laptop settings read from station.json."""
+"""Station configuration: the role and number given on the command line."""
 
 from __future__ import annotations
 
-import json
 import os
 import re
 from dataclasses import dataclass, field
@@ -10,67 +9,43 @@ from pathlib import Path
 
 LAUNCHER_DIR = Path(__file__).resolve().parent.parent
 REPO_DIR = LAUNCHER_DIR.parent
-STATION_FILE = LAUNCHER_DIR / "station.json"
-EXAMPLE_FILE = LAUNCHER_DIR / "station.example.json"
 ROLES = ("station", "fridge")
 DEFAULT_PORTS = {"station": 8765, "fridge": 8766}
-CONNECTIONS = ("usb", "queue")
 
 
 def default_state_dir() -> Path:
     return Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "ChezMona"
 
 
+def clean_number(number: str) -> str:
+    """The laptop's number, 1 to 6 for a station or A or B for a fridge."""
+    number = str(number).strip().upper()
+    if not re.fullmatch(r"[A-Z0-9]{0,3}", number):
+        raise ValueError("The number must be up to 3 letters or digits, for example 3 or A")
+    return number
+
+
 @dataclass
 class StationConfig:
-    port: int | None = None
     role: str = "station"
-    station_name: str = ""
-    number_prefix: str = ""
-    printer_connection: str = "usb"
-    printer_usb_match: str = ""
-    printer_queue: str = "Chez Mona Receipt"
-    paper_mm: int = 80
-    print_width_dots: int = 576
-    code_path: str = ""
+    number: str = ""
     idle_seconds: dict = field(
         default_factory=lambda: {"default": 120, "explore": 600, "prompt": 30}
     )
     state_dir: Path = field(default_factory=default_state_dir)
 
-    @classmethod
-    def load(cls, path: Path | None = None) -> "StationConfig":
-        path = path or (STATION_FILE if STATION_FILE.exists() else EXAMPLE_FILE)
-        data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-        config = cls()
-        for key, value in data.items():
-            if key == "idle_seconds":
-                config.idle_seconds = {**config.idle_seconds, **value}
-            elif key == "state_dir":
-                config.state_dir = Path(value)
-            elif hasattr(config, key):
-                setattr(config, key, value)
-            else:
-                raise ValueError(f"Unknown station setting: {key}")
-        if config.print_width_dots % 8:
-            raise ValueError("print_width_dots must be a multiple of 8")
-        if config.role not in ROLES:
+    def __post_init__(self):
+        if self.role not in ROLES:
             raise ValueError(f"role must be one of: {', '.join(ROLES)}")
-        if config.printer_connection not in CONNECTIONS:
-            raise ValueError(f"printer_connection must be one of: {', '.join(CONNECTIONS)}")
-        config.number_prefix = str(config.number_prefix).strip().upper()
-        if not re.fullmatch(r"[A-Z0-9]{0,3}", config.number_prefix):
-            raise ValueError("number_prefix must be up to 3 letters or digits, for example A or 3")
-        return config
+        self.number = clean_number(self.number)
+
+    def station_name(self) -> str:
+        """Printed on the receipt's guest check."""
+        return f"Station {self.number}" if self.role == "station" and self.number else ""
 
     def server_port(self) -> int:
-        """The configured port, or the role's own default so a station and a fridge never clash."""
-        return self.port or DEFAULT_PORTS[self.role]
-
-    def printer_label(self) -> str:
-        if self.printer_connection == "queue":
-            return f"queue '{self.printer_queue}'"
-        return "USB printer" + (f" matching '{self.printer_usb_match}'" if self.printer_usb_match else "")
+        """The role's own port, so a station and a fridge never clash on one laptop."""
+        return DEFAULT_PORTS[self.role]
 
     def public(self) -> dict:
         """Settings the browser page needs."""

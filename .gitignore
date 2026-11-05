@@ -2,4 +2,3 @@
 node_modules/
 __pycache__/
 .venv/
-launcher/station.json
