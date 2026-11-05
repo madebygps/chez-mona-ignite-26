@@ -2,10 +2,8 @@ import contextlib
 import http.client
 import io
 import json
-import tempfile
 import threading
 import unittest
-from pathlib import Path
 from unittest import mock
 
 from chez_mona import printer
@@ -36,11 +34,10 @@ class FakeSessions:
 class ServerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.tmp = tempfile.TemporaryDirectory()
         # Never touch a real printer from the tests.
         cls.printer_patch = mock.patch.object(printer, "submit_usb", lambda data: None)
         cls.printer_patch.start()
-        config = StationConfig(state_dir=Path(cls.tmp.name))
+        config = StationConfig()
         cls.sessions = FakeSessions()
         cls.server = make_server(Launcher(config, sessions=cls.sessions), 0)
         cls.port = cls.server.server_address[1]
@@ -51,7 +48,6 @@ class ServerTest(unittest.TestCase):
         cls.server.shutdown()
         cls.server.server_close()
         cls.printer_patch.stop()
-        cls.tmp.cleanup()
 
     def request(self, method, path, body=None, headers=None):
         conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
@@ -67,7 +63,7 @@ class ServerTest(unittest.TestCase):
         return response.status, response.getheader("Content-Type"), data
 
     def test_port_in_use_is_refused(self):
-        config = StationConfig(state_dir=Path(self.tmp.name), role="fridge")
+        config = StationConfig(role="fridge")
         with self.assertRaises(OSError):
             make_server(Launcher(config, sessions=FakeSessions()), self.port).server_close()
 
@@ -102,19 +98,11 @@ class ServerTest(unittest.TestCase):
         for hints in ([0], [0, -1], [0, 9], [0, "1"], [True, 0], "0,0"):
             self.assertEqual(self.request("POST", "/api/print", {"dish": "soup", "hints": hints})[0], 400, hints)
 
-    def test_ticket_numbers_advance_only_on_success(self):
-        launcher = self.server.RequestHandlerClass.launcher
-        first = json.loads(self.request("POST", "/api/ticket", {"dish": "soup"})[2])
-        self.assertEqual(first["status"], "sent")
+    def test_print_sends_ticket(self):
+        result = json.loads(self.request("POST", "/api/ticket", {"dish": "soup"})[2])
+        self.assertEqual(result["status"], "sent")
+        self.assertNotIn("order", result)
         self.assertEqual(self.request("POST", "/api/ticket", {"dish": "pizza"})[0], 400)
-
-        def fail(number):
-            raise RuntimeError("printer off")
-
-        with self.assertRaises(RuntimeError):
-            launcher.orders.issue(fail)
-        second = json.loads(self.request("POST", "/api/ticket", {"dish": "dip"})[2])
-        self.assertEqual(int(second["order"]), int(first["order"]) + 1)
 
     def test_fridge_role_serves_fridge_page(self):
         launcher = self.server.RequestHandlerClass.launcher

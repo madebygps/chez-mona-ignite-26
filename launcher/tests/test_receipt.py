@@ -49,11 +49,10 @@ class ReceiptTest(unittest.TestCase):
         self.assertNotIn("HINTS USED", rows(receipt.Check(AT)))
 
     def test_text_fits_the_paper(self):
-        order = receipt.Order(999, AT)
         for width in (384, 576):
             for dish in DISHES.values():
                 for items in (receipt.layout(dish, receipt.Check(AT, [3, 3])),
-                              receipt.ticket_layout(dish, order)):
+                              receipt.ticket_layout(dish, AT)):
                     for line, columns in printed_lines(items, width):
                         self.assertLessEqual(len(line), columns, line)
 
@@ -83,13 +82,13 @@ class ReceiptTest(unittest.TestCase):
     def test_plain_strips_markup_and_non_ascii(self):
         self.assertEqual(receipt.plain("Use `send_and_wait` **now** \u2713"), "Use send_and_wait now ?")
 
-    def test_ticket_carries_order_and_dish_id_qr(self):
-        order = receipt.Order(7, datetime(2026, 11, 18, 9, 5))
-        items = receipt.ticket_layout(DISHES["fried-chicken"], order)
-        self.assertIn("#007", [i.text for i in items if isinstance(i, receipt.Line)])
+    def test_ticket_carries_dish_id_qr_and_no_number(self):
+        at = datetime(2026, 11, 18, 9, 5)
+        items = receipt.ticket_layout(DISHES["fried-chicken"], at)
+        self.assertFalse(any(i.text.startswith("#") for i in items if isinstance(i, receipt.Line)))
         self.assertIn(("Wed Nov 18", "9:05 AM"), [(i.left, i.right) for i in items if isinstance(i, receipt.Row)])
         self.assertEqual([i.data for i in items if isinstance(i, receipt.Qr)], ["fried-chicken"])
-        data = receipt.ticket_escpos(DISHES["fried-chicken"], order, 576)
+        data = receipt.ticket_escpos(DISHES["fried-chicken"], at, 576)
         self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
         self.assertIn(b"1x FRIED CHICKEN", data)
 

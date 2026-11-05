@@ -91,23 +91,12 @@ def plain(text: str) -> str:
 
 # ---------- Fridge ticket ----------
 
-@dataclass
-class Order:
-    """A fridge ticket. Each fridge counts on its own, so the two can print the same number."""
-    number: int
-    at: datetime
-
-    def label(self) -> str:
-        return f"{self.number:03d}"
-
-
-def ticket_layout(dish: dict, order: Order) -> list[Item]:
+def ticket_layout(dish: dict, at: datetime) -> list[Item]:
     """Fridge ticket. Its QR holds only the dish ID, which the stations scan."""
     return [
         Line(TICKET_BAR.upper(), bold=True, invert=True),
         None,
-        Line(f"#{order.label()}", width=3, height=3, bold=True),
-        Row(f"{order.at:%a %b} {order.at.day}", clock(order.at)),
+        Row(f"{at:%a %b} {at.day}", clock(at)),
         Rule(spaced=True),
         None,
         Line(f"1x {dish['dish'].upper()}", width=2, height=2, bold=True),
@@ -295,8 +284,8 @@ def escpos(dish: dict, check: Check, width_dots: int = WIDTH_DOTS) -> bytes:
     return render_escpos(layout(dish, check), width_dots)
 
 
-def ticket_escpos(dish: dict, order: Order, width_dots: int = WIDTH_DOTS) -> bytes:
-    return render_escpos(ticket_layout(dish, order), width_dots)
+def ticket_escpos(dish: dict, at: datetime, width_dots: int = WIDTH_DOTS) -> bytes:
+    return render_escpos(ticket_layout(dish, at), width_dots)
 
 
 ALIGN = {"left": 0, "center": 1, "right": 2}

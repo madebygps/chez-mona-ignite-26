@@ -8,7 +8,7 @@ A small Python server listens on `localhost` only. It serves the page and does t
 
 | Path | Contents |
 |---|---|
-| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order numbers (`orders.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`) |
+| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`) |
 | [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt takeaways (`receipt.learned`, 1 to 4 short points) and QR link |
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
@@ -77,7 +77,6 @@ Fridges only print tickets, so they skip VS Code, the SDK runtime, the Copilot a
 5. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
 6. Tap a dish, then **Print my ticket**. A ticket should print and cut.
 7. Scan that ticket at a cooking station. The station should open the same dish.
-8. Before the booth opens, delete `%LOCALAPPDATA%\ChezMona\fridge-order.txt` so order numbers start at 001 again after the test tickets.
 
 ## Run
 
@@ -99,7 +98,7 @@ The script starts the server, waits for it, then opens the page in an Edge app w
 
 To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--port N]`.
 
-Everything else is fixed for the booth hardware: the one attached USB printer, 80 mm paper (576 printable dots), VS Code from `PATH` or its default install folder, and fridge order numbers kept in `%LOCALAPPDATA%\ChezMona\fridge-order.txt`. Delete that file to restart at 001.
+Everything else is fixed for the booth hardware: the one attached USB printer, 80 mm paper (576 printable dots), VS Code from `PATH` or its default install folder.
 
 ## Staff controls
 
@@ -126,4 +125,4 @@ cd launcher
 uv run python -m unittest discover -s tests
 ```
 
-The tests cover content validation, the station role, ESC/POS output for tickets and receipts, fridge order numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.
+The tests cover content validation, the station role, ESC/POS output for tickets and receipts, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.

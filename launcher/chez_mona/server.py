@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 from . import labs, printer, receipt
 from .config import LAUNCHER_DIR, ROLES, StationConfig
-from .orders import OrderCounter
+
 from .sdk_session import SdkSessions, SessionError
 
 STATIC_DIR = LAUNCHER_DIR / "static"
@@ -42,7 +42,6 @@ class Launcher:
         self.content = labs.load()
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions()
-        self.orders = OrderCounter(config.state_dir / "fridge-order.txt")
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -65,13 +64,8 @@ class Launcher:
 
     def print_ticket(self, dish_id: str) -> dict:
         dish = self.dish(dish_id)
-
-        def use(number: int) -> dict:
-            order = receipt.Order(number, datetime.now())
-            job = printer.submit_usb(receipt.ticket_escpos(dish, order))
-            return {"order": order.label(), "status": "sent", "job": job}
-
-        return self.orders.issue(use)
+        job = printer.submit_usb(receipt.ticket_escpos(dish, datetime.now()))
+        return {"status": "sent", "job": job}
 
     def printer_status(self) -> dict:
         info = {"printer": "USB printer", "problems": []}
