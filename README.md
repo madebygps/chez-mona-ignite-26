@@ -11,3 +11,7 @@ Private booth repository for the Chez Mona labs. See [SPEC.md](SPEC.md) for the 
 | [`SPEC.md`](SPEC.md) | Launcher and lab spec |
 
 The Canvas 101 lab lives in the public guest repo [madebygps/canvas-101](https://github.com/madebygps/canvas-101).
+
+## Set up the booth laptops
+
+Follow the [cooking station](launcher/README.md#cooking-station-checklist) and [fridge laptop](launcher/README.md#fridge-laptop-checklist) checklists in the launcher README.
