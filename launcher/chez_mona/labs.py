@@ -57,7 +57,10 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
             _check(len(set(others + [q["answer"]])) == 4, f"{did} question {i}: choices must be unique")
         _check(dish.get("wrap_up"), f"{did}: needs wrap_up")
         receipt = dish.get("receipt", {})
-        _check(receipt.get("learned"), f"{did}: receipt needs learned")
+        learned = receipt.get("learned")
+        _check(isinstance(learned, list) and 1 <= len(learned) <= 4
+               and all(isinstance(p, str) and p.strip() for p in learned),
+               f"{did}: receipt learned needs 1 to 4 short points")
         _check(receipt.get("qr", "").startswith("https://"), f"{did}: receipt needs https qr")
 
 

@@ -15,6 +15,7 @@ const state = {
   screen: null,
   dish: null,
   question: 0,
+  hints: [],
 };
 
 // ---------- helpers ----------
@@ -354,6 +355,7 @@ function renderQuiz(index) {
   const dish = state.dish;
   const q = dish.quiz[index];
   state.question = index;
+  if (index === 0) state.hints = dish.quiz.map(() => 0);
   const choices = shuffle([q.answer, ...q.others]);
   show("quiz", `
     <section>
@@ -375,6 +377,7 @@ function renderQuiz(index) {
       } else {
         button.classList.add("wrong");
         button.disabled = true;
+        state.hints[index] += 1;
         document.getElementById("hint").innerHTML = `<div class="hint"><strong>Not quite.</strong> ${fmt(q.hint)}</div>`;
       }
     });
@@ -391,7 +394,7 @@ async function renderPrint() {
       <h2>Printing your receipt…</h2>
     </section>`);
   try {
-    await api("/api/print", { dish: dish.id });
+    await api("/api/print", { dish: dish.id, hints: state.hints });
     show("print", `
       <section class="center">
         <p class="eyebrow">Well done</p>

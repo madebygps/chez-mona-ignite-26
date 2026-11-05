@@ -59,7 +59,7 @@ The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking sta
 2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
 3. **Ticket.** "Take your ticket" with the order number. Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
 
-The ticket shows Chez Mona, "Order ticket", the order number, the date and time, the dish in large type, the lab name, a large QR code with the dish ID only, "Scan at any open cooking station" and Microsoft Ignite 2026. Each fridge counts its own order numbers from 001 to 999, kept across restarts, so the two fridges can print the same number; nothing reads it. A failed print keeps its number for the next attempt.
+The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the order number in large type, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", a large QR code with the dish ID only, an inverted "Scan at any open station" bar and Microsoft Ignite 2026. Each fridge counts its own order numbers from 001 to 999, kept across restarts, so the two fridges can print the same number; nothing reads it. A failed print keeps its number for the next attempt.
 
 ## Per dish start and wrap up
 
@@ -147,11 +147,18 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 
 ## Receipt
 
-- Header: Chez Mona
-- Dish name and lab name
-- One line on what you learned
-- QR code to the dish's docs link, captioned "Scan to learn more"
-- Footer: Microsoft Ignite 2026
+The receipt is a keepsake guest check, designed to look different from the fridge ticket. From top to bottom:
+
+- Gingham band, chef hat and the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
+- **Guest check** with its number, the station name, the date and time, and "Served by GitHub Copilot"
+- The dish and lab as one line item
+- **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
+- Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
+- A stamp: "Perfect score" with no hints used, otherwise "Chef approved"
+- QR code to the dish's docs link, captioned "Scan to continue learning"
+- "Merci! Have a nice day" and a closing gingham band
+
+Each cooking station counts its own guest check numbers from 001 to 999, kept across restarts. The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
 
 ### Printer integration
 
@@ -210,4 +217,5 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [ ] GitHub links from the launcher open in a normal browser window when the launcher runs in Edge app mode
 - [ ] The other 7 RP326 units print the same way on their laptops
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper
+- [ ] Redesigned ticket and receipt on the RP326: inverted bars (ESC/POS `GS B`) print white on black, raster wordmark, stamp and gingham look clean, and the receipt length is acceptable
 - [ ] Missing printer, paper-out and cover-open handling on the real printer (the status query works; failures not yet triggered on hardware)

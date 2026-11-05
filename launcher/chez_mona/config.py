@@ -24,6 +24,7 @@ def default_state_dir() -> Path:
 class StationConfig:
     port: int | None = None
     role: str = "station"
+    station_name: str = ""
     printer_connection: str = "usb"
     printer_usb_match: str = ""
     printer_queue: str = "Chez Mona Receipt"
