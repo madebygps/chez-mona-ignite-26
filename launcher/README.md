@@ -8,8 +8,8 @@ A small Python server listens on `localhost` only. It serves the page and does t
 
 | Path | Contents |
 |---|---|
-| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order numbers (`orders.py`), USB and Windows queue printing (`printer.py`), station settings (`config.py`), content loader (`labs.py`) |
-| [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt line and QR link |
+| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), fridge order and guest check numbers (`orders.py`), USB and Windows queue printing (`printer.py`), station settings (`config.py`), content loader (`labs.py`) |
+| [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt takeaways (`receipt.learned`, 1 to 4 short points) and QR link |
 | [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
 | [`station.example.json`](station.example.json) | Every station setting at its default. Copy it to `station.json` only on a laptop that needs to change one |
@@ -65,6 +65,7 @@ To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] 
 |---|---|---|
 | `port` | `8765` station, `8766` fridge | Local port for the page |
 | `role` | `station` | `station` for a cooking station, `fridge` for a fridge wall kiosk that prints tickets. `start.ps1` sets this from its first argument |
+| `station_name` | empty | Name printed on the receipt's guest check, for example `Station 3`. Leave empty to print none |
 | `printer_connection` | `usb` | `usb` writes straight to the first attached USB printer, with no driver. `queue` sends RAW bytes to the Windows print queue `printer_queue` |
 | `printer_usb_match` | empty | With `usb`, use only a printer whose device path contains this text, for example `vid_0fe6` |
 | `printer_queue` | `Chez Mona Receipt` | Windows print queue used when `printer_connection` is `queue` |
@@ -72,7 +73,7 @@ To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] 
 | `print_width_dots` | `576` | Printable width in dots, a multiple of 8. Use `384` for 58 mm paper |
 | `code_path` | empty | Full path to VS Code's `code.cmd`. When empty, the launcher checks `PATH` and the default install folders |
 | `idle_seconds` | `120`, `600`, `30` | Seconds before the "Still cooking?" prompt on most screens (`default`) and on Explore (`explore`), then the prompt countdown (`prompt`) |
-| `state_dir` | `%LOCALAPPDATA%\ChezMona` | Where a fridge keeps its last order number (`fridge-order.txt`). Delete the file to restart at 001 |
+| `state_dir` | `%LOCALAPPDATA%\ChezMona` | Where a fridge keeps its last order number (`fridge-order.txt`) and a station its last guest check number (`guest-check.txt`). Delete a file to restart at 001 |
 
 Unknown settings stop the launcher with an error, so typos show up at start.
 
@@ -101,4 +102,4 @@ cd launcher
 uv run python -m unittest discover -s tests
 ```
 
-The tests cover content validation, station settings, ESC/POS output for tickets and receipts, fridge order numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.
+The tests cover content validation, station settings, ESC/POS output for tickets and receipts, order and guest check numbers, the Fried Chicken session with a fake VS Code, and the server endpoints with a fake printer.

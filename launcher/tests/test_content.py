@@ -33,6 +33,10 @@ class LabsTest(unittest.TestCase):
         self.assert_rejected(lambda d: d["dishes"][2]["steps"][0].update(markdown="soup/missing.md"))
         self.assert_rejected(lambda d: d["dishes"][1].update(id="omelette"))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].pop("qr"))
+        self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned="One string"))
+        self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=[]))
+        self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=["a", "b", "c", "d", "e"]))
+        self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=["ok", " "]))
 
 
 class ConfigTest(unittest.TestCase):

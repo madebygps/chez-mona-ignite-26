@@ -96,8 +96,14 @@ class ServerTest(unittest.TestCase):
 
     def test_print_sends_receipt(self):
         status, _, data = self.request("POST", "/api/print", {"dish": "omelette"})
-        self.assertEqual((status, json.loads(data)["status"]), (200, "sent"))
+        first = json.loads(data)
+        self.assertEqual((status, first["status"]), (200, "sent"))
         self.assertEqual(self.request("POST", "/api/print", {"dish": "pizza"})[0], 400)
+        status, _, data = self.request("POST", "/api/print", {"dish": "soup", "hints": [0, 2]})
+        self.assertEqual(status, 200)
+        self.assertEqual(int(json.loads(data)["check"]), int(first["check"]) + 1)
+        for hints in ([0], [0, -1], [0, 9], [0, "1"], [True, 0], "0,0"):
+            self.assertEqual(self.request("POST", "/api/print", {"dish": "soup", "hints": hints})[0], 400, hints)
 
     def test_ticket_numbers_advance_only_on_success(self):
         launcher = self.server.RequestHandlerClass.launcher

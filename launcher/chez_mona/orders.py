@@ -1,4 +1,4 @@
-"""Fridge order numbers, kept in a small file so they survive restarts."""
+"""Order and guest check numbers, kept in a small file so they survive restarts."""
 
 from __future__ import annotations
 

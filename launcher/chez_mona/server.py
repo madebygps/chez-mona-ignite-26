@@ -24,6 +24,17 @@ HOME_PAGE = {"station": "index.html", "fridge": "fridge.html"}
 MAX_BODY = 64 * 1024
 
 
+def check_hints(hints, questions: int) -> list[int] | None:
+    """Wrong answers per question from the quiz page. None when the page did not send them."""
+    if hints is None:
+        return None
+    valid = (isinstance(hints, list) and len(hints) == questions
+             and all(type(n) is int and 0 <= n <= 3 for n in hints))
+    if not valid:
+        raise LookupError(f"hints must list wrong answers (0 to 3) for each of the {questions} questions")
+    return hints
+
+
 class Launcher:
     """Everything the request handler needs, shared across threads."""
 
@@ -33,6 +44,7 @@ class Launcher:
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions(code_path=config.code_path)
         self.orders = OrderCounter(config.state_dir / "fridge-order.txt")
+        self.checks = OrderCounter(config.state_dir / "guest-check.txt")
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -47,11 +59,17 @@ class Launcher:
         self.sessions.end()
         return {}
 
-    def print_receipt(self, dish_id: str) -> dict:
+    def print_receipt(self, dish_id: str, hints=None) -> dict:
         dish = self.dish(dish_id)
-        data = receipt.escpos(dish, self.config.print_width_dots)
-        job = self.send(data, f"Chez Mona receipt: {dish['dish']}")
-        return {"status": "sent", "job": job}
+        hints = check_hints(hints, len(dish["quiz"]))
+
+        def use(number: int) -> dict:
+            check = receipt.Check(number, datetime.now(), self.config.station_name, hints)
+            data = receipt.escpos(dish, check, self.config.print_width_dots)
+            job = self.send(data, f"Chez Mona receipt {check.label()}: {dish['dish']}")
+            return {"check": check.label(), "status": "sent", "job": job}
+
+        return self.checks.issue(use)
 
     def send(self, data: bytes, title: str):
         if self.config.printer_connection == "queue":
@@ -144,7 +162,7 @@ class Handler(BaseHTTPRequestHandler):
             "/api/session/start": lambda: self.launcher.start(body.get("dish", "")),
             "/api/session/reopen": self.launcher.sessions.reopen,
             "/api/session/end": self.launcher.sessions.end,
-            "/api/print": lambda: self.launcher.print_receipt(body.get("dish", "")),
+            "/api/print": lambda: self.launcher.print_receipt(body.get("dish", ""), body.get("hints")),
             "/api/ticket": lambda: self.launcher.print_ticket(body.get("dish", "")),
         }
         route = routes.get(urlparse(self.path).path)
