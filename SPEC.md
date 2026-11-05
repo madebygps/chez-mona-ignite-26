@@ -186,7 +186,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - Use a JavaScript QR library (for example ZXing or jsQR). The built in `BarcodeDetector` is not available in Chrome on Windows.
 - Use large, matte QR codes on tickets to cope with booth lighting.
 - The local server prepares the SDK starter and launches VS Code. A hosted site could not do this.
-- Pre stage the SDK runtime on each laptop: `pip install -r copilot-sdk/requirements.txt`, then `python -m copilot download-runtime`. Requires Python 3.11 or later.
+- Pre stage the SDK runtime on each laptop: `uv run --with github-copilot-sdk==1.0.28 python -m copilot download-runtime` from `launcher/`. It caches the runtime per user in `%LOCALAPPDATA%\github-copilot-sdk`, so no system Python is needed.
 - Install and update the launcher on all laptops with a script, possibly extending `octobooth-demos/machine-setup`.
 
 ## Accidental change protection
