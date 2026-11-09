@@ -156,12 +156,12 @@ The receipt is a keepsake guest check, designed to look different from the fridg
 
 - Gingham band, chef hat and the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
 - **Guest check**, then "Cooking station" with the date and time, and "Served by GitHub Copilot". The guest check has no number: stations don't share a counter, so a number could repeat.
-- The dish and lab as one line item
-- **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
+- The dish and lab as one line item, then "Made with" and the `uses` tools from the confirm screen
+- **You learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json), one for each `about` point in the same order. The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
 - A stamp: "Perfect score" with no hints used, otherwise "Chef approved"
 - QR code to the dish's docs link, captioned "Scan to continue learning at home"
-- "Merci! Have a nice day" and a closing gingham band
+- "Merci! Have a nice day", "Thanks for cooking with us" and a closing gingham band
 
 The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
 

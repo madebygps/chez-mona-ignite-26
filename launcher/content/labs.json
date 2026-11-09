@@ -39,9 +39,9 @@
       "wrap_up": ["In the Copilot app, delete the chat you used for this lab."],
       "receipt": {
         "learned": [
-          "A canvas is an interactive panel in the Copilot app.",
-          "You and the agent can both change it.",
-          "Repository scoped canvases live in `.github/extensions/`."
+          "A canvas is an interactive panel. Use it when chat is not enough.",
+          "You click the canvas and the agent edits it. You both see each change.",
+          "A repository shares a canvas from `.github/extensions/`."
         ],
         "qr": "https://docs.github.com/en/copilot/how-tos/github-copilot-app/working-with-canvas-extensions"
       }
@@ -184,8 +184,8 @@
       "receipt": {
         "learned": [
           "An agentic workflow is a GitHub Actions workflow written in Markdown.",
-          "Frontmatter sets the trigger, permissions and allowed outputs.",
-          "The body tells the agent what to do in plain language."
+          "The frontmatter sets the trigger, permissions and safe outputs.",
+          "The agent follows the plain-language instructions on each run."
         ],
         "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows"
       }
@@ -264,9 +264,9 @@
       "wrap_up": ["Close the GitHub tabs you opened."],
       "receipt": {
         "learned": [
-          "Code scanning finds known vulnerabilities, like SQL injection.",
-          "Copilot Autofix suggests a fix right on the pull request.",
-          "Copilot code review reviews the whole change, like a teammate."
+          "Code scanning uses CodeQL to find known vulnerabilities, like SQL injection.",
+          "Copilot Autofix suggests a fix for the alert on the pull request.",
+          "Copilot code review checks the whole change, not only known patterns."
         ],
         "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review"
       }
