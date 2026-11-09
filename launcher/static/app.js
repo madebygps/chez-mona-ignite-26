@@ -167,7 +167,7 @@ const scanner = {
       });
     } catch (error) {
       if (generation !== this.generation) return;
-      message.textContent = "Camera unavailable. Use Choose a lab instead to pick a dish.";
+      message.textContent = "Camera unavailable. Tap Manually select a lab instead to pick a dish.";
       message.hidden = false;
       return;
     }
@@ -233,7 +233,7 @@ function renderScan() {
       <p class="eyebrow">Welcome to Chez Mona</p>
       <h1>Scan your ticket</h1>
       <p class="lede">Hold the QR code on your fridge ticket up to the camera.</p>
-      <button id="choose-lab">Choose a lab instead</button>
+      <button id="choose-lab">Manually select a lab instead</button>
       <div class="camera">
         <video id="video" muted playsinline></video>
         <div class="frame"></div>
@@ -251,7 +251,7 @@ function renderMenu() {
     <section class="menu">
       <p class="eyebrow">Today's menu</p>
       <h1>Choose a lab</h1>
-      <p class="lede">No ticket needed. Pick a dish to get started.</p>
+      <p class="lede">Pick a dish by what you want to learn. Each takes about 5 minutes.</p>
       <div class="menu-grid">
         ${Object.values(state.dishes).map((d) => `
           <button class="menu-item" data-dish="${escapeHtml(d.id)}">
@@ -278,10 +278,14 @@ function renderIntro(id) {
   state.dish = dish;
   state.question = 0;
   show("intro", `
-    <section>
+    <section class="intro">
       <p class="eyebrow">${escapeHtml(dish.lab)}</p>
       <h1>${escapeHtml(dish.dish)}</h1>
-      <p class="lede">${fmt(dish.learn)}</p>
+      <p class="confirm-meta">${dish.uses.map(escapeHtml).join(" · ")}</p>
+      <div class="confirm-about">
+        <p class="confirm-label">You'll learn</p>
+        <ul>${dish.about.map((point) => `<li>${fmt(point)}</li>`).join("")}</ul>
+      </div>
       <div class="row">
         <button class="primary" id="start">Start lab</button>
         <button class="link" id="back">Not my dish</button>
@@ -300,7 +304,7 @@ async function startLab() {
     show("starting", `
       <section class="center">
         <h2>Preparing your kitchen…</h2>
-        <p class="lede">Copying the starter and opening it in VS Code.</p>
+        <p class="lede">Copying the starter for you.</p>
       </section>`);
   }
   try {
@@ -314,7 +318,7 @@ async function startLab() {
         <pre class="detail">${escapeHtml(error.message)}</pre>
         <div class="row" style="justify-content:center">
           <button class="primary" id="retry">Try again</button>
-          <button id="back">Back to Scan</button>
+          <button id="back">Back to scan</button>
         </div>
       </section>`);
     on("retry", startLab);
@@ -328,13 +332,20 @@ function stepHtml(step, index) {
   const body = step.html
     ? `<div class="concept">${step.html}</div>`
     : `<div class="step-title">${fmt(step.text)}</div>`;
+  const stepBody = step.body ? `<p class="step-body">${fmt(step.body)}</p>` : "";
+  const image = step.image
+    ? `<img class="step-image" src="/${escapeHtml(step.image)}" alt="${escapeHtml(step.alt)}">`
+    : "";
+  const prompt = step.prompt
+    ? `<div class="step-prompt"><code>${escapeHtml(step.prompt)}</code><button data-copy="${index}">Copy</button></div>`
+    : "";
   const details = step.details
     ? `<ul class="step-details">${step.details.map((d) => `<li>${fmt(d)}</li>`).join("")}</ul>`
     : "";
   const action = step.action
     ? `<div class="step-action"><button data-step="${index}">${escapeHtml(step.action.label)}</button><span class="muted small" id="action-msg-${index}"></span></div>`
     : "";
-  return `<li><div class="card">${body}${details}${action}</div></li>`;
+  return `<li><div class="card">${body}${stepBody}${image}${prompt}${details}${action}</div></li>`;
 }
 
 function renderExplore() {
@@ -355,18 +366,32 @@ function renderExplore() {
   app.querySelectorAll("button[data-step]").forEach((button) => {
     button.addEventListener("click", () => runAction(Number(button.dataset.step), button));
   });
+  app.querySelectorAll("button[data-copy]").forEach((button) => {
+    button.addEventListener("click", () => copyPrompt(dish.steps[Number(button.dataset.copy)].prompt, button));
+  });
   on("ready", () => renderQuiz(0));
+}
+
+async function copyPrompt(text, button) {
+  try {
+    await navigator.clipboard.writeText(text);
+    button.textContent = "Copied";
+  } catch {
+    getSelection().selectAllChildren(button.previousElementSibling);
+    button.textContent = "Press Ctrl+C";
+  }
+  setTimeout(() => (button.textContent = "Copy"), 2000);
 }
 
 async function runAction(index, button) {
   const action = state.dish.steps[index].action;
   const message = document.getElementById(`action-msg-${index}`);
   if (action.type === "open_url") return openTab(action.url);
-  if (action.type === "reopen_vscode") {
+  if (action.type === "open_vscode") {
     button.disabled = true;
     message.textContent = "Opening VS Code…";
     try {
-      await api("/api/session/reopen", {});
+      await api("/api/session/open-vscode", {});
       message.textContent = "VS Code is open.";
     } catch (error) {
       message.textContent = error.message;
@@ -400,7 +425,7 @@ function renderQuiz(index) {
         button.classList.add("right");
         app.querySelectorAll(".choice").forEach((b) => (b.disabled = true));
         document.getElementById("hint").innerHTML = `<p class="status-ok"><strong>Correct!</strong></p>`;
-        setTimeout(() => (index + 1 < dish.quiz.length ? renderQuiz(index + 1) : renderPrint()), 900);
+        setTimeout(() => (index + 1 < dish.quiz.length ? renderQuiz(index + 1) : renderWrap()), 900);
       } else {
         button.classList.add("wrong");
         button.disabled = true;
@@ -424,14 +449,14 @@ async function renderPrint() {
     await api("/api/print", { dish: dish.id, hints: state.hints });
     show("print", `
       <section class="center">
-        <p class="eyebrow">Well done</p>
+        <p class="eyebrow">Thanks for cooking with us</p>
         <h2 class="status-ok">Your receipt is on its way</h2>
-        <p class="lede">Pick it up from the printer and scan the QR code to keep learning.</p>
+        <p class="lede">Pick it up from the printer.</p>
         <div class="row" style="justify-content:center">
-          <button class="primary" id="next">Continue</button>
+          <button class="primary" id="next">Next guest</button>
         </div>
       </section>`);
-    on("next", renderWrap);
+    on("next", endLab);
   } catch (error) {
     show("print", `
       <section class="center">
@@ -439,11 +464,11 @@ async function renderPrint() {
         <p class="lede">Please ask a chef. You still finished the lab!</p>
         <pre class="detail">${escapeHtml(error.message)}</pre>
         <div class="row" style="justify-content:center">
-          <button class="primary" id="next">Continue</button>
+          <button class="primary" id="next">Next guest</button>
           <button id="again">Staff: print again</button>
         </div>
       </section>`);
-    on("next", renderWrap);
+    on("next", endLab);
     on("again", renderPrint);
   }
 }
@@ -455,15 +480,15 @@ async function renderWrap() {
   const sdk = dish.start.type === "sdk";
   show("wrap", `
     <section>
-      <p class="eyebrow">Thanks for cooking with us</p>
-      <h2>Before you go</h2>
+      <p class="eyebrow">Well done</p>
+      <h2>Clean up before your receipt</h2>
       <ul class="step-details">${dish.wrap_up.map((w) => `<li>${fmt(w)}</li>`).join("")}</ul>
       <p class="muted" id="cleanup">${sdk ? "Cleaning up…" : ""}</p>
       <div class="row">
-        <button class="primary" id="next">Next guest</button>
+        <button class="primary" id="next">Print my receipt</button>
       </div>
     </section>`);
-  on("next", endLab);
+  on("next", renderPrint);
   if (sdk) {
     const cleanup = document.getElementById("cleanup");
     try {

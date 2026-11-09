@@ -70,7 +70,7 @@ async function launcher(getUserMedia = async () => ({ getTracks: () => [] })) {
 
 test("visible picker lists every lab and opens the same intro as scanning", async () => {
   const page = await launcher();
-  assert.match(page.elements.get("app").innerHTML, /<button id="choose-lab">Choose a lab instead/);
+  assert.match(page.elements.get("app").innerHTML, /<button id="choose-lab">Manually select a lab instead/);
   const requestsBefore = page.requests.length;
   for (const dish of content.dishes) {
     page.click("choose-lab");
@@ -78,7 +78,7 @@ test("visible picker lists every lab and opens the same intro as scanning", asyn
     assert.equal(page.run("progress.hidden"), true);
     const menu = page.elements.get("app");
     assert.equal(menu.querySelectorAll(".menu-item").length, content.dishes.length);
-    assert.match(menu.innerHTML, /No ticket needed/);
+    assert.match(menu.innerHTML, /Pick a dish by what you want to learn/);
     page.run(`
       app.querySelectorAll(".menu-item")
         .find((button) => button.dataset.dish === ${JSON.stringify(dish.id)})
@@ -87,6 +87,8 @@ test("visible picker lists every lab and opens the same intro as scanning", asyn
     assert.equal(page.run("state.screen"), "intro");
     assert.equal(page.run("state.dish.id"), dish.id);
     const manualIntro = menu.innerHTML;
+    assert.match(manualIntro, /You'll learn/);
+    assert.equal((manualIntro.match(/<li>/g) || []).length, dish.about.length);
     page.run(`renderScan(); scanner.found(${JSON.stringify(dish.id)});`);
     assert.equal(menu.innerHTML, manualIntro);
     page.run("renderScan()");
@@ -128,7 +130,7 @@ test("camera failure points guests to the visible picker", async () => {
   const page = await launcher(async () => { throw new Error("Permission denied"); });
   const message = page.elements.get("camera-msg");
   assert.equal(message.hidden, false);
-  assert.match(message.textContent, /Choose a lab instead/);
+  assert.match(message.textContent, /Manually select a lab instead/);
   assert.doesNotMatch(message.textContent, /Ctrl|Staff/);
   page.click("choose-lab");
   assert.equal(page.run("state.screen"), "menu");

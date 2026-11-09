@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/). The full flow (fridge ticket, scan, Fried Chicken in VS Code, quiz, receipt, wrap up) passed on one laptop with a real USB receipt printer; open items are in [To verify before the event](#to-verify-before-the-event).
+Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/). The full flow (fridge ticket, scan, Fried Chicken in VS Code, quiz, wrap up, receipt) passed on one laptop with a real USB receipt printer; open items are in [To verify before the event](#to-verify-before-the-event).
 
 ## Goal
 
@@ -43,13 +43,13 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Screen flow
 
-1. **Scan or choose.** Webcam view with "Scan your ticket" and a visible **Choose a lab instead** button. The button opens the four-dish menu without needing a ticket; choosing a dish opens its intro. **Scan a ticket instead** returns to the webcam.
-2. **Intro.** Dish name, one line on what you'll learn, **Start lab** button.
+1. **Scan or choose.** Webcam view with "Scan your ticket" and a visible **Manually select a lab instead** button. The button opens the four-dish menu without needing a ticket; choosing a dish opens its intro. **Scan a ticket instead** returns to the webcam.
+2. **Intro.** The lab name, the dish, then `uses` and "You'll learn" with the `about` points, as on the fridge confirm screen. **Start lab** and **Not my dish**.
 3. **Start lab.** Per dish action (see below).
 4. **Explore.** Numbered steps stay visible. **I'm ready for the quiz** button.
 5. **Quiz.** Two multiple choice questions. Wrong answer shows a hint and allows retry.
-6. **Print.** Receipt prints. Screen confirms.
-7. **Wrap up.** Short cleanup instructions, **Next guest** returns to Scan.
+6. **Wrap up.** "Clean up before your receipt" with short cleanup instructions, then **Print my receipt**. Guests clean up first because they leave as soon as the receipt prints.
+7. **Print.** Receipt prints. "Your receipt is on its way. Pick it up from the printer." **Next guest** returns to Scan. A print error shows the message, **Next guest** and **Staff: print again**.
 
 ## Fridge wall
 
@@ -65,22 +65,23 @@ The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the 
 
 | Dish | Start lab | Wrap up |
 |---|---|---|
-| Omelette | Show instructions: open the Copilot app, select **canvas-101**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
-| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>`. Explore has a **Reopen in VS Code** button in case the guest closes the window | Launcher closes the VS Code window it opened and deletes the temp folder |
+| Omelette | Show instructions: open the Copilot app from the taskbar, start a **Canvas 101** session, paste "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
+| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder. Explore step 1 has an **Open in VS Code** button that runs `code <folder>`. It focuses the window if it is open, or opens it again if the guest closed it | Launcher closes the VS Code window it opened and deletes the temp folder |
 | Soup | Nothing to open yet: the concept steps come first, and step 3 has an **Open workflow file** button for the pinned file on GitHub.com | Close the browser tabs |
-| Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
+| Dip | Show instructions. Each step opens one comment or the review on GitHub.com when the guest clicks its button | Close the browser tabs |
 
 ## Lab content
 
-The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). Each dish has a `pitch` for the menus, a `learn` line for the station intro, and `uses` and `about` points for the fridge confirm screen. The quiz answers below are the source; the other choices and hints are drafted there.
+The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). Each dish has a `pitch` for the menus, and `uses` and `about` points for the fridge confirm screen and the station intro. The quiz answers below are the source; the other choices and hints are drafted there.
 
 ### Omelette: GitHub Copilot app Canvas
 
 - Learn: canvases are interactive panels that you and the agent both drive.
 - Steps:
-  1. Open the canvas.
-  2. Click to add a dish.
-  3. Ask the agent to add or remove a dish, and watch the ticket update.
+  1. In the taskbar, click the GitHub Copilot app icon to open it.
+  2. On the left, find **Canvas 101**. Hover over it, then click **+** (New session) on the right. The step shows a screenshot of the button.
+  3. Copy the prompt "Open the Chez Mona Order Ticket canvas" with the **Copy** button and paste it into the chat.
+  4. Follow the instructions in the canvas: click to add a dish, then ask the agent to add or remove a dish. Return to the launcher and click **I'm ready for the quiz**.
 - Quiz:
   1. Who can change a canvas? Answer: you and the agent.
   2. Where does a repository scoped canvas live? Answer: `.github/extensions/`.
@@ -92,9 +93,11 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 - Learn: the SDK lets your app run a Copilot agent with your own tools.
 - Starter: [`copilot-sdk/`](copilot-sdk/), a single `main.py` menu assistant. Its `get_menu` tool takes a `vegetarian_only` flag; the prompt asks for vegetarian dishes, so the agent chooses the argument itself. No `.git` folder, no push remote. Pinned to `github-copilot-sdk==1.0.28`, verified running on Windows with Python 3.12.
 - Steps:
-  1. Open the starter in VS Code.
-  2. Ask Copilot Chat: "What does `define_tool` do?" and "How does the agent get the menu?"
-  3. Optional: run the sample.
+  1. Open VS Code with the **Open in VS Code** button.
+  2. Open Copilot Chat (**Ctrl+Alt+I** if it is hidden).
+  3. Ask: "What does define_tool do?"
+  4. Ask: "How does the agent get the menu?"
+  5. Optional: run the sample with `uv run main.py`.
 - Quiz:
   1. How do you give the agent a custom tool? Answer: `define_tool`, then pass it in `tools=[...]`.
   2. Which call sends a prompt and waits for the reply? Answer: `send_and_wait`.
@@ -105,11 +108,11 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 - Learn: an agentic workflow is a GitHub Actions workflow written in Markdown. Frontmatter sets the trigger, permissions and allowed outputs; the body tells the agent what to do in plain language.
 - Source: [`weekly-workshop-triage.md`](https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md) in upstream `github-samples/tailspin-toys`, pinned to commit `5cea212` so later changes do not affect the lab. No booth copy and nothing to run; guests only read.
 - Steps:
-  1. Concept: [What is an agentic workflow?](launcher/content/soup/01-what-is-an-agentic-workflow.md)
-  2. Concept: [How it works](launcher/content/soup/02-how-it-works.md)
-  3. Open the pinned workflow file and read it: the frontmatter (trigger, permissions, safe outputs), then the instructions.
-  4. Come back to the launcher for the quiz.
-- Concept steps are rendered Markdown in the launcher, quoted verbatim from [GitHub Agentic Workflows](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows) on GitHub Docs (checked Nov 3, 2026), each with its source link.
+  1. Meet agentic workflows: one short definition.
+  2. Read the frontmatter: explains the settings block and lists `on:`, `permissions:` and `safe-outputs:`. **Open frontmatter** opens the pinned file at lines 1 to 45 (`?plain=1#L1-L45`).
+  3. Read the instructions: explains the plain-language prompt and lists **What to do**, **Never close these** and **When in doubt**. **Open instructions** opens lines 47 to 146 (`?plain=1#L47-L146`).
+- The line ranges match commit `5cea212`. Update them if the pinned commit changes.
+- The receipt QR links to [GitHub Agentic Workflows](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows) on GitHub Docs for the full concepts.
 - Quiz:
   1. When does it run? Answer: every Monday on a schedule, or manually on demand.
   2. What does the agent do when unsure? Answer: leaves the item open.
@@ -137,9 +140,11 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
   - No new review can start: automatic review only runs on open, first draft to open, or new pushes, and pushes are blocked.
   - Lock the PR conversation and leave every comment unresolved.
 - Steps:
-  1. Open the PR's **Files changed** tab.
-  2. Read the code scanning comment and its Autofix suggestion on the query line.
-  3. Read Copilot code review's comments on the rest of the change.
+  1. Read the code scanning alert: **Open alert** opens the CodeQL comment (`files#discussion_r4461811755`). Look for its title and flagged line.
+  2. Read the Autofix: find **Suggested changeset** under the same alert. No button.
+  3. Read the Copilot review: **Open review** opens the review overview on the Conversation tab (`#pullrequestreview-5772715680`).
+  4. Read the route comment: **Open comment** opens the Copilot comment about the shadowed search route (`files#discussion_r4470875041`).
+- The comment and review IDs stay fixed because the PR is frozen. Update them if the PR is recreated.
 - Quiz:
   1. What did code scanning find? Answer: SQL injection. Other choices: exposed secret, outdated dependency, cross site scripting. Hint: user input ends up inside a database query.
   2. Which reviewer looks at the whole change, not only known vulnerability patterns? Answer: Copilot code review. Other choices: code scanning, Copilot Autofix, the PR author. Hint: find the comment that is not about the SQL query.
@@ -155,7 +160,7 @@ The receipt is a keepsake guest check, designed to look different from the fridg
 - **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
 - A stamp: "Perfect score" with no hints used, otherwise "Chef approved"
-- QR code to the dish's docs link, captioned "Scan to continue learning"
+- QR code to the dish's docs link, captioned "Scan to continue learning at home"
 - "Merci! Have a nice day" and a closing gingham band
 
 The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
@@ -175,7 +180,7 @@ The wordmark, chef hat, stamp and gingham are raster images drawn with Windows f
 
 | Screen | Timeout | Action |
 |---|---|---|
-| Intro, Quiz, Print, Wrap up | about 2 minutes | "Still cooking?" prompt, then return to Scan |
+| Intro, Quiz, Wrap up, Print | about 2 minutes | "Still cooking?" prompt, then return to Scan |
 | Explore | about 10 minutes | "Still cooking?" prompt, then return to Scan |
 
 On timeout the launcher closes the VS Code window and temp folder it created. Browser tabs and the Copilot app chat are left for staff.
@@ -212,7 +217,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [x] Printer model chosen: Rongta RP326, works with the driverless USB connection (Nov 4)
 - [x] Receipt and ticket print with RAW ESC/POS on the RP326: raster QR scans with a phone, text fits, paper cuts (Nov 4)
 - [x] `code --disable-workspace-trust` opened the guest folder on `main.py` with no Workspace Trust prompt (Nov 4)
-- [x] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title), and **Reopen in VS Code** brings it back after a guest closes it (Nov 4)
+- [x] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title), and **Open in VS Code** brings it back after a guest closes it (Nov 4)
 - [ ] GitHub links from the launcher open in a normal browser window when the launcher runs in Edge app mode
 - [ ] The other 7 RP326 units print the same way on their laptops
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper

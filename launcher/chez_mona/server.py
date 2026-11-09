@@ -139,7 +139,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON"})
         routes = {
             "/api/session/start": lambda: self.launcher.start(body.get("dish", "")),
-            "/api/session/reopen": self.launcher.sessions.reopen,
+            "/api/session/open-vscode": self.launcher.sessions.open_vscode,
             "/api/session/end": self.launcher.sessions.end,
             "/api/print": lambda: self.launcher.print_receipt(body.get("dish", ""), body.get("hints")),
             "/api/ticket": lambda: self.launcher.print_ticket(body.get("dish", "")),

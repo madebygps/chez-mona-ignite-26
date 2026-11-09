@@ -10,8 +10,9 @@ import markdown
 from .config import LAUNCHER_DIR
 
 CONTENT_DIR = LAUNCHER_DIR / "content"
+STATIC_DIR = LAUNCHER_DIR / "static"
 START_TYPES = {"none", "sdk", "open_url"}
-ACTION_TYPES = {"open_url", "reopen_vscode"}
+ACTION_TYPES = {"open_url", "open_vscode"}
 
 
 class ContentError(ValueError):
@@ -31,7 +32,7 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
         did = dish.get("id", "?")
         _check(did not in seen, f"duplicate dish id {did}")
         seen.add(did)
-        for key in ("id", "dish", "lab", "pitch", "learn"):
+        for key in ("id", "dish", "lab", "pitch"):
             _check(isinstance(dish.get(key), str) and dish[key], f"{did}: missing {key}")
         uses = dish.get("uses")
         _check(isinstance(uses, list) and 1 <= len(uses) <= 3
@@ -47,6 +48,14 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
         _check(dish.get("steps"), f"{did}: needs steps")
         for i, step in enumerate(dish["steps"], 1):
             _check(step.get("text"), f"{did} step {i}: missing text")
+            if "body" in step:
+                _check(isinstance(step["body"], str) and step["body"].strip(), f"{did} step {i}: empty body")
+            if "image" in step:
+                image = step["image"]
+                _check(isinstance(image, str) and (STATIC_DIR / image).is_file(), f"{did} step {i}: image not found in static/")
+                _check(isinstance(step.get("alt"), str) and step["alt"].strip(), f"{did} step {i}: image needs alt text")
+            if "prompt" in step:
+                _check(isinstance(step["prompt"], str) and step["prompt"].strip(), f"{did} step {i}: empty prompt")
             if "markdown" in step:
                 _check((content_dir / step["markdown"]).is_file(), f"{did} step {i}: markdown file not found")
             action = step.get("action")

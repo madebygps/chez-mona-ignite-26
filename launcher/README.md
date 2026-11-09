@@ -1,6 +1,6 @@
 # Chez Mona launcher
 
-Local web app that runs the booth flow on each laptop: scan a fridge ticket or choose a lab on screen, read the intro, explore the lab, take a two question quiz, print a receipt and wrap up. The same app also runs the fridge wall kiosks that print the tickets. [SPEC.md](../SPEC.md) describes the flow and every lab.
+Local web app that runs the booth flow on each laptop: scan a fridge ticket or choose a lab on screen, read the intro, explore the lab, take a two question quiz, wrap up and print a receipt. The same app also runs the fridge wall kiosks that print the tickets. [SPEC.md](../SPEC.md) describes the flow and every lab.
 
 A small Python server listens on `localhost` only. It serves the page and does the local work the browser cannot: copy the Fried Chicken starter, open and close VS Code, and send tickets and receipts to the printer.
 
@@ -9,8 +9,7 @@ A small Python server listens on `localhost` only. It serves the page and does t
 | Path | Contents |
 |---|---|
 | [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`) |
-| [`content/labs.json`](content/labs.json) | Every dish: intro line, steps, quiz with other choices and hints, wrap up, receipt takeaways (`receipt.learned`, 1 to 4 short points) and QR link |
-| [`content/soup/`](content/soup/) | Soup concept pages, rendered in the launcher |
+| [`content/labs.json`](content/labs.json) | Every dish: menu `pitch`, `uses` and `about` points for the confirm and intro screens, steps (a short `text` title, an optional lighter `body` line, an optional `image` under [`static/`](static/) with `alt` text, and an optional `prompt` shown with a **Copy** button), quiz with other choices and hints, wrap up, receipt takeaways (`receipt.learned`, 1 to 4 short points) and QR link |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, vendored [Mona Sans and Mona Sans Mono](https://github.com/github/mona-sans) web fonts in `fonts/`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
 | [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
@@ -43,7 +42,7 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
    uv run --with github-copilot-sdk==1.0.28 python -m copilot download-runtime
    ```
 
-6. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Omelette uses it.
+6. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Pin the Copilot app to the taskbar. Omelette uses both.
 7. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
 8. Start the station:
 
@@ -54,10 +53,10 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
 9. When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
 10. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
 11. Scan a fridge ticket. The station should open that dish's intro.
-12. Return to Scan, tap **Choose a lab instead**, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
+12. Return to Scan, tap **Manually select a lab instead**, pick Fried Chicken and start the lab. Click **Open in VS Code**. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
 13. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
-14. Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
-15. Wrap up, then check that the Fried Chicken VS Code window closed.
+14. Finish one Fried Chicken lab through the quiz. On the wrap up screen, check that its VS Code window closed.
+15. Click **Print my receipt**. A receipt should print and cut, and its QR code should scan with a phone.
 
 ### Fridge laptop
 
@@ -113,7 +112,7 @@ Everything else is fixed for the booth hardware: the one attached USB printer, 8
 
 ## Staff controls
 
-- Guests can tap **Choose a lab instead** on the Scan screen to pick any dish without a ticket or camera. **Scan a ticket instead** returns to scanning.
+- Guests can tap **Manually select a lab instead** on the Scan screen to pick any dish without a ticket or camera. **Scan a ticket instead** returns to scanning.
 - Press **Ctrl+Shift+M**, or hold the Chez Mona logo for 3 seconds, to open the staff panel. It lets you pick a dish without scanning, shows the printer status and returns to Scan.
 - After a print error, the Print screen offers **Staff: print again**. The launcher never retries on its own, so a guest never gets two receipts by accident.
 - Tickets hold only the dish ID: `omelette`, `fried-chicken`, `soup` or `dip`. Case does not matter, and spaces or underscores count as hyphens.
@@ -122,8 +121,8 @@ Everything else is fixed for the booth hardware: the one attached USB printer, 8
 ## How Fried Chicken works
 
 1. **Start lab** copies [`copilot-sdk/`](../copilot-sdk/) to `%LOCALAPPDATA%\ChezMona\guests\chez-mona-fried-chicken-<id>`, without caches or virtual environments. It adds workspace settings that turn on auto save, so closing never stops on an unsaved changes prompt.
-2. It runs `code --new-window --disable-workspace-trust <folder> <folder>\main.py`.
-3. **Reopen in VS Code** on Explore focuses the window, or opens a new one if the guest closed it.
+2. **Open in VS Code** in Explore step 1 runs `code --new-window --disable-workspace-trust <folder> <folder>\main.py`. If the window is already open, it uses `--reuse-window` to focus it. If the guest closed it, the button opens it again.
+3. VS Code opens only when the guest clicks, so it does not cover the steps before the guest reads them.
 4. Wrap up, the idle timeout and stopping the server close VS Code windows whose title contains the folder name, then delete the folder. Leftover folders are also removed when the server starts and before each new guest.
 
 ## Edit lab content

@@ -5,7 +5,6 @@
       "dish": "Canvas collaboration omelette",
       "lab": "GitHub Copilot app Canvas",
       "pitch": "Go beyond chat. Work with an agent in a panel you both click and edit.",
-      "learn": "Canvases are interactive panels that you and the agent both drive.",
       "uses": ["GitHub Copilot app"],
       "about": [
         "What a canvas is, and when to use one instead of chat",
@@ -14,17 +13,10 @@
       ],
       "start": { "type": "none" },
       "steps": [
-        {
-          "text": "Open the canvas.",
-          "details": [
-            "Open the **GitHub Copilot app**.",
-            "Select the **canvas-101** repository.",
-            "Open a new chat.",
-            "Ask: **Open the Chez Mona Order Ticket canvas**"
-          ]
-        },
-        { "text": "Click to add a dish to the ticket." },
-        { "text": "Ask the agent to add or remove a dish, and watch the ticket update." }
+        { "text": "Open the app", "body": "In the taskbar, click the **GitHub Copilot app** icon to open it." },
+        { "text": "Start a session", "body": "On the left, find **Canvas 101**. Hover over it, then click **+** (New session) on the right.", "image": "steps/omelette-new-session.png", "alt": "The Canvas 101 row in the Copilot app sidebar, with the New session button on the right" },
+        { "text": "Open the canvas", "body": "Copy this prompt and paste it into the chat.", "prompt": "Open the Chez Mona Order Ticket canvas" },
+        { "text": "Follow the canvas", "body": "Follow the instructions in the canvas. When you are done, return here and click **I'm ready for the quiz**." }
       ],
       "quiz": [
         {
@@ -35,7 +27,7 @@
             "Only the agent, through chat",
             "Only the repository owner"
           ],
-          "hint": "In step 3 you asked the agent to change the ticket you had already clicked."
+          "hint": "In the canvas, you clicked the ticket and then asked the agent to change it."
         },
         {
           "question": "Where does a repository scoped canvas live?",
@@ -59,7 +51,6 @@
       "dish": "Copilot SDK fried chicken",
       "lab": "Copilot SDK",
       "pitch": "Explore how you can give an agent its own tool with code.",
-      "learn": "The SDK lets your app run a Copilot agent with your own tools.",
       "uses": ["VS Code", "GitHub Copilot", "Python"],
       "about": [
         "How the Copilot SDK runs an agent in an app",
@@ -69,17 +60,28 @@
       "start": { "type": "sdk" },
       "steps": [
         {
-          "text": "Open the starter in VS Code.",
-          "details": ["The launcher opened it for you, with `main.py` showing."],
-          "action": { "type": "reopen_vscode", "label": "Reopen in VS Code" }
+          "text": "Open VS Code",
+          "body": "Click **Open in VS Code**. The starter opens with `main.py` showing.",
+          "action": { "type": "open_vscode", "label": "Open in VS Code" }
         },
         {
-          "text": "Ask Copilot Chat two questions.",
-          "details": ["What does `define_tool` do?", "How does the agent get the menu?"]
+          "text": "Open Copilot Chat",
+          "body": "Find **Copilot Chat** on the right side of VS Code. If you do not see it, press **Ctrl+Alt+I**."
         },
         {
-          "text": "Optional: run the sample.",
-          "details": ["In the VS Code terminal, run `uv run main.py`."]
+          "text": "Ask about the tool",
+          "body": "Copy this question and paste it into the chat.",
+          "prompt": "What does define_tool do?"
+        },
+        {
+          "text": "Ask about the menu",
+          "body": "Copy this question and paste it into the chat.",
+          "prompt": "How does the agent get the menu?"
+        },
+        {
+          "text": "Optional: run the sample",
+          "body": "In VS Code, open a terminal. Paste this command and press Enter.",
+          "prompt": "uv run main.py"
         }
       ],
       "quiz": [
@@ -115,7 +117,6 @@
       "dish": "Agentic alphabet soup",
       "lab": "Agentic Workflows",
       "pitch": "Read a CI workflow where an agent triages issues every week.",
-      "learn": "An agentic workflow is a GitHub Actions workflow written in Markdown.",
       "uses": ["GitHub Agentic Workflows"],
       "about": [
         "What an agentic workflow is",
@@ -124,21 +125,38 @@
       ],
       "start": { "type": "none" },
       "steps": [
-        { "text": "What is an agentic workflow?", "markdown": "soup/01-what-is-an-agentic-workflow.md" },
-        { "text": "How it works", "markdown": "soup/02-how-it-works.md" },
         {
-          "text": "Open the workflow file and read it.",
+          "text": "Meet agentic workflows",
+          "body": "An agentic workflow is a GitHub Actions workflow written in Markdown. An agent follows its plain-language instructions."
+        },
+        {
+          "text": "Read the frontmatter",
+          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open frontmatter** and look for these keys:",
           "details": [
-            "First the frontmatter: the trigger, the permissions and the safe outputs.",
-            "Then the instructions for the agent."
+            "`on:` sets when the workflow runs.",
+            "`permissions:` sets what the workflow can access.",
+            "`safe-outputs:` sets what the workflow may change."
           ],
           "action": {
             "type": "open_url",
-            "label": "Open workflow file",
-            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md"
+            "label": "Open frontmatter",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L1-L45"
           }
         },
-        { "text": "Come back here for the quiz." }
+        {
+          "text": "Read the instructions",
+          "body": "The instructions are the plain-language prompt below the frontmatter. The agent follows them on each run. Click **Open instructions** and look for these sections:",
+          "details": [
+            "**What to do** gives the agent its job.",
+            "**Never close these** lists the items the agent must skip.",
+            "**When in doubt** tells the agent what to do when it is unsure."
+          ],
+          "action": {
+            "type": "open_url",
+            "label": "Open instructions",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L47-L146"
+          }
+        }
       ],
       "quiz": [
         {
@@ -177,28 +195,57 @@
       "dish": "Autofix artichoke dip",
       "lab": "PR review",
       "pitch": "See how AI reviewers catch bugs in a pull request.",
-      "learn": "Code scanning, Copilot Autofix and Copilot code review work together on one pull request.",
       "uses": ["Code scanning", "Copilot Autofix", "Copilot code review"],
       "about": [
         "How code scanning finds a SQL injection",
         "How Copilot Autofix suggests the fix",
         "How Copilot code review checks the whole change"
       ],
-      "start": {
-        "type": "open_url",
-        "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files"
-      },
+      "start": { "type": "none" },
       "steps": [
         {
-          "text": "Open the pull request's **Files changed** tab.",
+          "text": "Read the code scanning alert",
+          "body": "Code scanning uses CodeQL to find known vulnerability patterns. Click **Open alert** and look for these parts:",
+          "details": [
+            "The **title** names the problem CodeQL found.",
+            "The **flagged line** is the code above the alert."
+          ],
           "action": {
             "type": "open_url",
-            "label": "Open pull request",
-            "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files"
+            "label": "Open alert",
+            "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files#discussion_r4461811755"
           }
         },
-        { "text": "Read the code scanning comment and its Autofix suggestion on the query line." },
-        { "text": "Read Copilot code review's comments on the rest of the change." }
+        {
+          "text": "Read the Autofix",
+          "body": "Copilot Autofix suggests a fix for the alert. Find **Suggested changeset** under the same alert:",
+          "details": [
+            "The **red line** is the unsafe query.",
+            "The **green line** is the fixed query."
+          ]
+        },
+        {
+          "text": "Read the Copilot review",
+          "body": "Copilot code review checks the whole change, not only known patterns. Click **Open review** and look for these parts:",
+          "details": [
+            "**Changes recommended** sums up the review.",
+            "**4 open issues** lists each comment Copilot left."
+          ],
+          "action": {
+            "type": "open_url",
+            "label": "Open review",
+            "url": "https://github.com/madebygps/chez-mona-dip/pull/2#pullrequestreview-5772715680"
+          }
+        },
+        {
+          "text": "Read the route comment",
+          "body": "This comment finds a bug that code scanning did not report. Click **Open comment** and read **Register the search route before the parameterized ID route**. Find why the search route never runs.",
+          "action": {
+            "type": "open_url",
+            "label": "Open comment",
+            "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files#discussion_r4470875041"
+          }
+        }
       ],
       "quiz": [
         {

@@ -14,8 +14,6 @@ class LabsTest(unittest.TestCase):
         loaded = labs.load()
         ids = [d["id"] for d in loaded["dishes"]]
         self.assertEqual(ids, ["omelette", "fried-chicken", "soup", "dip"])
-        soup = labs.by_id(loaded)["soup"]
-        self.assertTrue(all("html" in s for s in soup["steps"] if "markdown" in s))
 
     def assert_rejected(self, mutate):
         data = copy.deepcopy(self.data)
@@ -27,7 +25,7 @@ class LabsTest(unittest.TestCase):
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"].pop())
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"][0]["others"].append("Extra"))
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"][0].update(others=["a", "a", "b"]))
-        self.assert_rejected(lambda d: d["dishes"][3]["start"].update(url="http://example.com"))
+        self.assert_rejected(lambda d: d["dishes"][3]["steps"][0]["action"].update(url="http://example.com"))
         self.assert_rejected(lambda d: d["dishes"][2]["steps"][0].update(markdown="soup/missing.md"))
         self.assert_rejected(lambda d: d["dishes"][1].update(id="omelette"))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].pop("qr"))
@@ -36,6 +34,10 @@ class LabsTest(unittest.TestCase):
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=["a", "b", "c", "d", "e"]))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=["ok", " "]))
         self.assert_rejected(lambda d: d["dishes"][0].pop("pitch"))
+        self.assert_rejected(lambda d: d["dishes"][0]["steps"][0].update(body=" "))
+        self.assert_rejected(lambda d: d["dishes"][0]["steps"][0].update(image="steps/missing.png", alt="x"))
+        self.assert_rejected(lambda d: d["dishes"][0]["steps"][1].pop("alt"))
+        self.assert_rejected(lambda d: d["dishes"][0]["steps"][2].update(prompt=" "))
         self.assert_rejected(lambda d: d["dishes"][0].update(uses=[]))
         self.assert_rejected(lambda d: d["dishes"][0].update(uses="GitHub.com"))
         self.assert_rejected(lambda d: d["dishes"][0].update(about=[]))
