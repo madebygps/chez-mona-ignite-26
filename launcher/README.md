@@ -1,6 +1,6 @@
 # Chez Mona launcher
 
-Local web app that runs the booth flow on each laptop: scan a fridge ticket or choose a lab on screen, read the intro, explore the lab, take a two question quiz, wrap up and print a receipt. The same app also runs the fridge wall kiosks that print the tickets. [SPEC.md](../SPEC.md) describes the flow and every lab.
+Local web app that runs the booth flow on each laptop: scan a fridge ticket or choose a lab on screen, read the intro, explore the lab, take a two question quiz, wrap up and print a receipt. The same app also runs the fridge wall kiosks that print the tickets.
 
 A small Python server listens on `localhost` only. It serves the page and does the local work the browser cannot: copy the Fried Chicken starter, open and close VS Code, and send tickets and receipts to the printer.
 

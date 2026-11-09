@@ -11,8 +11,6 @@ The launcher talks to the printer directly over USB. It does not use a Windows p
 - Use an ESC/POS printer with 80 mm paper. The launcher sends raw ESC/POS commands.
 - Before each job, the launcher asks the printer for its status. It does not print if the cover is open or the paper is out.
 
-[SPEC.md](../SPEC.md#printer-integration) explains why the launcher prints this way.
-
 ## Cooking station
 
 1. Install Git, [uv](https://docs.astral.sh/uv/), VS Code and the GitHub Copilot app. uv brings its own Python, and Edge comes with Windows.
