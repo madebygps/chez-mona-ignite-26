@@ -154,16 +154,15 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 
 The receipt is a keepsake guest check, designed to look different from the fridge ticket. From top to bottom:
 
-- Gingham band, chef hat and the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
+- Gingham band, the Mona chef mark from the launcher UI beside the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
 - **Guest check**, then "Cooking station" with the date and time, and "Served by GitHub Copilot". The guest check has no number: stations don't share a counter, so a number could repeat.
 - The dish and lab as one line item, then "Made with" and the `uses` tools from the confirm screen
 - **You learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json), one for each `about` point in the same order. The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
-- A stamp: "Perfect score" with no hints used, otherwise "Chef approved"
-- QR code to the dish's docs link, captioned "Scan to continue learning at home"
+- QR code to the dish's docs link with a stamp beside it, captioned "Scan to continue learning at home". The stamp says "Perfect score" with no hints used, otherwise "Chef approved".
 - "Merci! Have a nice day", "Thanks for cooking with us" and a closing gingham band
 
-The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
+The wordmark, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used. The Mona chef mark is [`mona-chef.png`](launcher/chez_mona/mona-chef.png), a 512 px render of [`static/mona-chef.svg`](launcher/static/mona-chef.svg). Render it again if the SVG changes. The receipt has few blank lines, so it uses less paper.
 
 ### Printer integration
 
