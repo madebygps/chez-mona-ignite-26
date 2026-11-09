@@ -1,7 +1,7 @@
 "use strict";
 
 // Chez Mona launcher: one page, one screen at a time.
-// Screens: scan, intro, starting, start-error, explore, quiz, print, wrap.
+// Screens: scan, menu, intro, starting, start-error, explore, quiz, print, wrap.
 
 const app = document.getElementById("app");
 const progress = document.getElementById("progress");
@@ -88,7 +88,7 @@ const idle = {
     const s = state.station.idle_seconds;
     if (screen === "explore") return s.explore;
     if (["intro", "start-error", "quiz", "print", "wrap"].includes(screen)) return s.default;
-    return null; // scan and starting never time out
+    return null; // scan, menu and starting never time out
   },
 
   reset() {
@@ -167,7 +167,7 @@ const scanner = {
       });
     } catch (error) {
       if (generation !== this.generation) return;
-      message.textContent = "Camera unavailable. Staff: press Ctrl+Shift+M to pick a dish.";
+      message.textContent = "Camera unavailable. Use Choose a lab instead to pick a dish.";
       message.hidden = false;
       return;
     }
@@ -233,6 +233,7 @@ function renderScan() {
       <p class="eyebrow">Welcome to Chez Mona</p>
       <h1>Scan your ticket</h1>
       <p class="lede">Hold the QR code on your fridge ticket up to the camera.</p>
+      <button id="choose-lab">Choose a lab instead</button>
       <div class="camera">
         <video id="video" muted playsinline></video>
         <div class="frame"></div>
@@ -240,7 +241,33 @@ function renderScan() {
       </div>
       <p class="notice" id="scan-notice"></p>
     </section>`);
+  on("choose-lab", renderMenu);
   scanner.start(document.getElementById("video"), document.getElementById("camera-msg"));
+}
+
+function renderMenu() {
+  scanner.stop();
+  show("menu", `
+    <section class="menu">
+      <p class="eyebrow">Today's menu</p>
+      <h1>Choose a lab</h1>
+      <p class="lede">No ticket needed. Pick a dish to get started.</p>
+      <div class="menu-grid">
+        ${Object.values(state.dishes).map((d) => `
+          <button class="menu-item" data-dish="${escapeHtml(d.id)}">
+            <span class="menu-dish">${escapeHtml(d.dish)}</span>
+            <span class="menu-lab">${escapeHtml(d.lab)}</span>
+            <span class="menu-learn">${fmt(d.learn)}</span>
+          </button>`).join("")}
+      </div>
+      <div class="row">
+        <button id="back-to-scan">Scan a ticket instead</button>
+      </div>
+    </section>`);
+  app.querySelectorAll(".menu-item").forEach((b) =>
+    b.addEventListener("click", () => renderIntro(b.dataset.dish))
+  );
+  on("back-to-scan", renderScan);
 }
 
 // ---------- Intro and start ----------

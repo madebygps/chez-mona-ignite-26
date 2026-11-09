@@ -5,8 +5,8 @@ Status: all four labs' material built. Launcher and fridge ticket kiosk built in
 
 ## Goal
 
-A local web app on each booth laptop that turns a fridge ticket into a 5 minute lab:
-scan ticket, read instructions, explore, answer a short quiz, print a receipt with a docs QR code.
+A local web app on each booth laptop for a 5 minute lab:
+scan a fridge ticket or choose a lab, read instructions, explore, answer a short quiz, print a receipt with a docs QR code.
 
 ## Decisions
 
@@ -15,7 +15,7 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 | Format | Explore, then quiz, then printed receipt |
 | Machines and accounts | Booth provided, shared booth account |
 | Launcher hosting | Local web app on each laptop, served on `localhost` |
-| Laptop to lab mapping | Any laptop runs any dish, chosen by the scanned ticket |
+| Laptop to lab mapping | Any laptop runs any dish, chosen by scanning a ticket or picking a lab on screen |
 | Ticket scanning | Laptop webcam, in the browser |
 | Ticket QR content | Dish ID only, tickets are reusable |
 | Wrong quiz answer | Show a hint, retry until correct |
@@ -43,7 +43,7 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Screen flow
 
-1. **Scan.** Webcam view with "Scan your ticket". Hidden staff fallback to pick a dish manually.
+1. **Scan or choose.** Webcam view with "Scan your ticket" and a visible **Choose a lab instead** button. The button opens the four-dish menu without needing a ticket; choosing a dish opens its intro. **Scan a ticket instead** returns to the webcam.
 2. **Intro.** Dish name, one line on what you'll learn, **Start lab** button.
 3. **Start lab.** Per dish action (see below).
 4. **Explore.** Numbered steps stay visible. **I'm ready for the quiz** button.
