@@ -43,7 +43,7 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 ## Screen flow
 
-1. **Scan or choose.** Webcam view with "Scan your ticket" and a visible **Choose a lab instead** button. The button opens the four-dish menu without needing a ticket; choosing a dish opens its intro. **Scan a ticket instead** returns to the webcam.
+1. **Scan or choose.** Webcam view with "Scan your ticket" and a visible **Manually select a lab instead** button. The button opens the four-dish menu without needing a ticket; choosing a dish opens its intro. **Scan a ticket instead** returns to the webcam.
 2. **Intro.** The lab name, the dish, then `uses` and "You'll learn" with the `about` points, as on the fridge confirm screen. **Start lab** and **Not my dish**.
 3. **Start lab.** Per dish action (see below).
 4. **Explore.** Numbered steps stay visible. **I'm ready for the quiz** button.

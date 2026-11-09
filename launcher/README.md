@@ -54,7 +54,7 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
 9. When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
 10. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
 11. Scan a fridge ticket. The station should open that dish's intro.
-12. Return to Scan, tap **Choose a lab instead**, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
+12. Return to Scan, tap **Manually select a lab instead**, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
 13. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
 14. Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
 15. Wrap up, then check that the Fried Chicken VS Code window closed.
@@ -113,7 +113,7 @@ Everything else is fixed for the booth hardware: the one attached USB printer, 8
 
 ## Staff controls
 
-- Guests can tap **Choose a lab instead** on the Scan screen to pick any dish without a ticket or camera. **Scan a ticket instead** returns to scanning.
+- Guests can tap **Manually select a lab instead** on the Scan screen to pick any dish without a ticket or camera. **Scan a ticket instead** returns to scanning.
 - Press **Ctrl+Shift+M**, or hold the Chez Mona logo for 3 seconds, to open the staff panel. It lets you pick a dish without scanning, shows the printer status and returns to Scan.
 - After a print error, the Print screen offers **Staff: print again**. The launcher never retries on its own, so a guest never gets two receipts by accident.
 - Tickets hold only the dish ID: `omelette`, `fried-chicken`, `soup` or `dip`. Case does not matter, and spaces or underscores count as hyphens.

@@ -167,7 +167,7 @@ const scanner = {
       });
     } catch (error) {
       if (generation !== this.generation) return;
-      message.textContent = "Camera unavailable. Use Choose a lab instead to pick a dish.";
+      message.textContent = "Camera unavailable. Tap Manually select a lab instead to pick a dish.";
       message.hidden = false;
       return;
     }
@@ -233,7 +233,7 @@ function renderScan() {
       <p class="eyebrow">Welcome to Chez Mona</p>
       <h1>Scan your ticket</h1>
       <p class="lede">Hold the QR code on your fridge ticket up to the camera.</p>
-      <button id="choose-lab">Choose a lab instead</button>
+      <button id="choose-lab">Manually select a lab instead</button>
       <div class="camera">
         <video id="video" muted playsinline></video>
         <div class="frame"></div>

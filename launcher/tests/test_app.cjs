@@ -70,7 +70,7 @@ async function launcher(getUserMedia = async () => ({ getTracks: () => [] })) {
 
 test("visible picker lists every lab and opens the same intro as scanning", async () => {
   const page = await launcher();
-  assert.match(page.elements.get("app").innerHTML, /<button id="choose-lab">Choose a lab instead/);
+  assert.match(page.elements.get("app").innerHTML, /<button id="choose-lab">Manually select a lab instead/);
   const requestsBefore = page.requests.length;
   for (const dish of content.dishes) {
     page.click("choose-lab");
@@ -130,7 +130,7 @@ test("camera failure points guests to the visible picker", async () => {
   const page = await launcher(async () => { throw new Error("Permission denied"); });
   const message = page.elements.get("camera-msg");
   assert.equal(message.hidden, false);
-  assert.match(message.textContent, /Choose a lab instead/);
+  assert.match(message.textContent, /Manually select a lab instead/);
   assert.doesNotMatch(message.textContent, /Ctrl|Staff/);
   page.click("choose-lab");
   assert.equal(page.run("state.screen"), "menu");
