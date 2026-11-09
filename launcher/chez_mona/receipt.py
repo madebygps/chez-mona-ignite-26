@@ -18,7 +18,6 @@ import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
 HEADER = "Chez Mona"
-TAGLINE = "Cuisine agentique"
 EVENT = "Microsoft Ignite 2026"
 SERVED_BY = "GitHub Copilot"
 STATION = "Cooking station"
@@ -50,7 +49,6 @@ class Line:
     invert: bool = False  # white on black, padded to a full width bar
     indent: int = 0
     bullet: str = ""
-    letterspace: bool = False  # "C U I S I N E", when it fits
 
 
 @dataclass
@@ -130,7 +128,6 @@ def layout(dish: dict, check: Check) -> list[Item]:
     items: list[Item] = [
         Picture("gingham", gingham),
         Picture("wordmark", wordmark),
-        Line(TAGLINE.upper(), bold=True, letterspace=True),
         Line(EVENT),
         Rule("="),
         Line("GUEST CHECK", align="left", bold=True),
@@ -300,8 +297,6 @@ def _style(align: str = "center", width: int = 1, height: int = 1, bold: bool = 
 
 def _text_lines(item: Line, columns: int) -> list[str]:
     text = plain(item.text)
-    if item.letterspace and len(text) * 2 - 1 <= columns:
-        text = " ".join(text)
     if item.invert:
         pad = max(0, columns - len(text))
         return [" " * (pad // 2) + text[:columns] + " " * (pad - pad // 2)]

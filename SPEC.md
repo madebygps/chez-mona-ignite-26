@@ -154,7 +154,7 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 
 The receipt is a keepsake guest check, designed to look different from the fridge ticket. From top to bottom:
 
-- Gingham band, the Mona chef mark from the launcher UI beside the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
+- Gingham band, the Mona chef mark from the launcher UI beside the Chez Mona wordmark, and Microsoft Ignite 2026
 - **Guest check**, then "Cooking station" with the date and time, and "Served by GitHub Copilot". The guest check has no number: stations don't share a counter, so a number could repeat.
 - The dish and lab as one line item, then "Made with" and the `uses` tools from the confirm screen
 - **You learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json), one for each `about` point in the same order. The quiz questions are not printed.
