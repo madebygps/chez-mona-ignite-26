@@ -1,7 +1,7 @@
 # Chez Mona lab launcher spec
 
 Booth: Chez Mona, Microsoft Ignite 2026
-Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/). The full flow (fridge ticket, scan, Fried Chicken in VS Code, quiz, receipt, wrap up) passed on one laptop with a real USB receipt printer; open items are in [To verify before the event](#to-verify-before-the-event).
+Status: all four labs' material built. Launcher and fridge ticket kiosk built in [`launcher/`](launcher/). The full flow (fridge ticket, scan, Fried Chicken in VS Code, quiz, wrap up, receipt) passed on one laptop with a real USB receipt printer; open items are in [To verify before the event](#to-verify-before-the-event).
 
 ## Goal
 
@@ -48,8 +48,8 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 3. **Start lab.** Per dish action (see below).
 4. **Explore.** Numbered steps stay visible. **I'm ready for the quiz** button.
 5. **Quiz.** Two multiple choice questions. Wrong answer shows a hint and allows retry.
-6. **Print.** Receipt prints. Screen confirms.
-7. **Wrap up.** Short cleanup instructions, **Next guest** returns to Scan.
+6. **Wrap up.** "Clean up before your receipt" with short cleanup instructions, then **Print my receipt**. Guests clean up first because they leave as soon as the receipt prints.
+7. **Print.** Receipt prints. "Your receipt is on its way. Pick it up from the printer." **Next guest** returns to Scan. A print error shows the message, **Next guest** and **Staff: print again**.
 
 ## Fridge wall
 
@@ -65,7 +65,7 @@ The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the 
 
 | Dish | Start lab | Wrap up |
 |---|---|---|
-| Omelette | Show instructions: open the Copilot app, select **canvas-101**, open a chat, ask "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
+| Omelette | Show instructions: open the Copilot app from the taskbar, start a **Canvas 101** session, paste "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
 | Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>`. Explore has a **Reopen in VS Code** button in case the guest closes the window | Launcher closes the VS Code window it opened and deletes the temp folder |
 | Soup | Nothing to open yet: the concept steps come first, and step 3 has an **Open workflow file** button for the pinned file on GitHub.com | Close the browser tabs |
 | Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
@@ -156,7 +156,7 @@ The receipt is a keepsake guest check, designed to look different from the fridg
 - **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
 - A stamp: "Perfect score" with no hints used, otherwise "Chef approved"
-- QR code to the dish's docs link, captioned "Scan to continue learning"
+- QR code to the dish's docs link, captioned "Scan to continue learning at home"
 - "Merci! Have a nice day" and a closing gingham band
 
 The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
@@ -176,7 +176,7 @@ The wordmark, chef hat, stamp and gingham are raster images drawn with Windows f
 
 | Screen | Timeout | Action |
 |---|---|---|
-| Intro, Quiz, Print, Wrap up | about 2 minutes | "Still cooking?" prompt, then return to Scan |
+| Intro, Quiz, Wrap up, Print | about 2 minutes | "Still cooking?" prompt, then return to Scan |
 | Explore | about 10 minutes | "Still cooking?" prompt, then return to Scan |
 
 On timeout the launcher closes the VS Code window and temp folder it created. Browser tabs and the Copilot app chat are left for staff.

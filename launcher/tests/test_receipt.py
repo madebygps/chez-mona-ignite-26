@@ -29,6 +29,8 @@ class ReceiptTest(unittest.TestCase):
             self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
             for text in (b"Thank you for cooking", b"DIP", b"GUEST CHECK", b"Cooking station", b"PRICELESS", b"Scan to continue learning"):
                 self.assertIn(text, data)
+            if width == receipt.WIDTH_DOTS:
+                self.assertIn(receipt.QR_CAPTION.encode("ascii"), data)
             self.assertNotIn(b"No.", data)
 
     def test_receipt_lists_what_you_learned_not_the_questions(self):

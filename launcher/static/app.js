@@ -425,7 +425,7 @@ function renderQuiz(index) {
         button.classList.add("right");
         app.querySelectorAll(".choice").forEach((b) => (b.disabled = true));
         document.getElementById("hint").innerHTML = `<p class="status-ok"><strong>Correct!</strong></p>`;
-        setTimeout(() => (index + 1 < dish.quiz.length ? renderQuiz(index + 1) : renderPrint()), 900);
+        setTimeout(() => (index + 1 < dish.quiz.length ? renderQuiz(index + 1) : renderWrap()), 900);
       } else {
         button.classList.add("wrong");
         button.disabled = true;
@@ -449,14 +449,14 @@ async function renderPrint() {
     await api("/api/print", { dish: dish.id, hints: state.hints });
     show("print", `
       <section class="center">
-        <p class="eyebrow">Well done</p>
+        <p class="eyebrow">Thanks for cooking with us</p>
         <h2 class="status-ok">Your receipt is on its way</h2>
-        <p class="lede">Pick it up from the printer and scan the QR code to keep learning.</p>
+        <p class="lede">Pick it up from the printer.</p>
         <div class="row" style="justify-content:center">
-          <button class="primary" id="next">Continue</button>
+          <button class="primary" id="next">Next guest</button>
         </div>
       </section>`);
-    on("next", renderWrap);
+    on("next", endLab);
   } catch (error) {
     show("print", `
       <section class="center">
@@ -464,11 +464,11 @@ async function renderPrint() {
         <p class="lede">Please ask a chef. You still finished the lab!</p>
         <pre class="detail">${escapeHtml(error.message)}</pre>
         <div class="row" style="justify-content:center">
-          <button class="primary" id="next">Continue</button>
+          <button class="primary" id="next">Next guest</button>
           <button id="again">Staff: print again</button>
         </div>
       </section>`);
-    on("next", renderWrap);
+    on("next", endLab);
     on("again", renderPrint);
   }
 }
@@ -480,15 +480,15 @@ async function renderWrap() {
   const sdk = dish.start.type === "sdk";
   show("wrap", `
     <section>
-      <p class="eyebrow">Thanks for cooking with us</p>
-      <h2>Before you go</h2>
+      <p class="eyebrow">Well done</p>
+      <h2>Clean up before your receipt</h2>
       <ul class="step-details">${dish.wrap_up.map((w) => `<li>${fmt(w)}</li>`).join("")}</ul>
       <p class="muted" id="cleanup">${sdk ? "Cleaning up…" : ""}</p>
       <div class="row">
-        <button class="primary" id="next">Next guest</button>
+        <button class="primary" id="next">Print my receipt</button>
       </div>
     </section>`);
-  on("next", endLab);
+  on("next", renderPrint);
   if (sdk) {
     const cleanup = document.getElementById("cleanup");
     try {

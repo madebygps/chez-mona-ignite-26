@@ -1,6 +1,6 @@
 # Chez Mona launcher
 
-Local web app that runs the booth flow on each laptop: scan a fridge ticket or choose a lab on screen, read the intro, explore the lab, take a two question quiz, print a receipt and wrap up. The same app also runs the fridge wall kiosks that print the tickets. [SPEC.md](../SPEC.md) describes the flow and every lab.
+Local web app that runs the booth flow on each laptop: scan a fridge ticket or choose a lab on screen, read the intro, explore the lab, take a two question quiz, wrap up and print a receipt. The same app also runs the fridge wall kiosks that print the tickets. [SPEC.md](../SPEC.md) describes the flow and every lab.
 
 A small Python server listens on `localhost` only. It serves the page and does the local work the browser cannot: copy the Fried Chicken starter, open and close VS Code, and send tickets and receipts to the printer.
 
@@ -56,8 +56,8 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
 11. Scan a fridge ticket. The station should open that dish's intro.
 12. Return to Scan, tap **Manually select a lab instead**, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
 13. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
-14. Finish one dish through the quiz. A receipt should print and cut, and its QR code should scan with a phone.
-15. Wrap up, then check that the Fried Chicken VS Code window closed.
+14. Finish one Fried Chicken lab through the quiz. On the wrap up screen, check that its VS Code window closed.
+15. Click **Print my receipt**. A receipt should print and cut, and its QR code should scan with a phone.
 
 ### Fridge laptop
 
