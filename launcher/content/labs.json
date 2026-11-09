@@ -13,17 +13,10 @@
       ],
       "start": { "type": "none" },
       "steps": [
-        {
-          "text": "Open the canvas.",
-          "details": [
-            "Open the **GitHub Copilot app**.",
-            "Select the **canvas-101** repository.",
-            "Open a new chat.",
-            "Ask: **Open the Chez Mona Order Ticket canvas**"
-          ]
-        },
-        { "text": "Click to add a dish to the ticket." },
-        { "text": "Ask the agent to add or remove a dish, and watch the ticket update." }
+        { "text": "Open the **GitHub Copilot app**." },
+        { "text": "On the left, find the **canvas-101** repository. Hover over it, then click **New session** on the right." },
+        { "text": "Type this prompt: **Open the Chez Mona Order Ticket canvas**" },
+        { "text": "Follow the instructions in the canvas. When you are done, return here and click **I'm ready for the quiz**." }
       ],
       "quiz": [
         {
@@ -34,7 +27,7 @@
             "Only the agent, through chat",
             "Only the repository owner"
           ],
-          "hint": "In step 3 you asked the agent to change the ticket you had already clicked."
+          "hint": "In the canvas, you clicked the ticket and then asked the agent to change it."
         },
         {
           "question": "Where does a repository scoped canvas live?",

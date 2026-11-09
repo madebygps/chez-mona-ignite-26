@@ -78,9 +78,10 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 
 - Learn: canvases are interactive panels that you and the agent both drive.
 - Steps:
-  1. Open the canvas.
-  2. Click to add a dish.
-  3. Ask the agent to add or remove a dish, and watch the ticket update.
+  1. Open the GitHub Copilot app.
+  2. On the left, find the canvas-101 repository. Hover over it, then click **New session** on the right.
+  3. Type this prompt: "Open the Chez Mona Order Ticket canvas".
+  4. Follow the instructions in the canvas: click to add a dish, then ask the agent to add or remove a dish. Return to the launcher and click **I'm ready for the quiz**.
 - Quiz:
   1. Who can change a canvas? Answer: you and the agent.
   2. Where does a repository scoped canvas live? Answer: `.github/extensions/`.
