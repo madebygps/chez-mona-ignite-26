@@ -156,19 +156,7 @@ button.link:hover:not(:disabled) { background: none; color: var(--blue-dark); }
   opacity: 0.9;
 }
 .brand { display: flex; align-items: center; gap: 12px; user-select: none; }
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: var(--blue);
-  color: var(--white);
-  font-stretch: 125%;
-  font-weight: 800;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
-}
+.brand-mark { display: block; width: 50px; height: 50px; }
 .brand-name { font-size: 1.45rem; font-weight: 700; color: var(--blue); letter-spacing: -0.01em; }
 
 .progress { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; counter-reset: progress; }
