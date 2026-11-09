@@ -404,3 +404,27 @@ pre.detail {
   font-size: 1rem;
   letter-spacing: 1px;
 }
+.confirm-meta {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 4px 0 0;
+}
+.confirm-about {
+  text-align: left;
+  max-width: 30em;
+  margin: 28px auto 0;
+  padding-top: 20px;
+  border-top: var(--dash);
+}
+.confirm-label {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+.confirm-about ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+.confirm-about li { font-size: 1.05rem; font-weight: 300; color: var(--ink); }

@@ -257,7 +257,7 @@ function renderMenu() {
           <button class="menu-item" data-dish="${escapeHtml(d.id)}">
             <span class="menu-dish">${escapeHtml(d.dish)}</span>
             <span class="menu-lab">${escapeHtml(d.lab)}</span>
-            <span class="menu-learn">${fmt(d.learn)}</span>
+            <span class="menu-learn">${fmt(d.pitch)}</span>
           </button>`).join("")}
       </div>
       <div class="row">

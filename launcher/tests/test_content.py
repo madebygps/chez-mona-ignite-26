@@ -35,6 +35,11 @@ class LabsTest(unittest.TestCase):
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=[]))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=["a", "b", "c", "d", "e"]))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=["ok", " "]))
+        self.assert_rejected(lambda d: d["dishes"][0].pop("pitch"))
+        self.assert_rejected(lambda d: d["dishes"][0].update(uses=[]))
+        self.assert_rejected(lambda d: d["dishes"][0].update(uses="GitHub.com"))
+        self.assert_rejected(lambda d: d["dishes"][0].update(about=[]))
+        self.assert_rejected(lambda d: d["dishes"][0].update(about="One string"))
 
 
 class ConfigTest(unittest.TestCase):
