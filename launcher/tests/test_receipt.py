@@ -27,11 +27,12 @@ class ReceiptTest(unittest.TestCase):
             data = receipt.escpos(DISHES["dip"], receipt.Check(AT, [0, 1]), width)
             self.assertTrue(data.startswith(b"\x1b@\x1ba\x01"))
             self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
-            for text in (b"Thanks for cooking with us", b"DIP", b"GUEST CHECK", b"Cooking station", b"PRICELESS", b"Scan to continue learning", b"YOU LEARNED"):
+            for text in (b"Thanks for cooking with us", b"DIP", b"Wed Nov 18, 2026", b"PRICELESS", b"Scan to continue learning", b"YOU LEARNED"):
                 self.assertIn(text, data)
             if width == receipt.WIDTH_DOTS:
                 self.assertIn(receipt.QR_CAPTION.encode("ascii"), data)
             self.assertNotIn(b"No.", data)
+            self.assertNotIn(b"GUEST CHECK", data)
 
     def test_receipt_lists_what_you_learned_not_the_questions(self):
         dish = DISHES["omelette"]
@@ -39,12 +40,6 @@ class ReceiptTest(unittest.TestCase):
         self.assertIn(" - A canvas is an interactive panel. Use it when", texts)
         self.assertIn("   chat is not enough.", texts)
         self.assertFalse(any(dish["quiz"][0]["question"] in t for t in texts))
-
-    def test_receipt_lists_the_tools_used(self):
-        texts = [line for line, _ in printed_lines(receipt.layout(DISHES["fried-chicken"], receipt.Check(AT)), 576)]
-        self.assertIn("   Made with VS Code, GitHub Copilot and Python", texts)
-        self.assertEqual(receipt.join_names(["GitHub Copilot app"]), "GitHub Copilot app")
-        self.assertEqual(receipt.join_names(["A", "B"]), "A and B")
 
     def test_hints_decide_the_stamp_and_hint_line(self):
         def rows(check):

@@ -19,8 +19,6 @@ from PIL import Image, ImageDraw, ImageFont
 
 HEADER = "Chez Mona"
 EVENT = "Microsoft Ignite 2026"
-SERVED_BY = "GitHub Copilot"
-STATION = "Cooking station"
 QR_CAPTION = "Scan to continue learning at home"
 THANKS = "Merci! Have a nice day"
 THANKS_LINE = "Thanks for cooking with us"
@@ -129,15 +127,9 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Picture("gingham", gingham),
         Picture("wordmark", wordmark),
         Line(EVENT),
-        Rule("="),
-        Line("GUEST CHECK", align="left", bold=True),
-        Row(STATION, f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
-        Row("Served by", SERVED_BY),
+        Line(f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
         Rule("="),
         Row(f"1  {dish['dish'].upper()}", "1 lab", bold=True),
-        Line(dish["lab"], align="left", indent=3),
-        Line(f"Made with {join_names(dish['uses'])}", align="left", indent=3),
-        None,
         Line("YOU LEARNED", bold=True, invert=True),
         *[Line(point, align="left", indent=1, bullet="- ") for point in dish["receipt"]["learned"]],
         Rule(),
@@ -158,11 +150,6 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Picture("gingham", gingham),
     ]
     return items
-
-
-def join_names(names: list[str]) -> str:
-    """ "A", "A and B" or "A, B and C"."""
-    return " and ".join(filter(None, [", ".join(names[:-1]), names[-1]]))
 
 
 def clock(at: datetime) -> str:
