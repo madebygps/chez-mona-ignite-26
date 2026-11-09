@@ -278,7 +278,7 @@ function renderIntro(id) {
   state.dish = dish;
   state.question = 0;
   show("intro", `
-    <section class="intro">
+    <section class="card intro">
       <p class="eyebrow">${escapeHtml(dish.lab)}</p>
       <h1>${escapeHtml(dish.dish)}</h1>
       <p class="confirm-meta">${dish.uses.map(escapeHtml).join(" · ")}</p>
@@ -302,7 +302,7 @@ async function startLab() {
   if (start.type === "open_url") openTab(start.url);
   if (start.type === "sdk") {
     show("starting", `
-      <section class="center">
+      <section class="card center">
         <h2>Preparing your kitchen…</h2>
         <p class="lede">Copying the starter for you.</p>
       </section>`);
@@ -312,7 +312,7 @@ async function startLab() {
     renderExplore();
   } catch (error) {
     show("start-error", `
-      <section class="center">
+      <section class="card center">
         <h2 class="status-error">Something went wrong in the kitchen</h2>
         <p class="lede">Please ask a chef for help.</p>
         <pre class="detail">${escapeHtml(error.message)}</pre>
@@ -410,7 +410,7 @@ function renderQuiz(index) {
   if (index === 0) state.hints = dish.quiz.map(() => 0);
   const choices = shuffle([q.answer, ...q.others]);
   show("quiz", `
-    <section>
+    <section class="card">
       <p class="eyebrow">Question ${index + 1} of ${dish.quiz.length}</p>
       <h2>${fmt(q.question)}</h2>
       <div class="choices">
@@ -441,14 +441,14 @@ function renderQuiz(index) {
 async function renderPrint() {
   const dish = state.dish;
   show("print", `
-    <section class="center">
+    <section class="card center">
       <p class="eyebrow">Well done</p>
       <h2>Printing your receipt…</h2>
     </section>`);
   try {
     await api("/api/print", { dish: dish.id, hints: state.hints });
     show("print", `
-      <section class="center">
+      <section class="card center">
         <p class="eyebrow">Thanks for cooking with us</p>
         <h2 class="status-ok">Your receipt is on its way</h2>
         <p class="lede">Pick it up from the printer.</p>
@@ -459,7 +459,7 @@ async function renderPrint() {
     on("next", endLab);
   } catch (error) {
     show("print", `
-      <section class="center">
+      <section class="card center">
         <h2 class="status-error">The receipt did not print</h2>
         <p class="lede">Please ask a chef. You still finished the lab!</p>
         <pre class="detail">${escapeHtml(error.message)}</pre>
@@ -479,7 +479,7 @@ async function renderWrap() {
   const dish = state.dish;
   const sdk = dish.start.type === "sdk";
   show("wrap", `
-    <section>
+    <section class="card">
       <p class="eyebrow">Well done</p>
       <h2>Clean up before your receipt</h2>
       <ul class="step-details">${dish.wrap_up.map((w) => `<li>${fmt(w)}</li>`).join("")}</ul>

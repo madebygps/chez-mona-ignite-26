@@ -298,7 +298,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   text-align: left;
   font-weight: 400;
   color: var(--text);
-  background: var(--paper);
+  background: var(--white);
   border-radius: var(--radius);
   border: var(--rule);
   padding: 1em 3em 1em 1.2em;
