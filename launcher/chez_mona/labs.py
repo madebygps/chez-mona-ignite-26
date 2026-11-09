@@ -47,6 +47,8 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
         _check(dish.get("steps"), f"{did}: needs steps")
         for i, step in enumerate(dish["steps"], 1):
             _check(step.get("text"), f"{did} step {i}: missing text")
+            if "body" in step:
+                _check(isinstance(step["body"], str) and step["body"].strip(), f"{did} step {i}: empty body")
             if "markdown" in step:
                 _check((content_dir / step["markdown"]).is_file(), f"{did} step {i}: markdown file not found")
             action = step.get("action")

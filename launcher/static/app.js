@@ -332,13 +332,14 @@ function stepHtml(step, index) {
   const body = step.html
     ? `<div class="concept">${step.html}</div>`
     : `<div class="step-title">${fmt(step.text)}</div>`;
+  const stepBody = step.body ? `<p class="step-body">${fmt(step.body)}</p>` : "";
   const details = step.details
     ? `<ul class="step-details">${step.details.map((d) => `<li>${fmt(d)}</li>`).join("")}</ul>`
     : "";
   const action = step.action
     ? `<div class="step-action"><button data-step="${index}">${escapeHtml(step.action.label)}</button><span class="muted small" id="action-msg-${index}"></span></div>`
     : "";
-  return `<li><div class="card">${body}${details}${action}</div></li>`;
+  return `<li><div class="card">${body}${stepBody}${details}${action}</div></li>`;
 }
 
 function renderExplore() {
