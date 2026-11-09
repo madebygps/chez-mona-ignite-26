@@ -115,12 +115,12 @@ class ServerTest(unittest.TestCase):
         _, _, data = self.request("GET", "/")
         self.assertIn(b"app.js", data)
 
-    def test_print_says_cooking_station(self):
+    def test_print_sends_the_receipt(self):
         sent = []
         with mock.patch.object(printer, "submit_usb", lambda data: sent.append(data) or {}):
             result = json.loads(self.request("POST", "/api/print", {"dish": "dip"})[2])
         self.assertNotIn("check", result)
-        self.assertIn(b"Cooking station", sent[0])
+        self.assertIn(b"AUTOFIX ARTICHOKE DIP", sent[0])
         self.assertNotIn(b"No.", sent[0])
 
     def test_printer_status_reports_errors(self):

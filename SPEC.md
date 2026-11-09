@@ -59,7 +59,7 @@ The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking sta
 2. **Confirm.** The chosen dish, then `uses` (the products and tools in the lab), then "You'll learn" with the `about` points. **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
 3. **Ticket.** "Take your ticket". Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
 
-The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", a large QR code with the dish ID only, an inverted "Scan at any open station" bar and Microsoft Ignite 2026. It has no order number, since nothing reads one.
+The ticket is a kitchen chit: the Mona chef wordmark from the receipt, an inverted "Kitchen ticket" bar, the date and time, "1x" and the dish in large type, a large QR code with the dish ID only, "Take this to any open station and scan it" and Microsoft Ignite 2026. It has no order number, since nothing reads one.
 
 ## Per dish start and wrap up
 
@@ -154,16 +154,14 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 
 The receipt is a keepsake guest check, designed to look different from the fridge ticket. From top to bottom:
 
-- Gingham band, chef hat and the Chez Mona wordmark, "Cuisine agentique" and Microsoft Ignite 2026
-- **Guest check**, then "Cooking station" with the date and time, and "Served by GitHub Copilot". The guest check has no number: stations don't share a counter, so a number could repeat.
-- The dish and lab as one line item
-- **Today you learned:** 1 to 4 short takeaways from `receipt.learned` in [`labs.json`](launcher/content/labs.json). The quiz questions are not printed.
+- Gingham band, the Mona chef mark from the launcher UI beside the Chez Mona wordmark, Microsoft Ignite 2026, and the date and time. The receipt has no guest check number: stations don't share a counter, so a number could repeat.
+- The dish as one line item ("1 lab")
+- **You learned:** a one paragraph `receipt.summary` in [`labs.json`](launcher/content/labs.json), up to 180 characters, that sums up the `about` points. The quiz questions are not printed.
 - Subtotal ("2/2 correct"), hints used (wrong quiz picks), tip ("Ship it!") and **Total: Priceless**
-- A stamp: "Perfect score" with no hints used, otherwise "Chef approved"
 - QR code to the dish's docs link, captioned "Scan to continue learning at home"
-- "Merci! Have a nice day" and a closing gingham band
+- "Merci! Have a nice day", "Thanks for cooking with us" and a closing gingham band
 
-The wordmark, chef hat, stamp and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used.
+The wordmark and gingham are raster images drawn with Windows fonts; if a font is missing, a plain built in font is used. The Mona chef mark is [`mona-chef.png`](launcher/chez_mona/mona-chef.png), a 512 px render of [`static/mona-chef.svg`](launcher/static/mona-chef.svg). Render it again if the SVG changes. The receipt has few blank lines, so it uses less paper.
 
 ### Printer integration
 
@@ -221,5 +219,5 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [ ] GitHub links from the launcher open in a normal browser window when the launcher runs in Edge app mode
 - [ ] The other 7 RP326 units print the same way on their laptops
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper
-- [ ] Redesigned ticket and receipt on the RP326: inverted bars (ESC/POS `GS B`) print white on black, raster wordmark, stamp and gingham look clean, and the receipt length is acceptable
+- [ ] Redesigned ticket and receipt on the RP326: inverted bars (ESC/POS `GS B`) print white on black, raster wordmark and gingham look clean, and the receipt length is acceptable
 - [ ] Missing printer, paper-out and cover-open handling on the real printer (the status query works; failures not yet triggered on hardware)

@@ -38,11 +38,7 @@
       ],
       "wrap_up": ["In the Copilot app, delete the chat you used for this lab."],
       "receipt": {
-        "learned": [
-          "A canvas is an interactive panel in the Copilot app.",
-          "You and the agent can both change it.",
-          "Repository scoped canvases live in `.github/extensions/`."
-        ],
+        "summary": "A canvas is an interactive panel in the Copilot app. You and the agent both work in it, and a repository can share it with everyone.",
         "qr": "https://docs.github.com/en/copilot/how-tos/github-copilot-app/working-with-canvas-extensions"
       }
     },
@@ -104,11 +100,7 @@
       ],
       "wrap_up": ["The launcher closes the VS Code window and deletes your copy of the starter."],
       "receipt": {
-        "learned": [
-          "The Copilot SDK runs a Copilot agent inside your own app.",
-          "`define_tool` turns a function into a tool the agent can call.",
-          "`send_and_wait` sends a prompt and waits for the reply."
-        ],
+        "summary": "The Copilot SDK runs an agent in your own app. `define_tool` gives it a tool, and `send_and_wait` sends it a prompt.",
         "qr": "https://github.com/github/copilot-sdk/blob/main/python/README.md"
       }
     },
@@ -182,11 +174,7 @@
       ],
       "wrap_up": ["Close the GitHub tabs you opened."],
       "receipt": {
-        "learned": [
-          "An agentic workflow is a GitHub Actions workflow written in Markdown.",
-          "Frontmatter sets the trigger, permissions and allowed outputs.",
-          "The body tells the agent what to do in plain language."
-        ],
+        "summary": "An agentic workflow is a GitHub Actions workflow in Markdown. The frontmatter sets when it runs and what it can do. The agent follows the instructions.",
         "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows"
       }
     },
@@ -263,11 +251,7 @@
       ],
       "wrap_up": ["Close the GitHub tabs you opened."],
       "receipt": {
-        "learned": [
-          "Code scanning finds known vulnerabilities, like SQL injection.",
-          "Copilot Autofix suggests a fix right on the pull request.",
-          "Copilot code review reviews the whole change, like a teammate."
-        ],
+        "summary": "Code scanning finds known vulnerabilities and Copilot Autofix suggests the fix. Copilot code review checks the whole change, like a teammate.",
         "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review"
       }
     }

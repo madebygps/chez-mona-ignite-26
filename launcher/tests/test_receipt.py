@@ -27,26 +27,23 @@ class ReceiptTest(unittest.TestCase):
             data = receipt.escpos(DISHES["dip"], receipt.Check(AT, [0, 1]), width)
             self.assertTrue(data.startswith(b"\x1b@\x1ba\x01"))
             self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
-            for text in (b"Thank you for cooking", b"DIP", b"GUEST CHECK", b"Cooking station", b"PRICELESS", b"Scan to continue learning"):
+            for text in (b"Thanks for cooking with us", b"DIP", b"Wed Nov 18, 2026", b"PRICELESS", b"Scan to continue learning", b"YOU LEARNED"):
                 self.assertIn(text, data)
             if width == receipt.WIDTH_DOTS:
                 self.assertIn(receipt.QR_CAPTION.encode("ascii"), data)
             self.assertNotIn(b"No.", data)
+            self.assertNotIn(b"GUEST CHECK", data)
 
-    def test_receipt_lists_what_you_learned_not_the_questions(self):
+    def test_receipt_prints_the_summary_not_the_questions(self):
         dish = DISHES["omelette"]
         texts = [line for line, _ in printed_lines(receipt.layout(dish, receipt.Check(AT)), 576)]
-        self.assertIn(" - A canvas is an interactive panel in the", texts)
-        self.assertIn("   Copilot app.", texts)
+        self.assertIn("A canvas is an interactive panel in the", texts)
         self.assertFalse(any(dish["quiz"][0]["question"] in t for t in texts))
 
-    def test_hints_decide_the_stamp_and_hint_line(self):
+    def test_hint_line_only_when_hints_are_known(self):
         def rows(check):
             return [i.left for i in receipt.layout(DISHES["soup"], check) if isinstance(i, receipt.Row)]
 
-        self.assertTrue(receipt.Check(AT, hints=[0, 0]).perfect())
-        self.assertFalse(receipt.Check(AT, hints=[0, 2]).perfect())
-        self.assertFalse(receipt.Check(AT).perfect())
         self.assertIn("HINTS USED", rows(receipt.Check(AT, hints=[0, 2])))
         self.assertNotIn("HINTS USED", rows(receipt.Check(AT)))
 
@@ -93,6 +90,8 @@ class ReceiptTest(unittest.TestCase):
         data = receipt.ticket_escpos(DISHES["fried-chicken"], at, 576)
         self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
         self.assertIn(b"1x COPILOT SDK FRIED", data)
+        self.assertNotIn(b"Explore how you can give an agent its own", data)
+        self.assertIn(b"Take this to any open station and scan it", data)
 
 
 if __name__ == "__main__":

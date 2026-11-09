@@ -1,7 +1,7 @@
 """Receipt and fridge ticket layouts as ESC/POS bytes.
 
-The fridge ticket is a plain kitchen chit. The receipt is a keepsake guest
-check, with a raster wordmark, gingham edges and a rubber stamp.
+The fridge ticket is a kitchen chit with the Mona chef wordmark. The receipt
+is a keepsake guest check, with the same wordmark and gingham edges.
 """
 
 from __future__ import annotations
@@ -18,23 +18,19 @@ import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
 HEADER = "Chez Mona"
-TAGLINE = "Cuisine agentique"
 EVENT = "Microsoft Ignite 2026"
-SERVED_BY = "GitHub Copilot"
-STATION = "Cooking station"
 QR_CAPTION = "Scan to continue learning at home"
 THANKS = "Merci! Have a nice day"
-THANKS_LINE = "Thank you for cooking at Chez Mona"
-TICKET_BAR = "Chez Mona  *  Kitchen ticket"
-TICKET_CAPTION = ">> Scan at any open station <<"
-TICKET_DURATION = "about 5 min"
+THANKS_LINE = "Thanks for cooking with us"
+TICKET_BAR = "Kitchen ticket"
+TICKET_CAPTION = "Take this to any open station and scan it"
 FONT_A_WIDTH = 12  # dots per character, Font A at normal size
 WIDTH_DOTS = 576  # RP326 printable width: 72 mm of 80 mm paper at 203 dpi
 QR_TARGET_FRACTION = 0.45
 TICKET_QR_FRACTION = 0.6
 FONT_DIR = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
 WORDMARK_FONT = "georgiaz.ttf"  # Georgia Bold Italic
-STAMP_FONT = "consolab.ttf"  # Consolas Bold
+MONA_IMAGE = Path(__file__).with_name("mona-chef.png")  # static/mona-chef.svg, rendered at 512 px
 
 ESC, GS = b"\x1b", b"\x1d"
 
@@ -49,7 +45,7 @@ class Line:
     invert: bool = False  # white on black, padded to a full width bar
     indent: int = 0
     bullet: str = ""
-    letterspace: bool = False  # "C U I S I N E", when it fits
+    margin: int = 0  # blank columns on each side when wrapping
 
 
 @dataclass
@@ -94,18 +90,15 @@ def plain(text: str) -> str:
 def ticket_layout(dish: dict, at: datetime) -> list[Item]:
     """Fridge ticket. Its QR holds only the dish ID, which the stations scan."""
     return [
+        Picture("wordmark", wordmark),
         Line(TICKET_BAR.upper(), bold=True, invert=True),
-        None,
         Row(f"{at:%a %b} {at.day}", clock(at)),
-        Rule(spaced=True),
-        None,
+        Rule(),
         Line(f"1x {dish['dish'].upper()}", width=2, height=2, bold=True),
-        Line(f"{dish['lab']} lab  |  {TICKET_DURATION}"),
         None,
         Qr(dish["id"], TICKET_QR_FRACTION),
-        Line(TICKET_CAPTION.upper(), bold=True, invert=True),
-        None,
-        Rule(spaced=True),
+        Line(TICKET_CAPTION, bold=True),
+        Rule(),
         Line(EVENT),
     ]
 
@@ -118,33 +111,20 @@ class Check:
     at: datetime
     hints: list[int] | None = None
 
-    def perfect(self) -> bool:
-        return self.hints is not None and not any(self.hints)
-
 
 def layout(dish: dict, check: Check) -> list[Item]:
     """Take-home receipt printed at a cooking station. None is a blank line."""
     answered = len(dish["quiz"])
-    stamp_words = ("PERFECT", "SCORE") if check.perfect() else ("CHEF", "APPROVED")
     items: list[Item] = [
         Picture("gingham", gingham),
-        None,
         Picture("wordmark", wordmark),
-        Line(TAGLINE.upper(), bold=True, letterspace=True),
         Line(EVENT),
-        None,
+        Line(f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
         Rule("="),
-        Line("GUEST CHECK", align="left", bold=True),
-        Row(STATION, f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
-        Row("Served by", SERVED_BY),
-        Rule("="),
-        None,
         Row(f"1  {dish['dish'].upper()}", "1 lab", bold=True),
-        Line(dish["lab"], align="left", indent=3),
         None,
-        Line("TODAY YOU LEARNED", bold=True, invert=True),
-        None,
-        *[Line(point, align="left", indent=1, bullet="- ") for point in dish["receipt"]["learned"]],
+        Line("YOU LEARNED", bold=True, invert=True),
+        Line(dish["receipt"]["summary"], margin=3),
         None,
         Rule(),
         Row("SUBTOTAL", f"{answered}/{answered} correct"),
@@ -156,17 +136,11 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Rule(),
         Row("TOTAL", "PRICELESS", bold=True, size=2),
         Rule("="),
-        None,
-        Picture("stamp", lambda width: stamp(width, *stamp_words)),
-        None,
-        Rule(spaced=True),
         Qr(dish["receipt"]["qr"]),
         Line(QR_CAPTION, bold=True),
-        Rule(spaced=True),
         None,
         Line(THANKS.upper(), height=2, bold=True),
         Line(THANKS_LINE),
-        None,
         Picture("gingham", gingham),
     ]
     return items
@@ -186,7 +160,7 @@ def font(name: str, size: int) -> ImageFont.ImageFont:
         return ImageFont.load_default(size)
 
 
-def gingham(width_dots: int, square: int = 16, rows: int = 3) -> Image.Image:
+def gingham(width_dots: int, square: int = 16, rows: int = 2) -> Image.Image:
     """Bistro tablecloth band: black where stripes cross, a checker where one does."""
     image = Image.new("1", (width_dots, square * rows), 1)
     pixels = image.load()
@@ -198,68 +172,44 @@ def gingham(width_dots: int, square: int = 16, rows: int = 3) -> Image.Image:
     return image
 
 
-def chef_hat(size: int) -> Image.Image:
-    """Toque outline: three puffs and a band, drawn solid then hollowed out."""
-    s = size
-    line = max(4, s // 20)
-    puffs = ((0.27, 0.45, 0.19), (0.50, 0.32, 0.24), (0.73, 0.45, 0.19))
-    image = Image.new("1", (s, s), 1)
-    draw = ImageDraw.Draw(image)
+def threshold(image: Image.Image, cutoff: int = 140) -> Image.Image:
+    """Grayscale to pure black and white, with no dithering."""
+    return image.convert("L").point(lambda v: 0 if v < cutoff else 255).convert("1", dither=Image.Dither.NONE)
 
-    def shapes(grow: float, fill: int) -> None:
-        for cx, cy, r in puffs:
-            r = r * s + grow
-            draw.ellipse([cx * s - r, cy * s - r, cx * s + r, cy * s + r], fill=fill)
-        draw.rectangle([0.24 * s - grow, 0.50 * s - grow, 0.76 * s + grow, 0.94 * s + grow], fill=fill)
 
-    shapes(0, 0)
-    shapes(-line, 1)
-    draw.line([0.24 * s, 0.70 * s, 0.76 * s, 0.70 * s], fill=0, width=line)
-    for x in (0.40, 0.60):
-        draw.line([x * s, 0.74 * s, x * s, 0.90 * s], fill=0, width=max(3, line - 1))
-    return image
+def mona(size: int) -> Image.Image:
+    """The Mona chef mark from the launcher UI, as a black disc."""
+    return threshold(Image.open(MONA_IMAGE).convert("L").resize((size, size), Image.LANCZOS))
 
 
 def wordmark(width_dots: int) -> Image.Image:
-    """Chef hat over "Chez Mona" in a serif italic."""
-    hat = chef_hat(int(width_dots * 0.19))
-    face = font(WORDMARK_FONT, int(width_dots * 0.16))
-    left, top, right, bottom = ImageDraw.Draw(hat).textbbox((0, 0), HEADER, font=face)
-    image = Image.new("1", (width_dots, hat.height + bottom - top + 24), 1)
-    image.paste(hat, ((width_dots - hat.width) // 2, 0))
-    ImageDraw.Draw(image).text(((width_dots - (right - left)) // 2 - left, hat.height + 8 - top), HEADER, font=face, fill=0)
+    """Mona chef mark beside "Chez Mona" in a serif italic."""
+    disc = mona(int(width_dots * 0.2))
+    face = font(WORDMARK_FONT, int(width_dots * 0.11))
+    gap = width_dots // 28
+    left, top, right, bottom = ImageDraw.Draw(disc).textbbox((0, 0), HEADER, font=face)
+    x = (width_dots - disc.width - gap - (right - left)) // 2
+    image = Image.new("1", (width_dots, disc.height + 8), 1)
+    image.paste(disc, (x, 4))
+    y = (image.height - (bottom - top)) // 2 - top
+    ImageDraw.Draw(image).text((x + disc.width + gap - left, y), HEADER, font=face, fill=0)
     return image
 
 
-def stamp(width_dots: int, top: str, bottom: str, angle: float = -12) -> Image.Image:
-    """A tilted rubber stamp, centered on a strip width_dots wide."""
-    size = int(width_dots * 0.4)
-    image = Image.new("L", (size, size), 255)
-    draw = ImageDraw.Draw(image)
-    middle = size / 2
-    draw.ellipse([4, 4, size - 4, size - 4], outline=0, width=max(4, size // 32))
-    draw.ellipse([size * 0.08, size * 0.08, size * 0.92, size * 0.92], outline=0, width=max(2, size // 76))
-    big, small = font(STAMP_FONT, size // 6), font(STAMP_FONT, size // 8)
-    draw.text((middle, middle - size * 0.10), top, font=big, fill=0, anchor="mm")
-    draw.text((middle, middle + size * 0.10), bottom, font=small, fill=0, anchor="mm")
-    for dx in (-0.26, 0, 0.26):
-        for dy in (-0.30, 0.29):
-            draw.text((middle + dx * size, middle + dy * size), "*", font=small, fill=0, anchor="mm")
-    image = image.rotate(angle, resample=Image.BICUBIC, fillcolor=255)
-    strip = Image.new("1", (width_dots, size), 1)
-    strip.paste(image.point(lambda v: 0 if v < 140 else 255).convert("1"), ((width_dots - size) // 2, 0))
-    return strip
-
-
-def qr_image(data: str, width_dots: int, fraction: float = QR_TARGET_FRACTION) -> Image.Image:
-    """Monochrome QR code centered on a strip exactly width_dots wide."""
+def qr_code(data: str, target_dots: int) -> tuple[Image.Image, int]:
+    """Monochrome QR code at most target_dots wide, and its module size in dots."""
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, border=0)
     qr.add_data(data)
     qr.make(fit=True)
     modules = qr.modules_count
-    box = max(1, int(width_dots * fraction) // modules)
+    box = max(1, target_dots // modules)
     code = qr.make_image(fill_color="black", back_color="white").get_image()
-    code = code.convert("1").resize((modules * box, modules * box), Image.NEAREST)
+    return code.convert("1").resize((modules * box, modules * box), Image.NEAREST), box
+
+
+def qr_image(data: str, width_dots: int, fraction: float = QR_TARGET_FRACTION) -> Image.Image:
+    """Monochrome QR code centered on a strip exactly width_dots wide."""
+    code, box = qr_code(data, int(width_dots * fraction))
     quiet = 4 * box
     strip = Image.new("1", (width_dots, code.height + 2 * quiet), 1)
     strip.paste(code, ((width_dots - code.width) // 2, quiet))
@@ -300,14 +250,12 @@ def _style(align: str = "center", width: int = 1, height: int = 1, bold: bool = 
 
 def _text_lines(item: Line, columns: int) -> list[str]:
     text = plain(item.text)
-    if item.letterspace and len(text) * 2 - 1 <= columns:
-        text = " ".join(text)
     if item.invert:
         pad = max(0, columns - len(text))
         return [" " * (pad // 2) + text[:columns] + " " * (pad - pad // 2)]
     start = " " * item.indent + item.bullet
     rest = " " * (item.indent + len(item.bullet))
-    return textwrap.wrap(text, columns, initial_indent=start, subsequent_indent=rest) or [""]
+    return textwrap.wrap(text, columns - 2 * item.margin, initial_indent=start, subsequent_indent=rest) or [""]
 
 
 def _row_lines(row: Row, columns: int) -> list[str]:
