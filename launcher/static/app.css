@@ -176,7 +176,7 @@ button.link:hover:not(:disabled) { background: none; color: var(--blue); }
 }
 .brand { display: flex; align-items: center; gap: 12px; user-select: none; }
 .brand-mark { display: block; width: 50px; height: 50px; }
-.brand-name { font-stretch: 75%; font-size: 1.8rem; font-weight: 600; text-transform: uppercase; color: var(--ink); }
+.brand-name { font-stretch: 75%; font-size: 1.8rem; font-weight: 600; text-transform: uppercase; color: var(--text); }
 
 .progress { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; counter-reset: progress; }
 .progress li {
