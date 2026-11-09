@@ -31,8 +31,16 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
         did = dish.get("id", "?")
         _check(did not in seen, f"duplicate dish id {did}")
         seen.add(did)
-        for key in ("id", "dish", "lab", "learn"):
+        for key in ("id", "dish", "lab", "pitch", "learn"):
             _check(isinstance(dish.get(key), str) and dish[key], f"{did}: missing {key}")
+        uses = dish.get("uses")
+        _check(isinstance(uses, list) and 1 <= len(uses) <= 3
+               and all(isinstance(u, str) and u.strip() for u in uses),
+               f"{did}: uses needs 1 to 3 names")
+        about = dish.get("about")
+        _check(isinstance(about, list) and 1 <= len(about) <= 4
+               and all(isinstance(p, str) and p.strip() for p in about),
+               f"{did}: about needs 1 to 4 short points")
         _check(dish.get("start", {}).get("type") in START_TYPES, f"{did}: bad start type")
         if dish["start"]["type"] == "open_url":
             _check(dish["start"].get("url", "").startswith("https://"), f"{did}: start needs https url")

@@ -25,7 +25,7 @@ scan a fridge ticket or choose a lab, read instructions, explore, answer a short
 
 | Dish | Lab | Explore surface | Prepared material |
 |---|---|---|---|
-| Canvas collaboration omelette (Omelette) | Canvas 101 | GitHub Copilot app | Public guest repo [madebygps/canvas-101](https://github.com/madebygps/canvas-101) with the repository scoped Chez Mona order ticket canvas |
+| Canvas collaboration omelette (Omelette) | GitHub Copilot app Canvas | GitHub Copilot app | Public guest repo [madebygps/canvas-101](https://github.com/madebygps/canvas-101) with the repository scoped Chez Mona order ticket canvas |
 | Copilot SDK fried chicken (Fried Chicken) | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
 | Agentic alphabet soup (Soup) | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) triage workflow file, pinned to a commit |
 | Autofix artichoke dip (Dip) | PR review | GitHub.com | Tiny booth owned Chez Mona repo with an "Add menu search" PR that already has code scanning, Copilot Autofix and Copilot code review comments |
@@ -55,8 +55,8 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 
 The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking stations use `.\start.ps1 station`. No laptop needs its own setup. They are touch kiosks:
 
-1. **Menu.** The four dishes, each with its lab name and one line on what you'll learn.
-2. **Confirm.** The chosen dish with **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
+1. **Menu.** "Pick a dish by what you want to learn. Each takes about 5 minutes." The four dishes, each with its lab name and a one line `pitch`. The menu does not mention stations: the done screen and the ticket do.
+2. **Confirm.** The chosen dish, then `uses` (the products and tools in the lab), then "You'll learn" with the `about` points. **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
 3. **Ticket.** "Take your ticket". Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
 
 The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", a large QR code with the dish ID only, an inverted "Scan at any open station" bar and Microsoft Ignite 2026. It has no order number, since nothing reads one.
@@ -72,9 +72,9 @@ The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the 
 
 ## Lab content
 
-The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). The quiz answers below are the source; the other choices and hints are drafted there.
+The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). Each dish has a `pitch` for the menus, a `learn` line for the station intro, and `uses` and `about` points for the fridge confirm screen. The quiz answers below are the source; the other choices and hints are drafted there.
 
-### Omelette: Canvas 101
+### Omelette: GitHub Copilot app Canvas
 
 - Learn: canvases are interactive panels that you and the agent both drive.
 - Steps:

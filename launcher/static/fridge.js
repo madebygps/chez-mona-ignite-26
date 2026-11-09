@@ -59,13 +59,13 @@ function renderMenu() {
     <section class="menu">
       <p class="eyebrow">Today's menu</p>
       <h1>What would you like to cook?</h1>
-      <p class="lede">Pick a dish. Take your ticket to any open cooking station.</p>
+      <p class="lede">Pick a dish by what you want to learn. Each takes about 5 minutes.</p>
       <div class="menu-grid">
         ${state.dishes.map((d) => `
           <button class="menu-item" data-dish="${escapeHtml(d.id)}">
             <span class="menu-dish">${escapeHtml(d.dish)}</span>
             <span class="menu-lab">${escapeHtml(d.lab)}</span>
-            <span class="menu-learn">${fmt(d.learn)}</span>
+            <span class="menu-learn">${fmt(d.pitch)}</span>
           </button>`).join("")}
       </div>
     </section>`);
@@ -78,7 +78,11 @@ function renderConfirm(id) {
     <section class="card center confirm">
       <p class="eyebrow">Your order</p>
       <h1>${escapeHtml(d.dish)}</h1>
-      <p class="lede">${escapeHtml(d.lab)}. ${fmt(d.learn)}</p>
+      <p class="confirm-meta">${d.uses.map(escapeHtml).join(" · ")}</p>
+      <div class="confirm-about">
+        <p class="confirm-label">You'll learn</p>
+        <ul>${d.about.map((point) => `<li>${fmt(point)}</li>`).join("")}</ul>
+      </div>
       <div class="row" style="justify-content: center">
         <button class="primary" id="order">Print my ticket</button>
         <button id="back">Back to menu</button>
