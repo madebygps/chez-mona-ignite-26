@@ -22,6 +22,8 @@ ALLOWED_HOSTS = {"localhost", "127.0.0.1"}
 HOME_PAGE = {"station": "index.html", "fridge": "fridge.html"}
 MAX_BODY = 64 * 1024
 
+mimetypes.add_type("font/woff2", ".woff2")
+
 
 def check_hints(hints, questions: int) -> list[int] | None:
     """Wrong answers per question from the quiz page. None when the page did not send them."""
