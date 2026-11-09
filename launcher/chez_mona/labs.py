@@ -12,7 +12,7 @@ from .config import LAUNCHER_DIR
 CONTENT_DIR = LAUNCHER_DIR / "content"
 STATIC_DIR = LAUNCHER_DIR / "static"
 START_TYPES = {"none", "sdk", "open_url"}
-ACTION_TYPES = {"open_url", "reopen_vscode"}
+ACTION_TYPES = {"open_url", "open_vscode"}
 
 
 class ContentError(ValueError):

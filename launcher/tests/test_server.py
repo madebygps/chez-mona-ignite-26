@@ -19,8 +19,8 @@ class FakeSessions:
         self.calls.append("start")
         return {"folder": "x"}
 
-    def reopen(self):
-        self.calls.append("reopen")
+    def open_vscode(self):
+        self.calls.append("open_vscode")
         return {}
 
     def end(self):

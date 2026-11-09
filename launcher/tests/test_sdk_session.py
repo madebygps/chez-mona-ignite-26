@@ -43,20 +43,21 @@ class SdkSessionsTest(unittest.TestCase):
             finder=self.vscode.find,
         )
 
-    def test_start_copies_starter_and_opens_window(self):
+    def test_start_copies_starter_without_opening_a_window(self):
         folder = Path(self.sessions.start()["folder"])
         self.assertTrue(folder.name.startswith(FOLDER_PREFIX))
         self.assertTrue((folder / "main.py").is_file())
         self.assertTrue((folder / ".vscode" / "settings.json").is_file())
         self.assertFalse(any(p.name in {"__pycache__", ".venv"} for p in folder.rglob("*")))
-        self.assertEqual(self.vscode.launches, [(folder.name, True)])
+        self.assertEqual(self.vscode.launches, [])
 
-    def test_reopen_focuses_existing_window_or_opens_new(self):
+    def test_open_vscode_opens_new_window_or_focuses_existing(self):
         folder = Path(self.sessions.start()["folder"])
-        self.sessions.reopen()
+        self.sessions.open_vscode()
+        self.sessions.open_vscode()
         self.vscode.open.clear()
-        self.sessions.reopen()
-        self.assertEqual(self.vscode.launches[1:], [(folder.name, False), (folder.name, True)])
+        self.sessions.open_vscode()
+        self.assertEqual(self.vscode.launches, [(folder.name, True), (folder.name, False), (folder.name, True)])
 
     def test_end_closes_and_deletes(self):
         folder = Path(self.sessions.start()["folder"])
@@ -67,7 +68,7 @@ class SdkSessionsTest(unittest.TestCase):
         self.assertIn(folder.name, self.vscode.closed)
         self.assertEqual(self.sessions.end(), {"ended": False})
         with self.assertRaises(SessionError):
-            self.sessions.reopen()
+            self.sessions.open_vscode()
 
     def test_second_start_replaces_first(self):
         first = Path(self.sessions.start()["folder"])

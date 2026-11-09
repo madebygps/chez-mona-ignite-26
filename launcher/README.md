@@ -54,7 +54,7 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
 9. When Edge asks, allow camera access for `localhost`. Edge remembers the choice.
 10. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
 11. Scan a fridge ticket. The station should open that dish's intro.
-12. Return to Scan, tap **Manually select a lab instead**, pick Fried Chicken and start the lab. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
+12. Return to Scan, tap **Manually select a lab instead**, pick Fried Chicken and start the lab. Click **Open in VS Code**. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
 13. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
 14. Finish one Fried Chicken lab through the quiz. On the wrap up screen, check that its VS Code window closed.
 15. Click **Print my receipt**. A receipt should print and cut, and its QR code should scan with a phone.
@@ -122,8 +122,8 @@ Everything else is fixed for the booth hardware: the one attached USB printer, 8
 ## How Fried Chicken works
 
 1. **Start lab** copies [`copilot-sdk/`](../copilot-sdk/) to `%LOCALAPPDATA%\ChezMona\guests\chez-mona-fried-chicken-<id>`, without caches or virtual environments. It adds workspace settings that turn on auto save, so closing never stops on an unsaved changes prompt.
-2. It runs `code --new-window --disable-workspace-trust <folder> <folder>\main.py`.
-3. **Reopen in VS Code** on Explore focuses the window, or opens a new one if the guest closed it.
+2. **Open in VS Code** in Explore step 1 runs `code --new-window --disable-workspace-trust <folder> <folder>\main.py`. If the window is already open, it uses `--reuse-window` to focus it. If the guest closed it, the button opens it again.
+3. VS Code opens only when the guest clicks, so it does not cover the steps before the guest reads them.
 4. Wrap up, the idle timeout and stopping the server close VS Code windows whose title contains the folder name, then delete the folder. Leftover folders are also removed when the server starts and before each new guest.
 
 ## Edit lab content

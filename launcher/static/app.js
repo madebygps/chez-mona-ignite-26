@@ -304,7 +304,7 @@ async function startLab() {
     show("starting", `
       <section class="center">
         <h2>Preparing your kitchen…</h2>
-        <p class="lede">Copying the starter and opening it in VS Code.</p>
+        <p class="lede">Copying the starter for you.</p>
       </section>`);
   }
   try {
@@ -387,11 +387,11 @@ async function runAction(index, button) {
   const action = state.dish.steps[index].action;
   const message = document.getElementById(`action-msg-${index}`);
   if (action.type === "open_url") return openTab(action.url);
-  if (action.type === "reopen_vscode") {
+  if (action.type === "open_vscode") {
     button.disabled = true;
     message.textContent = "Opening VS Code…";
     try {
-      await api("/api/session/reopen", {});
+      await api("/api/session/open-vscode", {});
       message.textContent = "VS Code is open.";
     } catch (error) {
       message.textContent = error.message;

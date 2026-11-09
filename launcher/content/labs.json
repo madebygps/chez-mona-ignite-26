@@ -60,17 +60,28 @@
       "start": { "type": "sdk" },
       "steps": [
         {
-          "text": "Open the starter in VS Code.",
-          "details": ["The launcher opened it for you, with `main.py` showing."],
-          "action": { "type": "reopen_vscode", "label": "Reopen in VS Code" }
+          "text": "Open VS Code",
+          "body": "Click **Open in VS Code**. The starter opens with `main.py` showing.",
+          "action": { "type": "open_vscode", "label": "Open in VS Code" }
         },
         {
-          "text": "Ask Copilot Chat two questions.",
-          "details": ["What does `define_tool` do?", "How does the agent get the menu?"]
+          "text": "Open Copilot Chat",
+          "body": "Find **Copilot Chat** on the right side of VS Code. If you do not see it, press **Ctrl+Alt+I**."
         },
         {
-          "text": "Optional: run the sample.",
-          "details": ["In the VS Code terminal, run `uv run main.py`."]
+          "text": "Ask about the tool",
+          "body": "Copy this question and paste it into the chat.",
+          "prompt": "What does define_tool do?"
+        },
+        {
+          "text": "Ask about the menu",
+          "body": "Copy this question and paste it into the chat.",
+          "prompt": "How does the agent get the menu?"
+        },
+        {
+          "text": "Optional: run the sample",
+          "body": "In VS Code, open a terminal. Paste this command and press Enter.",
+          "prompt": "uv run main.py"
         }
       ],
       "quiz": [

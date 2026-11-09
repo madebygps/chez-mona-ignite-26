@@ -66,7 +66,7 @@ The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the 
 | Dish | Start lab | Wrap up |
 |---|---|---|
 | Omelette | Show instructions: open the Copilot app from the taskbar, start a **Canvas 101** session, paste "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
-| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder, then open it with `code <folder>`. Explore has a **Reopen in VS Code** button in case the guest closes the window | Launcher closes the VS Code window it opened and deletes the temp folder |
+| Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder. Explore step 1 has an **Open in VS Code** button that runs `code <folder>`. It focuses the window if it is open, or opens it again if the guest closed it | Launcher closes the VS Code window it opened and deletes the temp folder |
 | Soup | Nothing to open yet: the concept steps come first, and step 3 has an **Open workflow file** button for the pinned file on GitHub.com | Close the browser tabs |
 | Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
 
@@ -93,9 +93,11 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 - Learn: the SDK lets your app run a Copilot agent with your own tools.
 - Starter: [`copilot-sdk/`](copilot-sdk/), a single `main.py` menu assistant. Its `get_menu` tool takes a `vegetarian_only` flag; the prompt asks for vegetarian dishes, so the agent chooses the argument itself. No `.git` folder, no push remote. Pinned to `github-copilot-sdk==1.0.28`, verified running on Windows with Python 3.12.
 - Steps:
-  1. Open the starter in VS Code.
-  2. Ask Copilot Chat: "What does `define_tool` do?" and "How does the agent get the menu?"
-  3. Optional: run the sample.
+  1. Open VS Code with the **Open in VS Code** button.
+  2. Open Copilot Chat (**Ctrl+Alt+I** if it is hidden).
+  3. Ask: "What does define_tool do?"
+  4. Ask: "How does the agent get the menu?"
+  5. Optional: run the sample with `uv run main.py`.
 - Quiz:
   1. How do you give the agent a custom tool? Answer: `define_tool`, then pass it in `tools=[...]`.
   2. Which call sends a prompt and waits for the reply? Answer: `send_and_wait`.
@@ -213,7 +215,7 @@ On timeout the launcher closes the VS Code window and temp folder it created. Br
 - [x] Printer model chosen: Rongta RP326, works with the driverless USB connection (Nov 4)
 - [x] Receipt and ticket print with RAW ESC/POS on the RP326: raster QR scans with a phone, text fits, paper cuts (Nov 4)
 - [x] `code --disable-workspace-trust` opened the guest folder on `main.py` with no Workspace Trust prompt (Nov 4)
-- [x] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title), and **Reopen in VS Code** brings it back after a guest closes it (Nov 4)
+- [x] Launcher closes only the VS Code window it opened (matched by the guest folder name in the window title), and **Open in VS Code** brings it back after a guest closes it (Nov 4)
 - [ ] GitHub links from the launcher open in a normal browser window when the launcher runs in Edge app mode
 - [ ] The other 7 RP326 units print the same way on their laptops
 - [ ] Receipt QR codes scan reliably with a phone on the actual paper

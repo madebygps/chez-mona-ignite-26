@@ -162,23 +162,20 @@ class SdkSessions:
             if self.active:
                 self._end_locked()
             self.sweep()
-            code = find_code(self.code_path)
+            find_code(self.code_path)
             folder = self.guests_dir / f"{FOLDER_PREFIX}{uuid.uuid4().hex[:8]}"
             shutil.copytree(self.starter_dir, folder, ignore=COPY_IGNORE)
             settings = folder / ".vscode" / "settings.json"
             settings.parent.mkdir(exist_ok=True)
             settings.write_text(json.dumps(WORKSPACE_SETTINGS, indent=2), encoding="utf-8")
             self.active = folder
-            try:
-                self.launcher(code, folder)
-            except OSError as exc:
-                raise SessionError(f"Could not start VS Code: {exc}") from exc
             return {"folder": str(folder)}
 
-    def reopen(self) -> dict:
+    def open_vscode(self) -> dict:
+        """Focus the guest's VS Code window, or open a new one if there is none."""
         with self.lock:
             if not self.active or not self.active.is_dir():
-                raise SessionError("There is no starter folder to reopen. Start the lab again.")
+                raise SessionError("There is no starter folder to open. Start the lab again.")
             code = find_code(self.code_path)
             already_open = bool(self.finder(self.active.name))
             try:
