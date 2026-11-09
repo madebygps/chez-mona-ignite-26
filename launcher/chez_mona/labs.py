@@ -54,6 +54,8 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
                 image = step["image"]
                 _check(isinstance(image, str) and (STATIC_DIR / image).is_file(), f"{did} step {i}: image not found in static/")
                 _check(isinstance(step.get("alt"), str) and step["alt"].strip(), f"{did} step {i}: image needs alt text")
+            if "prompt" in step:
+                _check(isinstance(step["prompt"], str) and step["prompt"].strip(), f"{did} step {i}: empty prompt")
             if "markdown" in step:
                 _check((content_dir / step["markdown"]).is_file(), f"{did} step {i}: markdown file not found")
             action = step.get("action")

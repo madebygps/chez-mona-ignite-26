@@ -336,13 +336,16 @@ function stepHtml(step, index) {
   const image = step.image
     ? `<img class="step-image" src="/${escapeHtml(step.image)}" alt="${escapeHtml(step.alt)}">`
     : "";
+  const prompt = step.prompt
+    ? `<div class="step-prompt"><code>${escapeHtml(step.prompt)}</code><button data-copy="${index}">Copy</button></div>`
+    : "";
   const details = step.details
     ? `<ul class="step-details">${step.details.map((d) => `<li>${fmt(d)}</li>`).join("")}</ul>`
     : "";
   const action = step.action
     ? `<div class="step-action"><button data-step="${index}">${escapeHtml(step.action.label)}</button><span class="muted small" id="action-msg-${index}"></span></div>`
     : "";
-  return `<li><div class="card">${body}${stepBody}${image}${details}${action}</div></li>`;
+  return `<li><div class="card">${body}${stepBody}${image}${prompt}${details}${action}</div></li>`;
 }
 
 function renderExplore() {
@@ -363,7 +366,21 @@ function renderExplore() {
   app.querySelectorAll("button[data-step]").forEach((button) => {
     button.addEventListener("click", () => runAction(Number(button.dataset.step), button));
   });
+  app.querySelectorAll("button[data-copy]").forEach((button) => {
+    button.addEventListener("click", () => copyPrompt(dish.steps[Number(button.dataset.copy)].prompt, button));
+  });
   on("ready", () => renderQuiz(0));
+}
+
+async function copyPrompt(text, button) {
+  try {
+    await navigator.clipboard.writeText(text);
+    button.textContent = "Copied";
+  } catch {
+    getSelection().selectAllChildren(button.previousElementSibling);
+    button.textContent = "Press Ctrl+C";
+  }
+  setTimeout(() => (button.textContent = "Copy"), 2000);
 }
 
 async function runAction(index, button) {

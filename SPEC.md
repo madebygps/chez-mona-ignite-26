@@ -80,7 +80,7 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 - Steps:
   1. In the taskbar, click the GitHub Copilot app icon to open it.
   2. On the left, find **Canvas 101**. Hover over it, then click **+** (New session) on the right. The step shows a screenshot of the button.
-  3. Type this prompt: "Open the Chez Mona Order Ticket canvas".
+  3. Copy the prompt "Open the Chez Mona Order Ticket canvas" with the **Copy** button and paste it into the chat.
   4. Follow the instructions in the canvas: click to add a dish, then ask the agent to add or remove a dish. Return to the launcher and click **I'm ready for the quiz**.
 - Quiz:
   1. Who can change a canvas? Answer: you and the agent.
