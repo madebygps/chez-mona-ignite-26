@@ -130,21 +130,22 @@
           "body": "An agentic workflow is a GitHub Actions workflow written in Markdown. An agent follows its plain-language instructions."
         },
         {
-          "text": "Open the workflow",
-          "body": "Click **Open workflow file**. It opens in a new tab.",
+          "text": "Read the frontmatter",
+          "body": "Click **Open frontmatter**. Find when the workflow runs and what it may change.",
           "action": {
             "type": "open_url",
-            "label": "Open workflow file",
-            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md"
+            "label": "Open frontmatter",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L1-L45"
           }
         },
         {
-          "text": "Read the frontmatter",
-          "body": "Start at the top, between the `---` lines. Find when the workflow runs and what it may change."
-        },
-        {
           "text": "Read the instructions",
-          "body": "Read the text below the frontmatter. Find what the agent does when it is unsure."
+          "body": "Click **Open instructions**. Find what the agent does when it is unsure.",
+          "action": {
+            "type": "open_url",
+            "label": "Open instructions",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L47-L146"
+          }
         }
       ],
       "quiz": [
