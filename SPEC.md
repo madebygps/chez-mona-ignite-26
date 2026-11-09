@@ -25,10 +25,10 @@ scan ticket, read instructions, explore, answer a short quiz, print a receipt wi
 
 | Dish | Lab | Explore surface | Prepared material |
 |---|---|---|---|
-| Omelette | Canvas 101 | GitHub Copilot app | Public guest repo [madebygps/canvas-101](https://github.com/madebygps/canvas-101) with the repository scoped Chez Mona order ticket canvas |
-| Fried Chicken | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
-| Soup | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) triage workflow file, pinned to a commit |
-| Dip | PR review | GitHub.com | Tiny booth owned Chez Mona repo with an "Add menu search" PR that already has code scanning, Copilot Autofix and Copilot code review comments |
+| Canvas collaboration omelette (Omelette) | Canvas 101 | GitHub Copilot app | Public guest repo [madebygps/canvas-101](https://github.com/madebygps/canvas-101) with the repository scoped Chez Mona order ticket canvas |
+| Copilot SDK fried chicken (Fried Chicken) | Copilot SDK | VS Code with Copilot Chat | Small Python starter in the booth repo, based on the official SDK sample |
+| Agentic alphabet soup (Soup) | Agentic Workflows | GitHub.com | Upstream [github-samples/tailspin-toys](https://github.com/github-samples/tailspin-toys) triage workflow file, pinned to a commit |
+| Autofix artichoke dip (Dip) | PR review | GitHub.com | Tiny booth owned Chez Mona repo with an "Add menu search" PR that already has code scanning, Copilot Autofix and Copilot code review comments |
 
 ## Repositories
 
