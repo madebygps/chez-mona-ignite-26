@@ -10,6 +10,7 @@ import markdown
 from .config import LAUNCHER_DIR
 
 CONTENT_DIR = LAUNCHER_DIR / "content"
+STATIC_DIR = LAUNCHER_DIR / "static"
 START_TYPES = {"none", "sdk", "open_url"}
 ACTION_TYPES = {"open_url", "reopen_vscode"}
 
@@ -49,6 +50,10 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
             _check(step.get("text"), f"{did} step {i}: missing text")
             if "body" in step:
                 _check(isinstance(step["body"], str) and step["body"].strip(), f"{did} step {i}: empty body")
+            if "image" in step:
+                image = step["image"]
+                _check(isinstance(image, str) and (STATIC_DIR / image).is_file(), f"{did} step {i}: image not found in static/")
+                _check(isinstance(step.get("alt"), str) and step["alt"].strip(), f"{did} step {i}: image needs alt text")
             if "markdown" in step:
                 _check((content_dir / step["markdown"]).is_file(), f"{did} step {i}: markdown file not found")
             action = step.get("action")

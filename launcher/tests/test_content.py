@@ -37,6 +37,8 @@ class LabsTest(unittest.TestCase):
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(learned=["ok", " "]))
         self.assert_rejected(lambda d: d["dishes"][0].pop("pitch"))
         self.assert_rejected(lambda d: d["dishes"][0]["steps"][0].update(body=" "))
+        self.assert_rejected(lambda d: d["dishes"][0]["steps"][0].update(image="steps/missing.png", alt="x"))
+        self.assert_rejected(lambda d: d["dishes"][0]["steps"][1].pop("alt"))
         self.assert_rejected(lambda d: d["dishes"][0].update(uses=[]))
         self.assert_rejected(lambda d: d["dishes"][0].update(uses="GitHub.com"))
         self.assert_rejected(lambda d: d["dishes"][0].update(about=[]))
