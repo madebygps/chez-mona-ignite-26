@@ -1,7 +1,7 @@
 """Receipt and fridge ticket layouts as ESC/POS bytes.
 
 The fridge ticket is a plain kitchen chit. The receipt is a keepsake guest
-check, with the Mona chef wordmark, gingham edges and a rubber stamp.
+check, with the Mona chef wordmark and gingham edges.
 """
 
 from __future__ import annotations
@@ -31,7 +31,6 @@ QR_TARGET_FRACTION = 0.45
 TICKET_QR_FRACTION = 0.6
 FONT_DIR = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
 WORDMARK_FONT = "georgiaz.ttf"  # Georgia Bold Italic
-STAMP_FONT = "consolab.ttf"  # Consolas Bold
 MONA_IMAGE = Path(__file__).with_name("mona-chef.png")  # static/mona-chef.svg, rendered at 512 px
 
 ESC, GS = b"\x1b", b"\x1d"
@@ -47,6 +46,7 @@ class Line:
     invert: bool = False  # white on black, padded to a full width bar
     indent: int = 0
     bullet: str = ""
+    margin: int = 0  # blank columns on each side when wrapping
 
 
 @dataclass
@@ -115,14 +115,10 @@ class Check:
     at: datetime
     hints: list[int] | None = None
 
-    def perfect(self) -> bool:
-        return self.hints is not None and not any(self.hints)
-
 
 def layout(dish: dict, check: Check) -> list[Item]:
     """Take-home receipt printed at a cooking station. None is a blank line."""
     answered = len(dish["quiz"])
-    stamp_words = ("PERFECT", "SCORE") if check.perfect() else ("CHEF", "APPROVED")
     items: list[Item] = [
         Picture("gingham", gingham),
         Picture("wordmark", wordmark),
@@ -130,8 +126,10 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Line(f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
         Rule("="),
         Row(f"1  {dish['dish'].upper()}", "1 lab", bold=True),
+        None,
         Line("YOU LEARNED", bold=True, invert=True),
-        *[Line(point, align="left", indent=1, bullet="- ") for point in dish["receipt"]["learned"]],
+        Line(dish["receipt"]["summary"], margin=3),
+        None,
         Rule(),
         Row("SUBTOTAL", f"{answered}/{answered} correct"),
     ]
@@ -142,7 +140,7 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Rule(),
         Row("TOTAL", "PRICELESS", bold=True, size=2),
         Rule("="),
-        Picture("qr and stamp", lambda width: qr_and_stamp(width, dish["receipt"]["qr"], *stamp_words)),
+        Qr(dish["receipt"]["qr"]),
         Line(QR_CAPTION, bold=True),
         None,
         Line(THANKS.upper(), height=2, bold=True),
@@ -202,22 +200,6 @@ def wordmark(width_dots: int) -> Image.Image:
     return image
 
 
-def stamp(size: int, top: str, bottom: str, angle: float = -12) -> Image.Image:
-    """A tilted rubber stamp, size dots square."""
-    image = Image.new("L", (size, size), 255)
-    draw = ImageDraw.Draw(image)
-    middle = size / 2
-    draw.ellipse([4, 4, size - 4, size - 4], outline=0, width=max(4, size // 32))
-    draw.ellipse([size * 0.08, size * 0.08, size * 0.92, size * 0.92], outline=0, width=max(2, size // 76))
-    big, small = font(STAMP_FONT, size // 6), font(STAMP_FONT, size // 8)
-    draw.text((middle, middle - size * 0.10), top, font=big, fill=0, anchor="mm")
-    draw.text((middle, middle + size * 0.10), bottom, font=small, fill=0, anchor="mm")
-    for dx in (-0.26, 0, 0.26):
-        for dy in (-0.30, 0.29):
-            draw.text((middle + dx * size, middle + dy * size), "*", font=small, fill=0, anchor="mm")
-    return threshold(image.rotate(angle, resample=Image.BICUBIC, fillcolor=255))
-
-
 def qr_code(data: str, target_dots: int) -> tuple[Image.Image, int]:
     """Monochrome QR code at most target_dots wide, and its module size in dots."""
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, border=0)
@@ -235,18 +217,6 @@ def qr_image(data: str, width_dots: int, fraction: float = QR_TARGET_FRACTION) -
     quiet = 4 * box
     strip = Image.new("1", (width_dots, code.height + 2 * quiet), 1)
     strip.paste(code, ((width_dots - code.width) // 2, quiet))
-    return strip
-
-
-def qr_and_stamp(width_dots: int, data: str, top: str, bottom: str) -> Image.Image:
-    """QR code on the left and the rubber stamp on the right, on one strip."""
-    code, box = qr_code(data, int(width_dots * QR_TARGET_FRACTION))
-    quiet = 4 * box
-    seal = stamp(int(width_dots * 0.36), top, bottom)
-    gap = (width_dots - code.width - seal.width) // 3
-    strip = Image.new("1", (width_dots, max(code.height, seal.height) + 2 * quiet), 1)
-    strip.paste(code, (gap, (strip.height - code.height) // 2))
-    strip.paste(seal, (width_dots - gap - seal.width, (strip.height - seal.height) // 2))
     return strip
 
 
@@ -289,7 +259,7 @@ def _text_lines(item: Line, columns: int) -> list[str]:
         return [" " * (pad // 2) + text[:columns] + " " * (pad - pad // 2)]
     start = " " * item.indent + item.bullet
     rest = " " * (item.indent + len(item.bullet))
-    return textwrap.wrap(text, columns, initial_indent=start, subsequent_indent=rest) or [""]
+    return textwrap.wrap(text, columns - 2 * item.margin, initial_indent=start, subsequent_indent=rest) or [""]
 
 
 def _row_lines(row: Row, columns: int) -> list[str]:
