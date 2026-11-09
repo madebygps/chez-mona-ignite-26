@@ -1,7 +1,7 @@
 """Receipt and fridge ticket layouts as ESC/POS bytes.
 
-The fridge ticket is a plain kitchen chit. The receipt is a keepsake guest
-check, with the Mona chef wordmark and gingham edges.
+The fridge ticket is a kitchen chit with the Mona chef wordmark. The receipt
+is a keepsake guest check, with the same wordmark and gingham edges.
 """
 
 from __future__ import annotations
@@ -22,8 +22,9 @@ EVENT = "Microsoft Ignite 2026"
 QR_CAPTION = "Scan to continue learning at home"
 THANKS = "Merci! Have a nice day"
 THANKS_LINE = "Thanks for cooking with us"
-TICKET_BAR = "Chez Mona  *  Kitchen ticket"
-TICKET_CAPTION = ">> Scan at any open station <<"
+TICKET_BAR = "Kitchen ticket"
+TICKET_CAPTION = "Take this to any open station and scan it"
+TICKET_REUSE = "Reusable. Pass it on."
 TICKET_DURATION = "about 5 min"
 FONT_A_WIDTH = 12  # dots per character, Font A at normal size
 WIDTH_DOTS = 576  # RP326 printable width: 72 mm of 80 mm paper at 203 dpi
@@ -91,18 +92,18 @@ def plain(text: str) -> str:
 def ticket_layout(dish: dict, at: datetime) -> list[Item]:
     """Fridge ticket. Its QR holds only the dish ID, which the stations scan."""
     return [
+        Picture("wordmark", wordmark),
         Line(TICKET_BAR.upper(), bold=True, invert=True),
-        None,
         Row(f"{at:%a %b} {at.day}", clock(at)),
-        Rule(spaced=True),
-        None,
+        Rule(),
         Line(f"1x {dish['dish'].upper()}", width=2, height=2, bold=True),
         Line(f"{dish['lab']} lab  |  {TICKET_DURATION}"),
         None,
+        Line(dish["pitch"], margin=3),
         Qr(dish["id"], TICKET_QR_FRACTION),
-        Line(TICKET_CAPTION.upper(), bold=True, invert=True),
-        None,
-        Rule(spaced=True),
+        Line(TICKET_CAPTION, bold=True),
+        Line(TICKET_REUSE),
+        Rule(),
         Line(EVENT),
     ]
 
