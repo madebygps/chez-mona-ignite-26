@@ -4,6 +4,49 @@ Local web app that runs the booth flow on each laptop: scan a fridge ticket or c
 
 A small Python server listens on `localhost` only. It serves the page and does the local work the browser cannot: copy the Fried Chicken starter, open and close VS Code, and send tickets and receipts to the printer.
 
+## Guest flow
+
+The two apps work together through the printed ticket. The ticket QR code holds only the dish ID.
+
+```mermaid
+flowchart LR
+    A[Fridge: pick a dish] --> B[Fridge: confirm and print]
+    B --> T([Kitchen ticket])
+    T --> C[Station: scan ticket]
+    C --> D[Intro] --> E[Steps] --> F[Quiz] --> G[Wrap up]
+    G --> R([Receipt])
+```
+
+These screenshots show the Omelette lab. The other dishes use the same screens with their own content from [`content/labs.json`](content/labs.json).
+
+### Fridge
+
+| 1. Pick a dish | 2. Confirm and print a ticket |
+|---|---|
+| ![Fridge menu with the four dishes](docs/screenshots/fridge-menu.png) | ![Fridge confirm screen for the Omelette](docs/screenshots/fridge-confirm.png) |
+
+### Cooking station
+
+| 3. Scan the ticket | 4. Read the intro |
+|---|---|
+| ![Station scan screen](docs/screenshots/station-scan.png) | ![Omelette intro](docs/screenshots/station-intro.png) |
+
+| 5. Follow the steps | 6. Answer the quiz |
+|---|---|
+| ![Omelette steps](docs/screenshots/station-steps.png) | ![Quiz question](docs/screenshots/station-quiz.png) |
+
+| 7. Wrap up | 8. Take the receipt |
+|---|---|
+| ![Wrap up with Print my receipt](docs/screenshots/station-wrap-up.png) | ![Receipt on its way](docs/screenshots/station-print.png) |
+
+### Printouts
+
+These are previews of the layouts in [`chez_mona/receipt.py`](chez_mona/receipt.py). Real prints use the printer's own font.
+
+| Kitchen ticket (fridge) | Receipt (station) |
+|---|---|
+| <img src="docs/screenshots/kitchen-ticket.png" alt="Kitchen ticket" width="320"> | <img src="docs/screenshots/receipt.png" alt="Receipt" width="320"> |
+
 ## Layout
 
 | Path | Contents |
@@ -11,6 +54,7 @@ A small Python server listens on `localhost` only. It serves the page and does t
 | [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`) |
 | [`content/labs.json`](content/labs.json) | Every dish: menu `pitch`, `uses` and `about` points for the confirm and intro screens, steps (a short `text` title, an optional lighter `body` line, an optional `image` under [`static/`](static/) with `alt` text, and an optional `prompt` shown with a **Copy** button), quiz with other choices and hints, wrap up, receipt summary (`receipt.summary`, one short paragraph) and QR link |
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, vendored [Mona Sans and Mona Sans Mono](https://github.com/github/mona-sans) web fonts in `fonts/`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
+| [`docs/screenshots/`](docs/screenshots/) | Screenshots and printout previews for the [guest flow](#guest-flow) |
 | [`start.ps1`](start.ps1) | Starts a cooking station (`.\start.ps1 station`) or a fridge kiosk (`.\start.ps1 fridge`) and opens it in an Edge app window |
 | [`tests/`](tests/) | Unit tests |
 
