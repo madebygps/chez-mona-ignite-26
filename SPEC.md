@@ -109,8 +109,8 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 - Source: [`weekly-workshop-triage.md`](https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md) in upstream `github-samples/tailspin-toys`, pinned to commit `5cea212` so later changes do not affect the lab. No booth copy and nothing to run; guests only read.
 - Steps:
   1. Meet agentic workflows: one short definition.
-  2. Read the frontmatter: **Open frontmatter** opens the pinned file at lines 1 to 45 (`?plain=1#L1-L45`). Find when it runs and what it may change.
-  3. Read the instructions: **Open instructions** opens lines 47 to 146 (`?plain=1#L47-L146`). Find what the agent does when it is unsure.
+  2. Read the frontmatter: explains the settings block and lists `on:`, `permissions:` and `safe-outputs:`. **Open frontmatter** opens the pinned file at lines 1 to 45 (`?plain=1#L1-L45`).
+  3. Read the instructions: explains the plain-language prompt and lists **What to do**, **Never close these** and **When in doubt**. **Open instructions** opens lines 47 to 146 (`?plain=1#L47-L146`).
 - The line ranges match commit `5cea212`. Update them if the pinned commit changes.
 - The receipt QR links to [GitHub Agentic Workflows](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows) on GitHub Docs for the full concepts.
 - Quiz:

@@ -131,7 +131,12 @@
         },
         {
           "text": "Read the frontmatter",
-          "body": "Click **Open frontmatter**. Find when the workflow runs and what it may change.",
+          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open frontmatter** and look for these keys:",
+          "details": [
+            "`on:` sets when the workflow runs.",
+            "`permissions:` sets what the workflow can access.",
+            "`safe-outputs:` sets what the workflow may change."
+          ],
           "action": {
             "type": "open_url",
             "label": "Open frontmatter",
@@ -140,7 +145,12 @@
         },
         {
           "text": "Read the instructions",
-          "body": "Click **Open instructions**. Find what the agent does when it is unsure.",
+          "body": "The instructions are the plain-language prompt below the frontmatter. The agent follows them on each run. Click **Open instructions** and look for these sections:",
+          "details": [
+            "**What to do** gives the agent its job.",
+            "**Never close these** lists the items the agent must skip.",
+            "**When in doubt** tells the agent what to do when it is unsure."
+          ],
           "action": {
             "type": "open_url",
             "label": "Open instructions",
