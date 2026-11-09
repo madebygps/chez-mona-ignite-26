@@ -45,37 +45,36 @@ html, body {
   font-family: var(--sans);
   font-weight: 400;
   font-size: 20px;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-variant-ligatures: none;
   -webkit-font-smoothing: antialiased;
 }
 body { background: var(--lavender); }
 
-/* Type roles from the signage, all in cobalt:
-   900 condensed = headlines, 500 = subtitles, 400 = body, 600 = emphasis,
-   expanded tracked caps = labels, mono = tags, numbers and status. */
+/* Type roles from the Universe'26 typography guidelines, in signage cobalt:
+   normal width only, Regular (400) and Medium (500) only, no ligatures,
+   no manual tracking (the opsz axis handles it), mono caps only on one line. */
 h1, h2 {
-  font-stretch: 75%;
-  font-weight: 900;
+  font-weight: 400;
   color: var(--ink);
-  letter-spacing: -0.015em;
-  line-height: 1;
+  line-height: 1.05;
   text-wrap: balance;
 }
 h1 { font-size: 3.6rem; margin: 0 0 0.25em; }
-h2 { font-size: 2.5rem; margin: 0 0 0.45em; }
+h2 { font-size: 2rem; font-weight: 500; line-height: 1.16; margin: 0 0 0.5em; }
 .eyebrow {
   margin: 0 0 0.9em;
-  font-stretch: 125%;
-  font-weight: 500;
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--ink);
 }
 .lede { font-size: 1.35rem; font-weight: 500; color: var(--ink); max-width: 38em; text-wrap: pretty; }
 .muted { color: var(--ink-soft); }
 .small { font-size: 0.85rem; }
-strong { font-weight: 600; }
+strong { font-weight: 500; }
 .row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 32px; }
 .center { text-align: center; }
 .center .lede { margin-left: auto; margin-right: auto; }
@@ -93,7 +92,7 @@ code {
 /* Buttons */
 button {
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   border: var(--rule);
   background: transparent;
@@ -111,7 +110,6 @@ button.primary {
   border-color: var(--blue);
   color: var(--white);
   font-size: 1.1rem;
-  font-weight: 700;
   padding: 0.75em 2em;
 }
 button.primary:hover:not(:disabled) {
@@ -152,15 +150,15 @@ button.link:hover:not(:disabled) { background: none; color: var(--blue); }
 }
 .brand { display: flex; align-items: center; gap: 12px; user-select: none; }
 .brand-mark { display: block; width: 50px; height: 50px; }
-.brand-name { font-stretch: 75%; font-size: 1.7rem; font-weight: 900; color: var(--ink); letter-spacing: -0.01em; }
+.brand-name { font-size: 1.5rem; font-weight: 500; color: var(--ink); }
 
 .progress { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; counter-reset: progress; }
 .progress li {
   counter-increment: progress;
   font-family: var(--mono);
   font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-weight: 400;
+  letter-spacing: 1px;
   text-transform: uppercase;
   padding: 0.45em 1em;
   border-radius: var(--radius-sm);
@@ -171,7 +169,7 @@ button.link:hover:not(:disabled) { background: none; color: var(--blue); }
 .progress li::before { content: "0" counter(progress) " "; opacity: 0.6; }
 .progress li.done { color: var(--ink); background: var(--aqua); border-color: var(--aqua); }
 .progress li.done::before { content: "\2713  "; opacity: 1; }
-.progress li.current { color: var(--white); background: var(--ink); border-color: var(--ink); font-weight: 700; }
+.progress li.current { color: var(--white); background: var(--ink); border-color: var(--ink); }
 .progress li.current::before { opacity: 0.75; }
 .progress[hidden] { display: none; }
 
@@ -219,8 +217,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   min-height: 1.5em;
   font-family: var(--mono);
   font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-weight: 400;
   color: var(--red);
 }
 
@@ -240,16 +237,16 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   background: var(--ink);
   color: var(--white);
   font-family: var(--mono);
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.9rem;
 }
 .steps .card { padding: 18px 24px; }
-.step-title { font-weight: 600; font-size: 1.1rem; color: var(--ink); }
+.step-title { font-weight: 500; font-size: 1.1rem; color: var(--ink); }
 .step-details { margin: 0.5em 0 0; padding-left: 1.2em; }
 .step-details li { margin: 0.2em 0; }
 .step-details li::marker { color: var(--ink); }
 .step-action { margin-top: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.concept h1 { font-size: 1.8rem; margin-bottom: 0.4em; }
+.concept h1 { font-size: 1.6rem; font-weight: 500; line-height: 1.15; margin-bottom: 0.4em; }
 .concept blockquote {
   margin: 0.8em 0;
   padding: 0.6em 1.1em;
@@ -260,7 +257,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
 }
 .concept blockquote p { margin: 0.4em 0; }
 .concept > p:last-child { margin-bottom: 0; font-size: 0.85rem; color: var(--ink-soft); }
-.concept a { color: var(--ink); font-weight: 600; text-underline-offset: 0.15em; }
+.concept a { color: var(--ink); font-weight: 500; text-underline-offset: 0.15em; }
 
 /* Quiz */
 .choices { display: grid; gap: 12px; margin-top: 24px; }
@@ -287,7 +284,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   border-color: var(--ink);
   background: var(--ink);
   color: var(--white);
-  font-weight: 600;
+  font-weight: 500;
 }
 .choice.right code { background: rgba(255, 255, 255, 0.2); color: var(--white); }
 .choice.right::after { content: "\2713"; position: absolute; right: 1.1em; top: 50%; transform: translateY(-50%); }
@@ -299,7 +296,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   border-bottom: var(--rule);
   color: var(--ink);
 }
-.hint strong { font-weight: 700; }
+.hint strong { font-weight: 500; }
 
 /* Print */
 .status-ok { color: var(--ink); }
@@ -358,12 +355,12 @@ pre.detail {
 }
 .menu-item:hover:not(:disabled) { background: var(--aqua-soft); box-shadow: var(--shadow-lift); transform: translateY(-2px); }
 .menu-item:active:not(:disabled) { background: var(--aqua); transform: scale(0.99); }
-.menu-dish { font-stretch: 75%; font-size: 2.4rem; font-weight: 900; line-height: 1; color: var(--ink); }
+.menu-dish { font-size: 2rem; font-weight: 500; line-height: 1.1; color: var(--ink); }
 .menu-lab {
-  font-stretch: 125%;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--ink);
 }
@@ -377,8 +374,7 @@ pre.detail {
   background: var(--ink);
   color: var(--white);
   font-family: var(--mono);
-  font-stretch: 75%;
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 0.12em;
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: 1px;
 }
