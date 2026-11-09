@@ -43,7 +43,7 @@ The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surf
    uv run --with github-copilot-sdk==1.0.28 python -m copilot download-runtime
    ```
 
-6. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Omelette uses it.
+6. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Pin the Copilot app to the taskbar. Omelette uses both.
 7. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
 8. Start the station:
 

@@ -13,7 +13,7 @@
       ],
       "start": { "type": "none" },
       "steps": [
-        { "text": "Open the app", "body": "Click the **GitHub Copilot app** icon to open it." },
+        { "text": "Open the app", "body": "In the taskbar, click the **GitHub Copilot app** icon to open it." },
         { "text": "Start a session", "body": "On the left, find the **canvas-101** repository. Hover over it, then click **New session** on the right." },
         { "text": "Open the canvas", "body": "Type this prompt: **Open the Chez Mona Order Ticket canvas**" },
         { "text": "Follow the canvas", "body": "Follow the instructions in the canvas. When you are done, return here and click **I'm ready for the quiz**." }
