@@ -59,7 +59,7 @@ The 2 fridge laptops run the same app with `.\start.ps1 fridge`; the cooking sta
 2. **Confirm.** The chosen dish, then `uses` (the products and tools in the lab), then "You'll learn" with the `about` points. **Print my ticket** and **Back to menu**. Returns to the menu after 30 seconds.
 3. **Ticket.** "Take your ticket". Returns to the menu after 12 seconds. A print error shows the message and a **Try again** button; the kiosk never retries on its own.
 
-The ticket is a kitchen chit: the Mona chef wordmark from the receipt, an inverted "Kitchen ticket" bar, the date and time, "1x" and the dish in large type, the lab name with "about 5 min", the dish `pitch`, a large QR code with the dish ID only, "Take this to any open station and scan it", "Reusable. Pass it on." and Microsoft Ignite 2026. It has no order number, since nothing reads one.
+The ticket is a kitchen chit: the Mona chef wordmark from the receipt, an inverted "Kitchen ticket" bar, the date and time, "1x" and the dish in large type, a large QR code with the dish ID only, "Take this to any open station and scan it" and Microsoft Ignite 2026. It has no order number, since nothing reads one.
 
 ## Per dish start and wrap up
 
