@@ -14,8 +14,6 @@ class LabsTest(unittest.TestCase):
         loaded = labs.load()
         ids = [d["id"] for d in loaded["dishes"]]
         self.assertEqual(ids, ["omelette", "fried-chicken", "soup", "dip"])
-        soup = labs.by_id(loaded)["soup"]
-        self.assertTrue(all("html" in s for s in soup["steps"] if "markdown" in s))
 
     def assert_rejected(self, mutate):
         data = copy.deepcopy(self.data)

@@ -108,11 +108,11 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
 - Learn: an agentic workflow is a GitHub Actions workflow written in Markdown. Frontmatter sets the trigger, permissions and allowed outputs; the body tells the agent what to do in plain language.
 - Source: [`weekly-workshop-triage.md`](https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md) in upstream `github-samples/tailspin-toys`, pinned to commit `5cea212` so later changes do not affect the lab. No booth copy and nothing to run; guests only read.
 - Steps:
-  1. Concept: [What is an agentic workflow?](launcher/content/soup/01-what-is-an-agentic-workflow.md)
-  2. Concept: [How it works](launcher/content/soup/02-how-it-works.md)
-  3. Open the pinned workflow file and read it: the frontmatter (trigger, permissions, safe outputs), then the instructions.
-  4. Come back to the launcher for the quiz.
-- Concept steps are rendered Markdown in the launcher, quoted verbatim from [GitHub Agentic Workflows](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows) on GitHub Docs (checked Nov 3, 2026), each with its source link.
+  1. Meet agentic workflows: one short definition.
+  2. Open the pinned workflow file with the **Open workflow file** button.
+  3. Read the frontmatter: when it runs and what it may change.
+  4. Read the instructions: what the agent does when it is unsure.
+- The receipt QR links to [GitHub Agentic Workflows](https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows) on GitHub Docs for the full concepts.
 - Quiz:
   1. When does it run? Answer: every Monday on a schedule, or manually on demand.
   2. What does the agent do when unsure? Answer: leaves the item open.

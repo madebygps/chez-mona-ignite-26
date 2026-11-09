@@ -125,21 +125,27 @@
       ],
       "start": { "type": "none" },
       "steps": [
-        { "text": "What is an agentic workflow?", "markdown": "soup/01-what-is-an-agentic-workflow.md" },
-        { "text": "How it works", "markdown": "soup/02-how-it-works.md" },
         {
-          "text": "Open the workflow file and read it.",
-          "details": [
-            "First the frontmatter: the trigger, the permissions and the safe outputs.",
-            "Then the instructions for the agent."
-          ],
+          "text": "Meet agentic workflows",
+          "body": "An agentic workflow is a GitHub Actions workflow written in Markdown. An agent follows its plain-language instructions."
+        },
+        {
+          "text": "Open the workflow",
+          "body": "Click **Open workflow file**. It opens in a new tab.",
           "action": {
             "type": "open_url",
             "label": "Open workflow file",
             "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md"
           }
         },
-        { "text": "Come back here for the quiz." }
+        {
+          "text": "Read the frontmatter",
+          "body": "Start at the top, between the `---` lines. Find when the workflow runs and what it may change."
+        },
+        {
+          "text": "Read the instructions",
+          "body": "Read the text below the frontmatter. Find what the agent does when it is unsure."
+        }
       ],
       "quiz": [
         {
