@@ -27,7 +27,8 @@
   --aqua-soft: #dcf0f4;
   --red: #c00000;
   --white: #ffffff;
-  --rule: 1.5px solid var(--ink);
+  --rule: 1px solid var(--ink);
+  --dash: 1px dashed var(--ink-soft);
   --radius: 6px;
   --radius-sm: 4px;
   --shadow: none;
@@ -51,17 +52,20 @@ html, body {
 }
 body { background: var(--lavender); }
 
-/* Type roles from the Universe'26 typography guidelines, in signage cobalt:
-   normal width only, Regular (400) and Medium (500) only, no ligatures,
-   no manual tracking (the opsz axis handles it), mono caps only on one line. */
+/* Type roles from the Universe'26 Mo's Diner menu, in signage cobalt:
+   condensed semibold caps = titles, light tracked mono = taglines,
+   regular = body, light = descriptions, mono caps = one-line labels.
+   No ligatures, per the Universe'26 typography guidelines. */
 h1, h2 {
-  font-weight: 400;
+  font-stretch: 75%;
+  font-weight: 600;
+  text-transform: uppercase;
   color: var(--ink);
-  line-height: 1.05;
+  line-height: 1;
   text-wrap: balance;
 }
 h1 { font-size: 3.6rem; margin: 0 0 0.25em; }
-h2 { font-size: 2rem; font-weight: 500; line-height: 1.16; margin: 0 0 0.5em; }
+h2 { font-size: 2.4rem; margin: 0 0 0.45em; }
 .eyebrow {
   margin: 0 0 0.9em;
   font-family: var(--mono);
@@ -71,10 +75,10 @@ h2 { font-size: 2rem; font-weight: 500; line-height: 1.16; margin: 0 0 0.5em; }
   text-transform: uppercase;
   color: var(--ink);
 }
-.lede { font-size: 1.35rem; font-weight: 500; color: var(--ink); max-width: 38em; text-wrap: pretty; }
-.muted { color: var(--ink-soft); }
+.lede { font-family: var(--mono); font-size: 1.05rem; font-weight: 300; letter-spacing: 0.06em; color: var(--ink); max-width: 38em; text-wrap: pretty; }
+.muted { color: var(--ink-soft); font-weight: 300; }
 .small { font-size: 0.85rem; }
-strong { font-weight: 500; }
+strong { font-weight: 600; }
 .row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 32px; }
 .center { text-align: center; }
 .center .lede { margin-left: auto; margin-right: auto; }
@@ -105,12 +109,31 @@ button:hover:not(:disabled) { background: var(--aqua-soft); }
 button:active:not(:disabled) { transform: scale(0.98); }
 button:focus-visible { outline: 3px solid var(--aqua); outline-offset: 2px; }
 button:disabled { cursor: default; opacity: 0.5; }
+button:not([class]) {
+  font-size: 1.25rem;
+  font-stretch: 75%;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0.6em 1.8em;
+}
+button:not([class]) .small {
+  font-family: var(--mono);
+  font-stretch: 100%;
+  font-weight: 400;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
 button.primary {
   background: var(--blue);
   border-color: var(--blue);
   color: var(--white);
-  font-size: 1.1rem;
-  padding: 0.75em 2em;
+  font-size: 1.25rem;
+  font-stretch: 75%;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0.6em 1.8em;
 }
 button.primary:hover:not(:disabled) {
   background: var(--ink);
@@ -150,7 +173,7 @@ button.link:hover:not(:disabled) { background: none; color: var(--blue); }
 }
 .brand { display: flex; align-items: center; gap: 12px; user-select: none; }
 .brand-mark { display: block; width: 50px; height: 50px; }
-.brand-name { font-size: 1.5rem; font-weight: 500; color: var(--ink); }
+.brand-name { font-stretch: 75%; font-size: 1.8rem; font-weight: 600; text-transform: uppercase; color: var(--ink); }
 
 .progress { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; counter-reset: progress; }
 .progress li {
@@ -241,12 +264,12 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   font-size: 0.9rem;
 }
 .steps .card { padding: 18px 24px; }
-.step-title { font-weight: 500; font-size: 1.1rem; color: var(--ink); }
+.step-title { font-stretch: 75%; font-weight: 600; font-size: 1.3rem; text-transform: uppercase; line-height: 1.15; color: var(--ink); }
 .step-details { margin: 0.5em 0 0; padding-left: 1.2em; }
 .step-details li { margin: 0.2em 0; }
 .step-details li::marker { color: var(--ink); }
 .step-action { margin-top: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.concept h1 { font-size: 1.6rem; font-weight: 500; line-height: 1.15; margin-bottom: 0.4em; }
+.concept h1 { font-size: 2rem; padding-bottom: 0.4em; border-bottom: var(--dash); margin-bottom: 0.6em; }
 .concept blockquote {
   margin: 0.8em 0;
   padding: 0.6em 1.1em;
@@ -257,7 +280,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
 }
 .concept blockquote p { margin: 0.4em 0; }
 .concept > p:last-child { margin-bottom: 0; font-size: 0.85rem; color: var(--ink-soft); }
-.concept a { color: var(--ink); font-weight: 500; text-underline-offset: 0.15em; }
+.concept a { color: var(--ink); font-weight: 400; text-underline-offset: 0.15em; }
 
 /* Quiz */
 .choices { display: grid; gap: 12px; margin-top: 24px; }
@@ -296,7 +319,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   border-bottom: var(--rule);
   color: var(--ink);
 }
-.hint strong { font-weight: 500; }
+.hint strong { font-weight: 600; }
 
 /* Print */
 .status-ok { color: var(--ink); }
@@ -355,7 +378,7 @@ pre.detail {
 }
 .menu-item:hover:not(:disabled) { background: var(--aqua-soft); box-shadow: var(--shadow-lift); transform: translateY(-2px); }
 .menu-item:active:not(:disabled) { background: var(--aqua); transform: scale(0.99); }
-.menu-dish { font-size: 2rem; font-weight: 500; line-height: 1.1; color: var(--ink); }
+.menu-dish { font-stretch: 75%; font-size: 2.4rem; font-weight: 600; text-transform: uppercase; line-height: 1; color: var(--ink); }
 .menu-lab {
   font-family: var(--mono);
   font-size: 0.75rem;
@@ -363,8 +386,10 @@ pre.detail {
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--ink);
+  padding-bottom: 14px;
+  border-bottom: var(--dash);
 }
-.menu-learn { font-size: 0.92rem; color: var(--ink); }
+.menu-learn { font-size: 0.92rem; font-weight: 300; letter-spacing: 0.01em; color: var(--ink); }
 
 /* Confirm: cobalt band, as on the NOTICE sign */
 .confirm { padding-top: 0; overflow: hidden; }
