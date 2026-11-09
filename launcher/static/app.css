@@ -21,6 +21,7 @@
   --ink: #145ec2;
   --blue: #1f82ff;
   --kraft: #f2bd7b;
+  --kraft-wash: #f6ead8;
   --kraft-soft: #f7d3a4;
   --kraft-pale: #fbebd5;
   --paper: #fffaf2;
@@ -51,7 +52,7 @@ html, body {
   font-variant-ligatures: none;
   -webkit-font-smoothing: antialiased;
 }
-body { background: var(--kraft); }
+body { background: var(--kraft-wash); }
 
 /* Type roles from the Universe'26 Mo's Diner menu, in signage cobalt:
    condensed semibold caps = titles, light tracked mono = taglines,
