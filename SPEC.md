@@ -44,7 +44,7 @@ The Fried Chicken starter needs no repo of its own: the launcher copies it into 
 ## Screen flow
 
 1. **Scan or choose.** Webcam view with "Scan your ticket" and a visible **Choose a lab instead** button. The button opens the four-dish menu without needing a ticket; choosing a dish opens its intro. **Scan a ticket instead** returns to the webcam.
-2. **Intro.** Dish name, one line on what you'll learn, **Start lab** button.
+2. **Intro.** The lab name, the dish, then `uses` and "You'll learn" with the `about` points, as on the fridge confirm screen. **Start lab** and **Not my dish**.
 3. **Start lab.** Per dish action (see below).
 4. **Explore.** Numbered steps stay visible. **I'm ready for the quiz** button.
 5. **Quiz.** Two multiple choice questions. Wrong answer shows a hint and allows retry.
@@ -72,7 +72,7 @@ The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the 
 
 ## Lab content
 
-The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). Each dish has a `pitch` for the menus, a `learn` line for the station intro, and `uses` and `about` points for the fridge confirm screen. The quiz answers below are the source; the other choices and hints are drafted there.
+The launcher reads all lab text, quiz choices and hints from [`launcher/content/labs.json`](launcher/content/labs.json). Each dish has a `pitch` for the menus, and `uses` and `about` points for the fridge confirm screen and the station intro. The quiz answers below are the source; the other choices and hints are drafted there.
 
 ### Omelette: GitHub Copilot app Canvas
 

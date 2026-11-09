@@ -31,7 +31,7 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
         did = dish.get("id", "?")
         _check(did not in seen, f"duplicate dish id {did}")
         seen.add(did)
-        for key in ("id", "dish", "lab", "pitch", "learn"):
+        for key in ("id", "dish", "lab", "pitch"):
             _check(isinstance(dish.get(key), str) and dish[key], f"{did}: missing {key}")
         uses = dish.get("uses")
         _check(isinstance(uses, list) and 1 <= len(uses) <= 3

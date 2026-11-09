@@ -251,7 +251,7 @@ function renderMenu() {
     <section class="menu">
       <p class="eyebrow">Today's menu</p>
       <h1>Choose a lab</h1>
-      <p class="lede">No ticket needed. Pick a dish to get started.</p>
+      <p class="lede">Pick a dish by what you want to learn. Each takes about 5 minutes.</p>
       <div class="menu-grid">
         ${Object.values(state.dishes).map((d) => `
           <button class="menu-item" data-dish="${escapeHtml(d.id)}">
@@ -278,10 +278,14 @@ function renderIntro(id) {
   state.dish = dish;
   state.question = 0;
   show("intro", `
-    <section>
+    <section class="intro">
       <p class="eyebrow">${escapeHtml(dish.lab)}</p>
       <h1>${escapeHtml(dish.dish)}</h1>
-      <p class="lede">${fmt(dish.learn)}</p>
+      <p class="confirm-meta">${dish.uses.map(escapeHtml).join(" · ")}</p>
+      <div class="confirm-about">
+        <p class="confirm-label">You'll learn</p>
+        <ul>${dish.about.map((point) => `<li>${fmt(point)}</li>`).join("")}</ul>
+      </div>
       <div class="row">
         <button class="primary" id="start">Start lab</button>
         <button class="link" id="back">Not my dish</button>
@@ -314,7 +318,7 @@ async function startLab() {
         <pre class="detail">${escapeHtml(error.message)}</pre>
         <div class="row" style="justify-content:center">
           <button class="primary" id="retry">Try again</button>
-          <button id="back">Back to Scan</button>
+          <button id="back">Back to scan</button>
         </div>
       </section>`);
     on("retry", startLab);

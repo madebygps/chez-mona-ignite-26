@@ -78,7 +78,7 @@ test("visible picker lists every lab and opens the same intro as scanning", asyn
     assert.equal(page.run("progress.hidden"), true);
     const menu = page.elements.get("app");
     assert.equal(menu.querySelectorAll(".menu-item").length, content.dishes.length);
-    assert.match(menu.innerHTML, /No ticket needed/);
+    assert.match(menu.innerHTML, /Pick a dish by what you want to learn/);
     page.run(`
       app.querySelectorAll(".menu-item")
         .find((button) => button.dataset.dish === ${JSON.stringify(dish.id)})
@@ -87,6 +87,8 @@ test("visible picker lists every lab and opens the same intro as scanning", asyn
     assert.equal(page.run("state.screen"), "intro");
     assert.equal(page.run("state.dish.id"), dish.id);
     const manualIntro = menu.innerHTML;
+    assert.match(manualIntro, /You'll learn/);
+    assert.equal((manualIntro.match(/<li>/g) || []).length, dish.about.length);
     page.run(`renderScan(); scanner.found(${JSON.stringify(dish.id)});`);
     assert.equal(menu.innerHTML, manualIntro);
     page.run("renderScan()");

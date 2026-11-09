@@ -428,3 +428,4 @@ pre.detail {
 }
 .confirm-about ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
 .confirm-about li { font-size: 1.05rem; font-weight: 300; color: var(--ink); }
+.intro .confirm-about { margin: 24px 0; }

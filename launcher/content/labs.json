@@ -5,7 +5,6 @@
       "dish": "Canvas collaboration omelette",
       "lab": "GitHub Copilot app Canvas",
       "pitch": "Go beyond chat. Work with an agent in a panel you both click and edit.",
-      "learn": "Canvases are interactive panels that you and the agent both drive.",
       "uses": ["GitHub Copilot app"],
       "about": [
         "What a canvas is, and when to use one instead of chat",
@@ -59,7 +58,6 @@
       "dish": "Copilot SDK fried chicken",
       "lab": "Copilot SDK",
       "pitch": "Explore how you can give an agent its own tool with code.",
-      "learn": "The SDK lets your app run a Copilot agent with your own tools.",
       "uses": ["VS Code", "GitHub Copilot", "Python"],
       "about": [
         "How the Copilot SDK runs an agent in an app",
@@ -115,7 +113,6 @@
       "dish": "Agentic alphabet soup",
       "lab": "Agentic Workflows",
       "pitch": "Read a CI workflow where an agent triages issues every week.",
-      "learn": "An agentic workflow is a GitHub Actions workflow written in Markdown.",
       "uses": ["GitHub Agentic Workflows"],
       "about": [
         "What an agentic workflow is",
@@ -177,7 +174,6 @@
       "dish": "Autofix artichoke dip",
       "lab": "PR review",
       "pitch": "See how AI reviewers catch bugs in a pull request.",
-      "learn": "Code scanning, Copilot Autofix and Copilot code review work together on one pull request.",
       "uses": ["Code scanning", "Copilot Autofix", "Copilot code review"],
       "about": [
         "How code scanning finds a SQL injection",
