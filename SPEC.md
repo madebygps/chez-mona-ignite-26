@@ -68,7 +68,7 @@ The ticket is a kitchen chit: an inverted "Chez Mona * Kitchen ticket" bar, the 
 | Omelette | Show instructions: open the Copilot app from the taskbar, start a **Canvas 101** session, paste "Open the Chez Mona Order Ticket canvas" | Delete the chat session (exact menu label to confirm) |
 | Fried Chicken | Copy the pristine `copilot-sdk/` starter to a fresh temp folder. Explore step 1 has an **Open in VS Code** button that runs `code <folder>`. It focuses the window if it is open, or opens it again if the guest closed it | Launcher closes the VS Code window it opened and deletes the temp folder |
 | Soup | Nothing to open yet: the concept steps come first, and step 3 has an **Open workflow file** button for the pinned file on GitHub.com | Close the browser tabs |
-| Dip | Open the "Add menu search" PR's **Files changed** tab on GitHub.com | Close the browser tabs |
+| Dip | Show instructions. Each step opens one comment or the review on GitHub.com when the guest clicks its button | Close the browser tabs |
 
 ## Lab content
 
@@ -140,9 +140,11 @@ The launcher reads all lab text, quiz choices and hints from [`launcher/content/
   - No new review can start: automatic review only runs on open, first draft to open, or new pushes, and pushes are blocked.
   - Lock the PR conversation and leave every comment unresolved.
 - Steps:
-  1. Open the PR's **Files changed** tab.
-  2. Read the code scanning comment and its Autofix suggestion on the query line.
-  3. Read Copilot code review's comments on the rest of the change.
+  1. Read the code scanning alert: **Open alert** opens the CodeQL comment (`files#discussion_r4461811755`). Look for its title and flagged line.
+  2. Read the Autofix: find **Suggested changeset** under the same alert. No button.
+  3. Read the Copilot review: **Open review** opens the review overview on the Conversation tab (`#pullrequestreview-5772715680`).
+  4. Read the route comment: **Open comment** opens the Copilot comment about the shadowed search route (`files#discussion_r4470875041`).
+- The comment and review IDs stay fixed because the PR is frozen. Update them if the PR is recreated.
 - Quiz:
   1. What did code scanning find? Answer: SQL injection. Other choices: exposed secret, outdated dependency, cross site scripting. Hint: user input ends up inside a database query.
   2. Which reviewer looks at the whole change, not only known vulnerability patterns? Answer: Copilot code review. Other choices: code scanning, Copilot Autofix, the PR author. Hint: find the comment that is not about the SQL query.
