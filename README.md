@@ -14,4 +14,4 @@ The GitHub Copilot app Canvas lab lives in the public guest repo [madebygps/canv
 
 ## Set up the booth laptops
 
-Follow the [cooking station](launcher/README.md#cooking-station) and [fridge laptop](launcher/README.md#fridge-laptop) steps in the launcher README.
+Follow the [cooking station](launcher/SETUP.md#cooking-station) and [fridge laptop](launcher/SETUP.md#fridge-laptop) steps in [launcher/SETUP.md](launcher/SETUP.md).
