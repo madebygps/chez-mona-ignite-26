@@ -295,7 +295,19 @@ function renderIntro(id) {
   on("back", endLab);
 }
 
+let starting = false;
 async function startLab() {
+  // A double tap would start the lab twice: two tabs and two "started" counts.
+  if (starting) return;
+  starting = true;
+  try {
+    await startLabOnce();
+  } finally {
+    starting = false;
+  }
+}
+
+async function startLabOnce() {
   const dish = state.dish;
   const start = dish.start;
   // Open tabs inside the click so the browser does not block the pop-up.

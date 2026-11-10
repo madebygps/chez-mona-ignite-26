@@ -18,9 +18,9 @@ class StatsTest(unittest.TestCase):
         stats.record("started", "soup", self.path, datetime(2026, 11, 17, 9, 0))
         stats.record("started", "soup", self.path, datetime(2026, 11, 18, 9, 0))
         stats.record("completed", "soup", self.path, datetime(2026, 11, 18, 9, 20))
-        stats.record("receipt", "soup", self.path, datetime(2026, 11, 18, 9, 21))
         with self.path.open("a", encoding="utf-8") as f:
-            f.write('{"time": "2026-11-18T10:00:00", "event": "start')  # cut short by a crash
+            f.write('{"time": "2026-11-18T09:21:00", "event": "start')  # cut short by a crash
+        stats.record("receipt", "soup", self.path, datetime(2026, 11, 18, 9, 21))
 
         day = stats.summary(["soup", "dip"], self.path, date(2026, 11, 18))
         self.assertEqual(day["soup"], {"started": 1, "completed": 1, "receipt": 1})

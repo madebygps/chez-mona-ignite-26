@@ -25,12 +25,16 @@ _lock = threading.Lock()
 def record(event: str, dish_id: str, path: Path = LOG_PATH, when: datetime | None = None) -> None:
     """Add one event to the log. A logging failure never stops the guest flow."""
     line = json.dumps({"time": (when or datetime.now()).isoformat(timespec="seconds"),
-                       "event": event, "dish": dish_id})
+                       "event": event, "dish": dish_id}) + "\n"
     try:
         with _lock:
             path.parent.mkdir(parents=True, exist_ok=True)
-            with path.open("a", encoding="utf-8") as f:
-                f.write(line + "\n")
+            with path.open("a+b") as f:
+                if f.tell():
+                    f.seek(-1, 2)
+                    if f.read(1) != b"\n":
+                        line = "\n" + line  # a crash left a half line; keep this event on its own
+                f.write(line.encode("utf-8"))
     except OSError as exc:
         print(f"Could not write lab stats: {exc}", file=sys.stderr)
 
