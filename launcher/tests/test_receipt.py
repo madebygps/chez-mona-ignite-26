@@ -89,7 +89,7 @@ class ReceiptTest(unittest.TestCase):
         self.assertEqual([i.data for i in items if isinstance(i, receipt.Qr)], ["fried-chicken"])
         data = receipt.ticket_escpos(DISHES["fried-chicken"], at, 576)
         self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
-        self.assertIn(b"1x COPILOT SDK FRIED", data)
+        self.assertIn(b"1x MICROSOFT COPILOT", data)
         self.assertNotIn(b"Explore how you can give an agent its own", data)
         self.assertIn(b"Take this to any open station and scan it", data)
 
