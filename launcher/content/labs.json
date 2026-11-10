@@ -41,7 +41,7 @@
       "wrap_up": ["In the Copilot app, delete the chat you used for this lab."],
       "receipt": {
         "summary": "Copilot Fusion picks the models for each prompt. It uses one of three patterns: single, cascade or critique. Then it returns one reply.",
-        "qr": "https://docs.github.com/en/copilot/concepts/models/copilot-fusion"
+        "qr": "https://gh.io/ignite26"
       }
     },
     {
@@ -103,7 +103,7 @@
       "wrap_up": ["The launcher closes the VS Code window and deletes your copy of the starter."],
       "receipt": {
         "summary": "The Copilot SDK runs an agent in your own app. `define_tool` gives it a tool, and `send_and_wait` sends it a prompt.",
-        "qr": "https://github.com/github/copilot-sdk/blob/main/python/README.md"
+        "qr": "https://gh.io/ignite26"
       }
     },
     {
@@ -177,7 +177,7 @@
       "wrap_up": ["Close the GitHub tabs you opened."],
       "receipt": {
         "summary": "An agentic workflow is a GitHub Actions workflow in Markdown. The frontmatter sets when it runs and what it can do. The agent follows the instructions.",
-        "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/about-github-agentic-workflows"
+        "qr": "https://gh.io/ignite26"
       }
     },
     {
@@ -254,7 +254,7 @@
       "wrap_up": ["Close the GitHub tabs you opened."],
       "receipt": {
         "summary": "Code scanning finds known vulnerabilities and Copilot Autofix suggests the fix. Copilot code review checks the whole change, like a teammate.",
-        "qr": "https://docs.github.com/en/copilot/concepts/agent-capabilities/agent-powered-workflows-and-operations/code-review"
+        "qr": "https://gh.io/ignite26"
       }
     }
   ]
