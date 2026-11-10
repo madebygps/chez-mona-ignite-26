@@ -35,7 +35,7 @@ The launcher talks to the printer directly over USB. It does not use a Windows p
    uv run --with github-copilot-sdk==1.0.28 python -m copilot download-runtime
    ```
 
-6. Clone [madebygps/canvas-101](https://github.com/madebygps/canvas-101) and add it to the Copilot app. Pin the Copilot app to the taskbar. Omelette uses both.
+6. Pin the Copilot app to the taskbar. Omelette uses it.
 7. Plug in the receipt printer by USB, load paper and turn it on. It needs no driver and no settings: the launcher uses the one USB printer it finds. Wi-Fi, network and virtual printers like "Microsoft Print to PDF" do not affect it.
 8. Start the station:
 
@@ -47,7 +47,7 @@ The launcher talks to the printer directly over USB. It does not use a Windows p
 10. Press **Ctrl+Shift+M** and check that the staff panel shows the printer as ready. If it does not, check the cable, power, cover and paper, and close any other program that uses the printer.
 11. Scan a fridge ticket. The station should open that dish's intro.
 12. Return to Scan, tap **Manually select a lab instead**, pick Fried Chicken and start the lab. Click **Open in VS Code**. VS Code should open `main.py` with no Workspace Trust prompt. If the prompt appears, trust the parent folder `%LOCALAPPDATA%\ChezMona\guests` so later guests skip it.
-13. In the Copilot app, select **canvas-101** and ask "Open the Chez Mona Order Ticket canvas". The canvas should open with an empty ticket.
+13. In the Copilot app, click **New chat**. Open the model picker and check that **Copilot Fusion** with **High** is available.
 14. Finish one Fried Chicken lab through the quiz. On the wrap up screen, check that its VS Code window closed.
 15. Click **Print my receipt**. A receipt should print and cut, and its QR code should scan with a phone.
 
