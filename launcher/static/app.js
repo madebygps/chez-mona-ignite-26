@@ -233,12 +233,12 @@ function renderScan() {
       <p class="eyebrow">Welcome to Chez Mona</p>
       <h1>Scan your ticket</h1>
       <p class="lede">Hold the QR code on your fridge ticket up to the camera.</p>
-      <button id="choose-lab">Manually select a lab instead</button>
       <div class="camera">
         <video id="video" muted playsinline></video>
         <div class="frame"></div>
         <div class="camera-msg" id="camera-msg" hidden></div>
       </div>
+      <button id="choose-lab">Manually select a lab instead</button>
       <p class="notice" id="scan-notice"></p>
     </section>`);
   on("choose-lab", renderMenu);
@@ -251,7 +251,7 @@ function renderMenu() {
     <section class="menu">
       <p class="eyebrow">Today's menu</p>
       <h1>Choose a lab</h1>
-      <p class="lede">Pick a dish by what you want to learn. Each takes about 5 minutes.</p>
+      <p class="lede">Choose a dish based on what you'd like to learn.<br>Each takes about 5 minutes.</p>
       <div class="menu-grid">
         ${Object.values(state.dishes).map((d) => `
           <button class="menu-item" data-dish="${escapeHtml(d.id)}">

@@ -78,7 +78,7 @@ test("visible picker lists every lab and opens the same intro as scanning", asyn
     assert.equal(page.run("progress.hidden"), true);
     const menu = page.elements.get("app");
     assert.equal(menu.querySelectorAll(".menu-item").length, content.dishes.length);
-    assert.match(menu.innerHTML, /Pick a dish by what you want to learn/);
+    assert.match(menu.innerHTML, /Choose a dish based on what you/);
     page.run(`
       app.querySelectorAll(".menu-item")
         .find((button) => button.dataset.dish === ${JSON.stringify(dish.id)})

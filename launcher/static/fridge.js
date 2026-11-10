@@ -59,7 +59,7 @@ function renderMenu() {
     <section class="menu">
       <p class="eyebrow">Today's menu</p>
       <h1>What would you like to cook?</h1>
-      <p class="lede">Pick a dish by what you want to learn. Each takes about 5 minutes.</p>
+      <p class="lede">Choose a dish based on what you'd like to learn.<br>Each takes about 5 minutes.</p>
       <div class="menu-grid">
         ${state.dishes.map((d) => `
           <button class="menu-item" data-dish="${escapeHtml(d.id)}">
