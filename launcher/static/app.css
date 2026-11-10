@@ -209,7 +209,7 @@ main {
   padding: 44px 40px 56px;
 }
 /* Single-card screens sit in the middle of the screen */
-main:has(> section.card) { justify-content: center; }
+main:has(> section.card, > section.menu) { justify-content: center; }
 
 .card {
   background: var(--paper);
