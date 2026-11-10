@@ -52,16 +52,16 @@ html, body {
   font-variant-ligatures: none;
   -webkit-font-smoothing: antialiased;
 }
-body { background: var(--kraft-wash); }
+body { background: var(--kraft-wash); display: flex; flex-direction: column; min-height: 100vh; }
 
 /* Type roles from the Universe'26 Mo's Diner menu, in signage cobalt:
-   condensed semibold caps = titles, light tracked mono = taglines,
+   Display SemiCondensed SemiBold = titles, medium = taglines,
    regular = body, light = descriptions, mono caps = one-line labels.
    No ligatures, per the Universe'26 typography guidelines. */
-h1, h2 {
-  font-stretch: 75%;
+h1, h2, .menu-dish {
+  font-stretch: 87.5%;
   font-weight: 600;
-  text-transform: uppercase;
+  font-variation-settings: "opsz" 72;
   color: var(--ink);
   line-height: 1;
   text-wrap: balance;
@@ -77,7 +77,7 @@ h2 { font-size: 2.4rem; margin: 0 0 0.45em; }
   text-transform: uppercase;
   color: var(--red);
 }
-.lede { font-family: var(--mono); font-size: 1.05rem; font-weight: 300; letter-spacing: 0.06em; color: var(--text); max-width: 38em; text-wrap: pretty; }
+.lede { font-size: 1.05rem; font-weight: 500; color: var(--text); max-width: 38em; text-wrap: pretty; }
 .muted { color: var(--text-soft); font-weight: 300; }
 .small { font-size: 0.85rem; }
 strong { font-weight: 600; }
@@ -199,7 +199,17 @@ button.link:hover:not(:disabled) { background: none; color: var(--blue); }
 .progress li.current::before { opacity: 0.75; }
 .progress[hidden] { display: none; }
 
-main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 44px 40px 56px;
+}
+/* Single-card screens sit in the middle of the screen */
+main:has(> section.card) { justify-content: center; }
 
 .card {
   background: var(--paper);
@@ -212,10 +222,11 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
 /* Scan */
 .scan { display: grid; justify-items: center; gap: 10px; text-align: center; }
 .scan h1 { font-size: 3.2rem; margin: 0; }
-.scan .lede { margin: 0 0 12px; }
+.scan .lede { margin: 0 0 16px; }
+.scan #choose-lab { margin-top: 22px; }
 .camera {
   position: relative;
-  width: min(640px, 100%, calc(54vh * 4 / 3));
+  width: min(640px, 100%, calc(46vh * 4 / 3));
   aspect-ratio: 4 / 3;
   border-radius: var(--radius);
   overflow: hidden;
@@ -254,7 +265,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 44px 40px 56px; }
   content: counter(step, decimal-leading-zero);
   position: absolute;
   left: 0;
-  top: 18px;
+  top: 0;
   width: 44px;
   height: 44px;
   border-radius: var(--radius-sm);
@@ -387,7 +398,7 @@ pre.detail {
 }
 .menu-item:hover:not(:disabled) { background: var(--kraft-pale); box-shadow: var(--shadow-lift); transform: translateY(-2px); }
 .menu-item:active:not(:disabled) { background: var(--kraft-soft); transform: scale(0.99); }
-.menu-dish { font-stretch: 75%; font-size: 2.4rem; font-weight: 600; text-transform: uppercase; line-height: 1; color: var(--ink); }
+.menu-dish { font-size: 2.1rem; line-height: 1.05; }
 .menu-lab {
   font-family: var(--mono);
   font-size: 0.75rem;
@@ -409,9 +420,10 @@ pre.detail {
   color: var(--white);
   font-family: var(--mono);
   font-weight: 400;
-  font-size: 1rem;
+  font-size: 0.85rem;
   letter-spacing: 1px;
 }
+.confirm h1 { font-size: 2.3rem; max-width: 600px; margin-left: auto; margin-right: auto; }
 .confirm-meta {
   font-family: var(--mono);
   font-size: 0.85rem;
