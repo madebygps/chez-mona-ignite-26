@@ -18,7 +18,7 @@
         { "text": "Turn on Fusion", "body": "In the chat box, click the model name. Turn on **Copilot Fusion**. Under **Effort level**, select **High**.", "image": "steps/omelette-fusion.png", "alt": "The model menu in the chat box, with Copilot Fusion turned on and High selected under Effort level" },
         { "text": "Ask about the patterns", "body": "Copy this prompt and paste it into the chat.", "prompt": "Read https://docs.github.com/en/copilot/concepts/models/copilot-fusion. What execution patterns can Copilot Fusion use?" },
         { "text": "Compare two patterns", "body": "Copy this prompt and paste it into the same chat.", "prompt": "What is the difference between cascade and critique?" },
-        { "text": "See the models", "body": "Below the reply, hover over **Fusion High** to see the models that answered. Then return here and click **I'm ready for the quiz**." }
+        { "text": "See the models", "body": "Below the reply, find **Copilot Fusion** and the name of the model that answered. Then return here and click **I'm ready for the quiz**.", "image": "steps/omelette-models.png", "alt": "The label below a reply in the Copilot app that reads Copilot Fusion, GPT-6.1 Terra" }
       ],
       "quiz": [
         {
