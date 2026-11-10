@@ -260,9 +260,11 @@ def _text_lines(item: Line, columns: int) -> list[str]:
 
 def _row_lines(row: Row, columns: int) -> list[str]:
     left, right = plain(row.left), plain(row.right)
-    if len(left) + len(right) + 1 > columns:
-        return [left, right.rjust(columns)] if left else [right.rjust(columns)]
-    return [left + right.rjust(columns - len(left))]
+    lines = textwrap.wrap(left, columns)
+    last = lines.pop() if lines else ""
+    if len(last) + len(right) + 1 > columns:
+        return lines + ([last, right.rjust(columns)] if last else [right.rjust(columns)])
+    return lines + [last + right.rjust(columns - len(last))]
 
 
 def render_escpos(items: list[Item], width_dots: int) -> bytes:

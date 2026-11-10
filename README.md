@@ -6,7 +6,7 @@ Private booth repository for the Chez Mona labs.
 
 | Path | Contents |
 |---|---|
-| [`copilot-sdk/`](copilot-sdk/) | Copilot SDK starter, copied to a temp folder for each guest |
+| [`copilot-sdk/`](copilot-sdk/) | Microsoft Copilot SDK starter, copied to a temp folder for each guest |
 | [`launcher/`](launcher/) | Lab launcher for the cooking stations and ticket kiosk for the fridge wall: local web app, lab content and quizzes, ticket and receipt printing. See [`launcher/README.md`](launcher/README.md) |
 
 ## Set up the booth laptops

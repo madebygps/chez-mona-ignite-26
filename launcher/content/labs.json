@@ -46,12 +46,12 @@
     },
     {
       "id": "fried-chicken",
-      "dish": "Copilot SDK Fried Chicken",
-      "lab": "Copilot SDK",
+      "dish": "Microsoft Copilot SDK Fried Chicken",
+      "lab": "Microsoft Copilot SDK",
       "pitch": "Explore how you can give an agent its own tool with code.",
       "uses": ["VS Code", "GitHub Copilot", "Python"],
       "about": [
-        "How the Copilot SDK runs an agent in an app",
+        "How the Microsoft Copilot SDK runs an agent in an app",
         "How the app gives the agent its own tool",
         "How to send a prompt and get the reply"
       ],
@@ -102,7 +102,7 @@
       ],
       "wrap_up": ["The launcher closes the VS Code window and deletes your copy of the starter."],
       "receipt": {
-        "summary": "The Copilot SDK runs an agent in your own app. `define_tool` gives it a tool, and `send_and_wait` sends it a prompt.",
+        "summary": "The Microsoft Copilot SDK runs an agent in your own app. `define_tool` gives it a tool, and `send_and_wait` sends it a prompt.",
         "qr": "https://gh.io/ignite26"
       }
     },
