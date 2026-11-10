@@ -3,3 +3,4 @@ node_modules/
 __pycache__/
 .venv/
 copilot-sdk/uv.lock
+launcher/data/

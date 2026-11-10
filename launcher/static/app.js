@@ -489,6 +489,7 @@ async function renderWrap() {
       </div>
     </section>`);
   on("next", renderPrint);
+  api("/api/complete", { dish: dish.id }).catch((error) => console.warn("Could not record completion:", error));
   if (sdk) {
     const cleanup = document.getElementById("cleanup");
     try {
@@ -523,6 +524,7 @@ const staff = {
     );
     const line = document.getElementById("staff-printer");
     line.textContent = "Checking printer…";
+    this.showStats();
     try {
       const p = await api("/api/printer");
       line.textContent = p.error ? p.error : `${p.printer}: ${p.problems.length ? p.problems.join(", ") : "ready"}.`;
@@ -533,6 +535,21 @@ const staff = {
 
   close() {
     this.overlay.hidden = true;
+  },
+
+  async showStats() {
+    const box = document.getElementById("staff-stats");
+    box.textContent = "Loading today's labs…";
+    try {
+      const s = await api("/api/stats");
+      box.innerHTML = `
+        <table class="stats">
+          <thead><tr><th>Today</th><th>Started</th><th>Completed</th><th>Receipts</th></tr></thead>
+          <tbody>${s.labs.map((l) => `<tr><td>${escapeHtml(l.dish)}</td><td>${l.started}</td><td>${l.completed}</td><td>${l.receipt}</td></tr>`).join("")}</tbody>
+        </table>`;
+    } catch (error) {
+      box.textContent = error.message;
+    }
   },
 };
 

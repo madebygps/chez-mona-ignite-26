@@ -51,7 +51,7 @@ These are previews of the layouts in [`chez_mona/receipt.py`](chez_mona/receipt.
 
 | Path | Contents |
 |---|---|
-| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`) |
+| [`chez_mona/`](chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`), [lab stats](#lab-stats) (`stats.py`) |
 | [`content/labs.json`](content/labs.json) | Every dish: menu `pitch`, `uses` and `about` points for the confirm and intro screens, steps (a short `text` title, an optional lighter `body` line, an optional `image` under [`static/`](static/) with `alt` text, and an optional `prompt` shown with a **Copy** button), quiz with other choices and hints, wrap up, receipt summary (`receipt.summary`, one short paragraph) and QR link |
 
 | [`static/`](static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, vendored [Mona Sans and Mona Sans Mono](https://github.com/github/mona-sans) web fonts in `fonts/`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
@@ -88,10 +88,30 @@ Everything else is fixed for the booth hardware: the one attached USB printer, 8
 ## Staff controls
 
 - Guests can tap **Manually select a lab instead** on the Scan screen to pick any dish without a ticket or camera. **Scan a ticket instead** returns to scanning.
-- Press **Ctrl+Shift+M**, or hold the Chez Mona logo for 3 seconds, to open the staff panel. It lets you pick a dish without scanning, shows the printer status and returns to Scan.
+- Press **Ctrl+Shift+M**, or hold the Chez Mona logo for 3 seconds, to open the staff panel. It lets you pick a dish without scanning, shows the printer status and today's [lab stats](#lab-stats), and returns to Scan.
 - After a print error, the Print screen offers **Staff: print again**. The launcher never retries on its own, so a guest never gets two receipts by accident.
 - Tickets hold only the dish ID: `omelette`, `fried-chicken`, `soup` or `dip`. Case does not matter, and spaces or underscores count as hyphens.
 - On a fridge, **Ctrl+Shift+M** shows the printer status. After a ticket print error, **Try again** prints once more; check the printer first, because the first attempt may have printed.
+
+## Lab stats
+
+Each cooking station counts its own labs. The laptops do not share data. The server adds one line to `data/events.jsonl` for each event. A line holds only the time, the event and the dish ID. Git ignores the `data/` folder.
+
+| Event | When |
+|---|---|
+| `started` | The guest taps **Start lab** and the lab starts |
+| `completed` | The guest answers the last quiz question and Wrap up shows. This is the completion count. |
+| `receipt` | The receipt prints. **Staff: print again** counts again. |
+
+To see today's counts, open the staff panel. To get a table you can paste into a GitHub issue, run this in `launcher/`:
+
+```powershell
+uv run python -m chez_mona.stats            # today
+uv run python -m chez_mona.stats --day 2026-11-18
+uv run python -m chez_mona.stats --all      # every day
+```
+
+The table header shows the laptop name, so you can tell the stations apart.
 
 ## How Fried Chicken works
 
