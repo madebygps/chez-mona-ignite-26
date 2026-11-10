@@ -37,7 +37,7 @@ class ReceiptTest(unittest.TestCase):
     def test_receipt_prints_the_summary_not_the_questions(self):
         dish = DISHES["omelette"]
         texts = [line for line, _ in printed_lines(receipt.layout(dish, receipt.Check(AT)), 576)]
-        self.assertIn("A canvas is an interactive panel in the", texts)
+        self.assertIn("Copilot Fusion picks the models for each", texts)
         self.assertFalse(any(dish["quiz"][0]["question"] in t for t in texts))
 
     def test_hint_line_only_when_hints_are_known(self):
