@@ -2,7 +2,7 @@
   "dishes": [
     {
       "id": "omelette",
-      "dish": "Canvas collaboration omelette",
+      "dish": "Canvas Collaboration Omelette",
       "lab": "GitHub Copilot app Canvas",
       "pitch": "Go beyond chat. Work with an agent in a panel you both click and edit.",
       "uses": ["GitHub Copilot app"],
@@ -44,7 +44,7 @@
     },
     {
       "id": "fried-chicken",
-      "dish": "Copilot SDK fried chicken",
+      "dish": "Copilot SDK Fried Chicken",
       "lab": "Copilot SDK",
       "pitch": "Explore how you can give an agent its own tool with code.",
       "uses": ["VS Code", "GitHub Copilot", "Python"],
@@ -106,7 +106,7 @@
     },
     {
       "id": "soup",
-      "dish": "Agentic alphabet soup",
+      "dish": "Agentic Alphabet Soup",
       "lab": "Agentic Workflows",
       "pitch": "Read a CI workflow where an agent triages issues every week.",
       "uses": ["GitHub Agentic Workflows"],
@@ -180,7 +180,7 @@
     },
     {
       "id": "dip",
-      "dish": "Autofix artichoke dip",
+      "dish": "Autofix Artichoke Dip",
       "lab": "PR review",
       "pitch": "See how AI reviewers catch bugs in a pull request.",
       "uses": ["Code scanning", "Copilot Autofix", "Copilot code review"],
