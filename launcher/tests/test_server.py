@@ -2,8 +2,10 @@ import contextlib
 import http.client
 import io
 import json
+import tempfile
 import threading
 import unittest
+from pathlib import Path
 from unittest import mock
 
 from chez_mona import printer
@@ -39,7 +41,9 @@ class ServerTest(unittest.TestCase):
         cls.printer_patch.start()
         config = StationConfig()
         cls.sessions = FakeSessions()
-        cls.server = make_server(Launcher(config, sessions=cls.sessions), 0)
+        cls.stats_dir = tempfile.TemporaryDirectory()
+        cls.stats_path = Path(cls.stats_dir.name) / "events.jsonl"
+        cls.server = make_server(Launcher(config, sessions=cls.sessions, stats_path=cls.stats_path), 0)
         cls.port = cls.server.server_address[1]
         threading.Thread(target=cls.server.serve_forever, daemon=True).start()
 
@@ -48,6 +52,7 @@ class ServerTest(unittest.TestCase):
         cls.server.shutdown()
         cls.server.server_close()
         cls.printer_patch.stop()
+        cls.stats_dir.cleanup()
 
     def request(self, method, path, body=None, headers=None):
         conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
@@ -131,6 +136,26 @@ class ServerTest(unittest.TestCase):
             status = json.loads(self.request("GET", "/api/printer")[2])
         self.assertEqual(status["printer"], "USB printer")
         self.assertIn("No USB receipt printer", status["error"])
+
+    def test_stats_count_starts_completions_and_receipts(self):
+        def today(dish_id):
+            labs = json.loads(self.request("GET", "/api/stats")[2])["labs"]
+            return next(lab for lab in labs if lab["id"] == dish_id)
+
+        before = today("soup")
+        self.request("POST", "/api/session/start", {"dish": "soup"})
+        self.assertEqual(self.request("POST", "/api/complete", {"dish": "soup"})[0], 200)
+        self.assertEqual(self.request("POST", "/api/complete", {"dish": "pizza"})[0], 400)
+        self.request("POST", "/api/print", {"dish": "soup"})
+
+        def broken(data):
+            raise printer.PrintError("Out of paper")
+
+        with mock.patch.object(printer, "submit_usb", broken):
+            self.request("POST", "/api/print", {"dish": "soup"})
+        after = today("soup")
+        for event in ("started", "completed", "receipt"):
+            self.assertEqual(after[event], before[event] + 1, event)
 
 
 if __name__ == "__main__":

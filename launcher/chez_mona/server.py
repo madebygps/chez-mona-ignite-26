@@ -7,12 +7,13 @@ import json
 import mimetypes
 import socket
 import sys
-from datetime import datetime
+from datetime import date, datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import urlparse
 
-from . import labs, printer, receipt
+from . import labs, printer, receipt, stats
 from .config import LAUNCHER_DIR, ROLES, StationConfig
 
 from .sdk_session import SdkSessions, SessionError
@@ -39,11 +40,13 @@ def check_hints(hints, questions: int) -> list[int] | None:
 class Launcher:
     """Everything the request handler needs, shared across threads."""
 
-    def __init__(self, config: StationConfig, sessions: SdkSessions | None = None):
+    def __init__(self, config: StationConfig, sessions: SdkSessions | None = None,
+                 stats_path: Path = stats.LOG_PATH):
         self.config = config
         self.content = labs.load()
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions()
+        self.stats_path = stats_path
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -53,15 +56,31 @@ class Launcher:
     def start(self, dish_id: str) -> dict:
         dish = self.dish(dish_id)
         if dish["start"]["type"] == "sdk":
-            return self.sessions.start()
-        # Another dish starting means any earlier starter folder is abandoned.
-        self.sessions.end()
+            result = self.sessions.start()
+        else:
+            # Another dish starting means any earlier starter folder is abandoned.
+            self.sessions.end()
+            result = {}
+        stats.record("started", dish_id, self.stats_path)
+        return result
+
+    def complete(self, dish_id: str) -> dict:
+        self.dish(dish_id)
+        stats.record("completed", dish_id, self.stats_path)
         return {}
+
+    def stats_today(self) -> dict:
+        counts = stats.summary(list(self.dishes), self.stats_path, date.today())
+        return {"day": date.today().isoformat(), "labs": [
+            {"id": dish_id, "dish": self.dishes[dish_id]["dish"], **counts[dish_id]}
+            for dish_id in self.dishes
+        ]}
 
     def print_receipt(self, dish_id: str, hints=None) -> dict:
         dish = self.dish(dish_id)
         hints = check_hints(hints, len(dish["quiz"]))
         job = printer.submit_usb(receipt.escpos(dish, receipt.Check(datetime.now(), hints)))
+        stats.record("receipt", dish_id, self.stats_path)
         return {"status": "sent", "job": job}
 
     def print_ticket(self, dish_id: str) -> dict:
@@ -112,6 +131,8 @@ class Handler(BaseHTTPRequestHandler):
             })
         if url.path == "/api/printer":
             return self._json(HTTPStatus.OK, self.launcher.printer_status())
+        if url.path == "/api/stats":
+            return self._json(HTTPStatus.OK, self.launcher.stats_today())
         return self._static(url.path)
 
     def _static(self, path: str) -> None:
@@ -141,6 +162,7 @@ class Handler(BaseHTTPRequestHandler):
             "/api/session/start": lambda: self.launcher.start(body.get("dish", "")),
             "/api/session/open-vscode": self.launcher.sessions.open_vscode,
             "/api/session/end": self.launcher.sessions.end,
+            "/api/complete": lambda: self.launcher.complete(body.get("dish", "")),
             "/api/print": lambda: self.launcher.print_receipt(body.get("dish", ""), body.get("hints")),
             "/api/ticket": lambda: self.launcher.print_ticket(body.get("dish", "")),
         }
