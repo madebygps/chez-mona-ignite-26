@@ -2,43 +2,45 @@
   "dishes": [
     {
       "id": "omelette",
-      "dish": "Canvas Collaboration Omelette",
-      "lab": "GitHub Copilot app Canvas",
-      "pitch": "Go beyond chat. Work with an agent in a panel you both click and edit.",
-      "uses": ["GitHub Copilot app"],
+      "dish": "Copilot Fusion Omelette",
+      "lab": "GitHub Copilot Fusion",
+      "pitch": "Let Copilot pick the right models for each prompt, then see which models answered.",
+      "uses": ["GitHub Copilot app", "Copilot Fusion"],
       "about": [
-        "What a canvas is, and when to use one instead of chat",
-        "How you and the agent both update the same canvas",
-        "How a repository shares a canvas with everyone who uses it"
+        "What Copilot Fusion is",
+        "The three execution patterns that Fusion can use",
+        "How to see which models answered your prompt"
       ],
       "start": { "type": "none" },
       "steps": [
         { "text": "Open the app", "body": "In the taskbar, click the **GitHub Copilot app** icon to open it." },
-        { "text": "Start a session", "body": "On the left, find **Canvas 101**. Hover over it, then click **+** (New session) on the right.", "image": "steps/omelette-new-session.png", "alt": "The Canvas 101 row in the Copilot app sidebar, with the New session button on the right" },
-        { "text": "Open the canvas", "body": "Copy this prompt and paste it into the chat.", "prompt": "Open the Chez Mona Order Ticket canvas" },
-        { "text": "Follow the canvas", "body": "Follow the instructions in the canvas. When you are done, return here and click **I'm ready for the quiz**." }
+        { "text": "Start a chat", "body": "On the left, find **Sessions**. Click **+** (New) on the right.", "image": "steps/omelette-new-chat.png", "alt": "The Sessions row in the Copilot app sidebar, with the New button on the right" },
+        { "text": "Turn on Fusion", "body": "In the chat box, click the model name. Turn on **Copilot Fusion**. Under **Effort level**, select **High**.", "image": "steps/omelette-fusion.png", "alt": "The model menu in the chat box, with Copilot Fusion turned on and High selected under Effort level" },
+        { "text": "Ask about the patterns", "body": "Copy this prompt and paste it into the chat.", "prompt": "Read https://docs.github.com/en/copilot/concepts/models/copilot-fusion. What execution patterns can Copilot Fusion use?" },
+        { "text": "Compare two patterns", "body": "Copy this prompt and paste it into the same chat.", "prompt": "What is the difference between cascade and critique?" },
+        { "text": "See the models", "body": "Below the reply, find **Copilot Fusion** and the name of the model that answered. Then return here and click **I'm ready for the quiz**.", "image": "steps/omelette-models.png", "alt": "The label below a reply in the Copilot app that reads Copilot Fusion, GPT-6.1 Terra" }
       ],
       "quiz": [
         {
-          "question": "Who can change a canvas?",
-          "answer": "You and the agent",
-          "others": [
-            "Only you, by clicking",
-            "Only the agent, through chat",
-            "Only the repository owner"
-          ],
-          "hint": "In the canvas, you clicked the ticket and then asked the agent to change it."
+          "question": "Which pattern sends a draft to a judge that can escalate to a stronger model?",
+          "answer": "Cascade",
+          "others": ["Single", "Critique", "Fusion Max"],
+          "hint": "Read the reply to your second prompt."
         },
         {
-          "question": "Where does a repository scoped canvas live?",
-          "answer": "`.github/extensions/`",
-          "others": ["`.vscode/`", "`.github/workflows/`", "`AGENTS.md`"],
-          "hint": "A canvas is an extension stored in the repository's `.github` folder."
+          "question": "In the critique pattern, what happens after one model writes a draft?",
+          "answer": "Several models review it, then the first model revises it",
+          "others": [
+            "A judge accepts it or sends it to a stronger model",
+            "The fastest model rewrites it from the start",
+            "You pick the best draft from a list"
+          ],
+          "hint": "Read the reply to your second prompt."
         }
       ],
       "wrap_up": ["In the Copilot app, delete the chat you used for this lab."],
       "receipt": {
-        "summary": "A canvas is an interactive panel in the Copilot app. You and the agent both work in it, and a repository can share it with everyone.",
+        "summary": "Copilot Fusion picks the models for each prompt. It uses one of three patterns: single, cascade or critique. Then it returns one reply.",
         "qr": "https://gh.io/ignite26"
       }
     },

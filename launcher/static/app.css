@@ -209,7 +209,7 @@ main {
   padding: 44px 40px 56px;
 }
 /* Single-card screens sit in the middle of the screen */
-main:has(> section.card) { justify-content: center; }
+main:has(> section.card, > section.menu) { justify-content: center; }
 
 .card {
   background: var(--paper);
@@ -283,7 +283,7 @@ main:has(> section.card) { justify-content: center; }
 .step-body strong { font-weight: 500; }
 .step-image { display: block; max-width: min(100%, 540px); margin: 14px 0 4px; border: var(--rule); border-radius: 6px; }
 .step-prompt { display: flex; align-items: center; gap: 12px; margin: 14px 0 4px; padding: 10px 10px 10px 16px; border: var(--rule); border-radius: 6px; background: var(--white); }
-.step-prompt code { flex: 1; font-family: var(--mono); font-size: 1rem; color: var(--text); background: none; padding: 0; user-select: all; }
+.step-prompt code { flex: 1; min-width: 0; white-space: normal; overflow-wrap: anywhere; font-family: var(--mono); font-size: 1rem; color: var(--text); background: none; padding: 0; user-select: all; }
 .step-details { margin: 0.5em 0 0; padding-left: 1.2em; font-size: 1.05rem; font-weight: 300; }
 .step-details strong { font-weight: 500; }
 .step-details li { margin: 0.2em 0; }
