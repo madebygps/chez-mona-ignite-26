@@ -40,6 +40,20 @@ class ReceiptTest(unittest.TestCase):
         self.assertIn("Copilot Fusion picks the models for each", texts)
         self.assertFalse(any(dish["quiz"][0]["question"] in t for t in texts))
 
+    def test_receipt_number_beside_date_and_time(self):
+        for number in (1, 24, 1000):
+            check = receipt.Check(AT, number=number)
+            items = receipt.layout(DISHES["soup"], check)
+            self.assertIn(
+                (f"Receipt #{number:03d}", "Wed Nov 18, 2026  10:42 AM"),
+                [(i.left, i.right) for i in items if isinstance(i, receipt.Row)],
+            )
+            for width in (384, 576):
+                data = receipt.escpos(DISHES["soup"], check, width)
+                self.assertIn(f"Receipt #{number:03d}".encode("ascii"), data)
+                for line, columns in printed_lines(items, width):
+                    self.assertLessEqual(len(line), columns, line)
+
     def test_hint_line_only_when_hints_are_known(self):
         def rows(check):
             return [i.left for i in receipt.layout(DISHES["soup"], check) if isinstance(i, receipt.Row)]

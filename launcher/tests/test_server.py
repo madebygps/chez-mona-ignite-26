@@ -5,10 +5,12 @@ import json
 import tempfile
 import threading
 import unittest
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
-from chez_mona import printer
+from chez_mona import printer, stats
 from chez_mona.config import StationConfig
 from chez_mona.server import Launcher, make_server, parse_args
 
@@ -127,6 +129,33 @@ class ServerTest(unittest.TestCase):
         self.assertNotIn("check", result)
         self.assertIn(b"AUTOFIX ARTICHOKE DIP", sent[0])
         self.assertNotIn(b"No.", sent[0])
+
+    def test_receipt_numbers_continue_across_dishes_days_and_restarts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "events.jsonl"
+            stats.record("receipt", "soup", path, datetime(2026, 1, 1))
+            stats.record("completed", "soup", path)
+            launcher = Launcher(StationConfig(), sessions=FakeSessions(), stats_path=path)
+            with mock.patch.object(printer, "submit_usb") as submit:
+                launcher.print_receipt("dip")
+                self.assertIn(b"Receipt #002", submit.call_args.args[0])
+                submit.side_effect = printer.PrintError("Out of paper")
+                with self.assertRaises(printer.PrintError):
+                    launcher.print_receipt("soup")
+                submit.side_effect = None
+                launcher = Launcher(StationConfig(), sessions=FakeSessions(), stats_path=path)
+                launcher.print_receipt("dip")
+                self.assertIn(b"Receipt #003", submit.call_args.args[0])
+
+    def test_concurrent_receipts_get_separate_numbers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            launcher = Launcher(StationConfig(), sessions=FakeSessions(),
+                                stats_path=Path(directory) / "events.jsonl")
+            with mock.patch.object(printer, "submit_usb") as submit:
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    list(pool.map(launcher.print_receipt, ["soup", "dip"]))
+                self.assertIn(b"Receipt #001", submit.call_args_list[0].args[0])
+                self.assertIn(b"Receipt #002", submit.call_args_list[1].args[0])
 
     def test_printer_status_reports_errors(self):
         def missing():
