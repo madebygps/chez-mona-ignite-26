@@ -98,7 +98,7 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(self.request("POST", "/api/session/start", {"dish": "pizza"})[0], 400)
 
     def test_print_sends_receipt(self):
-        status, _, data = self.request("POST", "/api/print", {"dish": "omelette"})
+        status, _, data = self.request("POST", "/api/print", {"dish": "fusilli"})
         self.assertEqual((status, json.loads(data)["status"]), (200, "sent"))
         self.assertEqual(self.request("POST", "/api/print", {"dish": "pizza"})[0], 400)
         self.assertEqual(self.request("POST", "/api/print", {"dish": "soup", "hints": [0, 2]})[0], 200)

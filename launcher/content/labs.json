@@ -1,7 +1,7 @@
 {
   "dishes": [
     {
-      "id": "omelette",
+      "id": "fusilli",
       "dish": "Copilot Fusion Fusilli",
       "lab": "GitHub Copilot Fusion",
       "pitch": "Let Copilot pick the right models for each prompt, then see which models answered.",
