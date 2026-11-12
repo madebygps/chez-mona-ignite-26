@@ -110,6 +110,7 @@ class Check:
     """One printed receipt. hints holds wrong answers per question, or None if unknown."""
     at: datetime
     hints: list[int] | None = None
+    number: int | None = None
 
 
 def layout(dish: dict, check: Check) -> list[Item]:
@@ -119,6 +120,9 @@ def layout(dish: dict, check: Check) -> list[Item]:
         Picture("gingham", gingham),
         Picture("wordmark", wordmark),
         Line(EVENT),
+        Row(f"Receipt #{check.number:03d}",
+            f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}")
+        if check.number is not None else
         Line(f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
         Rule("="),
         Row(f"1  {dish['dish'].upper()}", "1 lab", bold=True),

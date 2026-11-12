@@ -7,6 +7,7 @@ import json
 import mimetypes
 import socket
 import sys
+import threading
 from datetime import date, datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -47,6 +48,7 @@ class Launcher:
         self.dishes = labs.by_id(self.content)
         self.sessions = sessions or SdkSessions()
         self.stats_path = stats_path
+        self.receipt_lock = threading.Lock()
 
     def dish(self, dish_id: str) -> dict:
         if dish_id not in self.dishes:
@@ -79,8 +81,11 @@ class Launcher:
     def print_receipt(self, dish_id: str, hints=None) -> dict:
         dish = self.dish(dish_id)
         hints = check_hints(hints, len(dish["quiz"]))
-        job = printer.submit_usb(receipt.escpos(dish, receipt.Check(datetime.now(), hints)))
-        stats.record("receipt", dish_id, self.stats_path)
+        with self.receipt_lock:
+            counts = stats.summary(list(self.dishes), self.stats_path)
+            number = sum(c["receipt"] for c in counts.values()) + 1
+            job = printer.submit_usb(receipt.escpos(dish, receipt.Check(datetime.now(), hints, number)))
+            stats.record("receipt", dish_id, self.stats_path)
         return {"status": "sent", "job": job}
 
     def print_ticket(self, dish_id: str) -> dict:

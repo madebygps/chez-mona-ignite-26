@@ -58,6 +58,10 @@ Do these checks after you [set up a laptop](setup.md) and start it for the first
 - **Open the staff panel.** Press **Ctrl+Shift+M**, or hold the Chez Mona logo for 3 seconds. The panel lets you pick a dish without scanning, shows the printer status and today's [lab counts](#get-lab-counts), and returns to Scan.
 - **Print a receipt again.** After a print error, the Print screen shows **Staff: print again**. The launcher never retries on its own, so a guest never gets two receipts by accident.
 
+Receipts show a number beside the date and time, such as **Receipt #024**.
+Each station numbers its own receipts across all dishes and days, using its event log.
+Numbers continue after a restart. Each successful reprint gets a new number.
+
 ### Fridge
 
 - **Check the printer.** Press **Ctrl+Shift+M**.
