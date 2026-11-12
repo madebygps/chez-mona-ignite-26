@@ -84,7 +84,9 @@ class Launcher:
         with self.receipt_lock:
             counts = stats.summary(list(self.dishes), self.stats_path)
             number = sum(c["receipt"] for c in counts.values()) + 1
-            job = printer.submit_usb(receipt.escpos(dish, receipt.Check(datetime.now(), hints, number)))
+            course = (list(self.dishes).index(dish_id) + 1, len(self.dishes))
+            check = receipt.Check(datetime.now(), hints, number, course)
+            job = printer.submit_usb(receipt.escpos(dish, check))
             stats.record("receipt", dish_id, self.stats_path)
         return {"status": "sent", "job": job}
 

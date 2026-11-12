@@ -13,7 +13,9 @@ CONTENT_DIR = LAUNCHER_DIR / "content"
 STATIC_DIR = LAUNCHER_DIR / "static"
 START_TYPES = {"none", "sdk", "open_url"}
 ACTION_TYPES = {"open_url", "open_vscode"}
-SUMMARY_MAX = 180  # about 4 receipt lines
+PRODUCT_MAX = 48  # one receipt line
+BULLET_MAX = 43  # one receipt line after the "   - " indent
+TIP_MAX = 44  # one receipt line beside "TIP"
 
 
 class ContentError(ValueError):
@@ -75,9 +77,14 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
             _check(len(set(others + [q["answer"]])) == 4, f"{did} question {i}: choices must be unique")
         _check(dish.get("wrap_up"), f"{did}: needs wrap_up")
         receipt = dish.get("receipt", {})
-        summary = receipt.get("summary")
-        _check(isinstance(summary, str) and summary.strip() and len(summary) <= SUMMARY_MAX,
-               f"{did}: receipt summary needs 1 short paragraph, up to {SUMMARY_MAX} characters")
+        product, bullets, tip = receipt.get("product"), receipt.get("bullets"), receipt.get("tip")
+        _check(isinstance(product, str) and product.strip() and len(product) <= PRODUCT_MAX,
+               f"{did}: receipt product needs a name, up to {PRODUCT_MAX} characters")
+        _check(isinstance(bullets, list) and len(bullets) == 3
+               and all(isinstance(b, str) and b.strip() and len(b) <= BULLET_MAX for b in bullets),
+               f"{did}: receipt bullets needs 3 points, each up to {BULLET_MAX} characters")
+        _check(isinstance(tip, str) and tip.strip() and len(tip) <= TIP_MAX,
+               f"{did}: receipt tip needs 1 line, up to {TIP_MAX} characters")
         _check(receipt.get("qr", "").startswith("https://"), f"{did}: receipt needs https qr")
 
 
