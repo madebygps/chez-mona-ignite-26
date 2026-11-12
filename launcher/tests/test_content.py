@@ -13,7 +13,7 @@ class LabsTest(unittest.TestCase):
     def test_shipped_content_is_valid(self):
         loaded = labs.load()
         ids = [d["id"] for d in loaded["dishes"]]
-        self.assertEqual(ids, ["omelette", "fried-chicken", "soup", "dip"])
+        self.assertEqual(ids, ["fusilli", "fried-chicken", "soup", "dip"])
 
     def assert_rejected(self, mutate):
         data = copy.deepcopy(self.data)
@@ -27,7 +27,7 @@ class LabsTest(unittest.TestCase):
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"][0].update(others=["a", "a", "b"]))
         self.assert_rejected(lambda d: d["dishes"][3]["steps"][0]["action"].update(url="http://example.com"))
         self.assert_rejected(lambda d: d["dishes"][2]["steps"][0].update(markdown="soup/missing.md"))
-        self.assert_rejected(lambda d: d["dishes"][1].update(id="omelette"))
+        self.assert_rejected(lambda d: d["dishes"][1].update(id="fusilli"))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].pop("qr"))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(summary=["A list"]))
         self.assert_rejected(lambda d: d["dishes"][0]["receipt"].update(summary=" "))

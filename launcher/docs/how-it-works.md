@@ -17,23 +17,23 @@ flowchart LR
     G --> R([Receipt])
 ```
 
-These screenshots show the Omelette lab. The other dishes use the same screens with their own content from [`content/labs.json`](../content/labs.json).
+These screenshots show the Copilot Fusion Fusilli lab. The other dishes use the same screens with their own content from [`content/labs.json`](../content/labs.json).
 
 ### Fridge
 
 | 1. Pick a dish | 2. Confirm and print a ticket |
 |---|---|
-| ![Fridge menu with the four dishes](screenshots/fridge-menu.png) | ![Fridge confirm screen for the Omelette](screenshots/fridge-confirm.png) |
+| ![Fridge menu with the four dishes](screenshots/fridge-menu.png) | ![Fridge confirm screen for the Fusilli](screenshots/fridge-confirm.png) |
 
 ### Cooking station
 
 | 3. Scan the ticket | 4. Read the intro |
 |---|---|
-| ![Station scan screen](screenshots/station-scan.png) | ![Omelette intro](screenshots/station-intro.png) |
+| ![Station scan screen](screenshots/station-scan.png) | ![Fusilli intro](screenshots/station-intro.png) |
 
 | 5. Follow the steps | 6. Answer the quiz |
 |---|---|
-| ![Omelette steps](screenshots/station-steps.png) | ![Quiz question](screenshots/station-quiz.png) |
+| ![Fusilli steps](screenshots/station-steps.png) | ![Quiz question](screenshots/station-quiz.png) |
 
 | 7. Wrap up | 8. Take the receipt |
 |---|---|

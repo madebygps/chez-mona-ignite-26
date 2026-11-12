@@ -1,8 +1,8 @@
 {
   "dishes": [
     {
-      "id": "omelette",
-      "dish": "Copilot Fusion Omelette",
+      "id": "fusilli",
+      "dish": "Copilot Fusion Fusilli",
       "lab": "GitHub Copilot Fusion",
       "pitch": "Let Copilot pick the right models for each prompt, then see which models answered.",
       "uses": ["GitHub Copilot app", "Copilot Fusion"],
@@ -14,11 +14,11 @@
       "start": { "type": "none" },
       "steps": [
         { "text": "Open the app", "body": "In the taskbar, click the **GitHub Copilot app** icon to open it." },
-        { "text": "Start a chat", "body": "On the left, find **Sessions**. Click **+** (New) on the right.", "image": "steps/omelette-new-chat.png", "alt": "The Sessions row in the Copilot app sidebar, with the New button on the right" },
-        { "text": "Turn on Fusion", "body": "In the chat box, click the model name. Turn on **Copilot Fusion**. Under **Effort level**, select **High**.", "image": "steps/omelette-fusion.png", "alt": "The model menu in the chat box, with Copilot Fusion turned on and High selected under Effort level" },
+        { "text": "Start a chat", "body": "On the left, find **Sessions**. Click **+** (New) on the right.", "image": "steps/fusilli-new-chat.png", "alt": "The Sessions row in the Copilot app sidebar, with the New button on the right" },
+        { "text": "Turn on Fusion", "body": "In the chat box, click the model name. Turn on **Copilot Fusion**. Under **Effort level**, select **High**.", "image": "steps/fusilli-fusion.png", "alt": "The model menu in the chat box, with Copilot Fusion turned on and High selected under Effort level" },
         { "text": "Ask about the patterns", "body": "Copy this prompt and paste it into the chat.", "prompt": "Read https://docs.github.com/en/copilot/concepts/models/copilot-fusion. What execution patterns can Copilot Fusion use?" },
         { "text": "Compare two patterns", "body": "Copy this prompt and paste it into the same chat.", "prompt": "What is the difference between cascade and critique?" },
-        { "text": "See the models", "body": "Below the reply, find **Copilot Fusion** and the name of the model that answered. Then return here and click **I'm ready for the quiz**.", "image": "steps/omelette-models.png", "alt": "The label below a reply in the Copilot app that reads Copilot Fusion, GPT-6.1 Terra" }
+        { "text": "See the models", "body": "Below the reply, find **Copilot Fusion** and the name of the model that answered. Then return here and click **I'm ready for the quiz**.", "image": "steps/fusilli-models.png", "alt": "The label below a reply in the Copilot app that reads Copilot Fusion, GPT-6.1 Terra" }
       ],
       "quiz": [
         {

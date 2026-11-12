@@ -35,7 +35,7 @@ class ReceiptTest(unittest.TestCase):
             self.assertNotIn(b"GUEST CHECK", data)
 
     def test_receipt_prints_the_summary_not_the_questions(self):
-        dish = DISHES["omelette"]
+        dish = DISHES["fusilli"]
         texts = [line for line, _ in printed_lines(receipt.layout(dish, receipt.Check(AT)), 576)]
         self.assertIn("Copilot Fusion picks the models for each", texts)
         self.assertFalse(any(dish["quiz"][0]["question"] in t for t in texts))
