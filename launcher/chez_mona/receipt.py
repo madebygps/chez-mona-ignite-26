@@ -19,9 +19,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 HEADER = "Chez Mona"
 EVENT = "Microsoft Ignite 2026"
-QR_CAPTION = "Scan to continue learning at home"
-THANKS = "Merci! Have a nice day"
-THANKS_LINE = "Thanks for cooking with us"
+QR_CAPTION = "Scan to keep the learning going at home"
+THANKS = "Merci, chef!"
+SIGNATURE = "Chef Mona"
+SIGNATURE_FONT = "segoescb.ttf"  # Segoe Script Bold
 TICKET_BAR = "Kitchen ticket"
 TICKET_CAPTION = "Take this to any open station and scan it"
 FONT_A_WIDTH = 12  # dots per character, Font A at normal size
@@ -107,45 +108,55 @@ def ticket_layout(dish: dict, at: datetime) -> list[Item]:
 
 @dataclass
 class Check:
-    """One printed receipt. hints holds wrong answers per question, or None if unknown."""
+    """One printed receipt. hints holds wrong answers per question, or None if unknown.
+    course is the dish position and the dish count, like (2, 4), or None if unknown."""
     at: datetime
     hints: list[int] | None = None
     number: int | None = None
+    course: tuple[int, int] | None = None
+
+
+def rank(hints: int) -> str:
+    """Kitchen rank from the total wrong answers."""
+    if hints == 0:
+        return "HEAD CHEF"
+    return "SOUS CHEF" if hints <= 2 else "LINE COOK"
 
 
 def layout(dish: dict, check: Check) -> list[Item]:
     """Take-home receipt printed at a cooking station. None is a blank line."""
     answered = len(dish["quiz"])
+    card = dish["receipt"]
+    course = f"DISH {check.course[0]} OF {check.course[1]}" if check.course else ""
     items: list[Item] = [
         Picture("gingham", gingham),
         Picture("wordmark", wordmark),
-        Line(EVENT),
         Row(f"Receipt #{check.number:03d}",
             f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}")
         if check.number is not None else
         Line(f"{check.at:%a %b} {check.at.day}, {check.at:%Y}  {clock(check.at)}"),
         Rule("="),
-        Row(f"1  {dish['dish'].upper()}", "1 lab", bold=True),
+        Row(f"1  {dish['dish'].upper()}", course, bold=True),
         None,
-        Line("YOU LEARNED", bold=True, invert=True),
-        Line(dish["receipt"]["summary"], margin=3),
+        Line(card["product"].upper(), bold=True, invert=True),
+        *[Line(point, align="left", indent=3, bullet="- ") for point in card["bullets"]],
         None,
         Rule(),
-        Row("SUBTOTAL", f"{answered}/{answered} correct"),
+        Row("QUIZ", f"{answered}/{answered} aced"),
     ]
     if check.hints is not None:
-        items.append(Row("HINTS USED", str(sum(check.hints))))
+        items.append(Row("RANK", rank(sum(check.hints))))
     items += [
-        Row("TIP", "Ship it!"),
+        Row("TIP", card["tip"]),
         Rule(),
         Row("TOTAL", "PRICELESS", bold=True, size=2),
         Rule("="),
-        Qr(dish["receipt"]["qr"]),
+        Qr(card["qr"]),
         Line(QR_CAPTION, bold=True),
         None,
         Line(THANKS.upper(), height=2, bold=True),
-        Line(THANKS_LINE),
-        Picture("gingham", gingham),
+        Line(EVENT),
+        Picture("signature", signature),
     ]
     return items
 
@@ -197,6 +208,19 @@ def wordmark(width_dots: int) -> Image.Image:
     image.paste(disc, (x, 4))
     y = (image.height - (bottom - top)) // 2 - top
     ImageDraw.Draw(image).text((x + disc.width + gap - left, y), HEADER, font=face, fill=0)
+    return image
+
+
+def signature(width_dots: int) -> Image.Image:
+    """"Chef Mona" in a script font over a slanted pen stroke."""
+    face = font(SIGNATURE_FONT, int(width_dots * 0.06))
+    left, top, right, bottom = ImageDraw.Draw(Image.new("1", (1, 1))).textbbox((0, 0), SIGNATURE, font=face)
+    image = Image.new("1", (width_dots, bottom - top + 18), 1)
+    draw = ImageDraw.Draw(image)
+    x = (width_dots - (right - left)) // 2
+    draw.text((x - left, 2 - top), SIGNATURE, font=face, fill=0)
+    y = bottom - top + 8
+    draw.line([(x - 20, y + 6), (x + right - left + 30, y)], fill=0, width=3)
     return image
 
 
@@ -266,9 +290,9 @@ def _row_lines(row: Row, columns: int) -> list[str]:
     left, right = plain(row.left), plain(row.right)
     lines = textwrap.wrap(left, columns)
     last = lines.pop() if lines else ""
-    if len(last) + len(right) + 1 > columns:
-        return lines + ([last, right.rjust(columns)] if last else [right.rjust(columns)])
-    return lines + [last + right.rjust(columns - len(last))]
+    if not right or len(last) + len(right) + 1 <= columns:
+        return lines + [last + right.rjust(columns - len(last))]
+    return lines + ([last] if last else []) + [part.rjust(columns) for part in textwrap.wrap(right, columns)]
 
 
 def render_escpos(items: list[Item], width_dots: int) -> bytes:

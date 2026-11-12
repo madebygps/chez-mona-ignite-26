@@ -40,7 +40,13 @@
       ],
       "wrap_up": ["In the Copilot app, delete the chat you used for this lab."],
       "receipt": {
-        "summary": "Copilot Fusion picks the models for each prompt. It uses one of three patterns: single, cascade or critique. Then it returns one reply.",
+        "product": "GitHub Copilot Fusion",
+        "bullets": [
+          "Many models work on one prompt",
+          "Effort levels to fit the task",
+          "Single, cascade or critique patterns"
+        ],
+        "tip": "Stop picking models. Choose Fusion.",
         "qr": "https://gh.io/ignite26"
       }
     },
@@ -102,7 +108,13 @@
       ],
       "wrap_up": ["The launcher closes the VS Code window and deletes your copy of the starter."],
       "receipt": {
-        "summary": "The Microsoft Copilot SDK runs an agent in your own app. `define_tool` gives it a tool, and `send_and_wait` sends it a prompt.",
+        "product": "Microsoft Copilot SDK",
+        "bullets": [
+          "Add an agent to your own app",
+          "Give it tools from your own code",
+          "Powered by the engine behind Copilot"
+        ],
+        "tip": "Bring your own tools. We run the loop.",
         "qr": "https://gh.io/ignite26"
       }
     },
@@ -176,7 +188,13 @@
       ],
       "wrap_up": ["Close the GitHub tabs you opened."],
       "receipt": {
-        "summary": "An agentic workflow is a GitHub Actions workflow in Markdown. The frontmatter sets when it runs and what it can do. The agent follows the instructions.",
+        "product": "GitHub Agentic Workflows",
+        "bullets": [
+          "Add an agent to your automations",
+          "Define them in natural language",
+          "Safe and secure on GitHub Actions"
+        ],
+        "tip": "Less YAML, more natural language",
         "qr": "https://gh.io/ignite26"
       }
     },
@@ -253,7 +271,13 @@
       ],
       "wrap_up": ["Close the GitHub tabs you opened."],
       "receipt": {
-        "summary": "Code scanning finds known vulnerabilities and Copilot Autofix suggests the fix. Copilot code review checks the whole change, like a teammate.",
+        "product": "Code scanning + Copilot",
+        "bullets": [
+          "Code scanning finds security bugs",
+          "Copilot Autofix suggests the fix",
+          "Copilot code review checks your PRs"
+        ],
+        "tip": "Ask Copilot to review your next PR",
         "qr": "https://gh.io/ignite26"
       }
     }

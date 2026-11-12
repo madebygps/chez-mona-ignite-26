@@ -27,18 +27,27 @@ class ReceiptTest(unittest.TestCase):
             data = receipt.escpos(DISHES["dip"], receipt.Check(AT, [0, 1]), width)
             self.assertTrue(data.startswith(b"\x1b@\x1ba\x01"))
             self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
-            for text in (b"Thanks for cooking with us", b"DIP", b"Wed Nov 18, 2026", b"PRICELESS", b"Scan to continue learning", b"YOU LEARNED"):
+            for text in (b"MERCI, CHEF!", b"Microsoft Ignite 2026", b"DIP", b"Wed Nov 18, 2026", b"PRICELESS",
+                         b"CODE SCANNING + COPILOT"):
                 self.assertIn(text, data)
             if width == receipt.WIDTH_DOTS:
                 self.assertIn(receipt.QR_CAPTION.encode("ascii"), data)
+                self.assertIn(b"Ask Copilot to review your next PR", data)
             self.assertNotIn(b"No.", data)
             self.assertNotIn(b"GUEST CHECK", data)
 
-    def test_receipt_prints_the_summary_not_the_questions(self):
+    def test_receipt_prints_the_bullets_not_the_questions(self):
         dish = DISHES["fusilli"]
         texts = [line for line, _ in printed_lines(receipt.layout(dish, receipt.Check(AT)), 576)]
-        self.assertIn("Copilot Fusion picks the models for each", texts)
+        self.assertIn("   - Many models work on one prompt", texts)
         self.assertFalse(any(dish["quiz"][0]["question"] in t for t in texts))
+
+    def test_dish_position_only_when_known(self):
+        def dish_row(check):
+            return next(i.right for i in receipt.layout(DISHES["soup"], check) if isinstance(i, receipt.Row))
+
+        self.assertEqual(dish_row(receipt.Check(AT, course=(3, 4))), "DISH 3 OF 4")
+        self.assertEqual(dish_row(receipt.Check(AT)), "")
 
     def test_receipt_number_beside_date_and_time(self):
         for number in (1, 24, 1000):
@@ -54,20 +63,32 @@ class ReceiptTest(unittest.TestCase):
                 for line, columns in printed_lines(items, width):
                     self.assertLessEqual(len(line), columns, line)
 
-    def test_hint_line_only_when_hints_are_known(self):
+    def test_rank_only_when_hints_are_known(self):
         def rows(check):
-            return [i.left for i in receipt.layout(DISHES["soup"], check) if isinstance(i, receipt.Row)]
+            return {i.left: i.right for i in receipt.layout(DISHES["soup"], check) if isinstance(i, receipt.Row)}
 
-        self.assertIn("HINTS USED", rows(receipt.Check(AT, hints=[0, 2])))
-        self.assertNotIn("HINTS USED", rows(receipt.Check(AT)))
+        self.assertEqual(rows(receipt.Check(AT, hints=[0, 0]))["RANK"], "HEAD CHEF")
+        self.assertEqual(rows(receipt.Check(AT, hints=[0, 2]))["RANK"], "SOUS CHEF")
+        self.assertEqual(rows(receipt.Check(AT, hints=[1, 2]))["RANK"], "LINE COOK")
+        self.assertNotIn("RANK", rows(receipt.Check(AT)))
 
     def test_text_fits_the_paper(self):
         for width in (384, 576):
             for dish in DISHES.values():
-                for items in (receipt.layout(dish, receipt.Check(AT, [3, 3])),
+                for items in (receipt.layout(dish, receipt.Check(AT, [3, 3], 1000, (2, 4))),
                               receipt.ticket_layout(dish, AT)):
                     for line, columns in printed_lines(items, width):
                         self.assertLessEqual(len(line), columns, line)
+
+    def test_receipt_copy_fits_one_line_on_the_station_printer(self):
+        columns = receipt.WIDTH_DOTS // receipt.FONT_A_WIDTH
+        for dish in DISHES.values():
+            items = [i for i in receipt.layout(dish, receipt.Check(AT, [0, 0])) if isinstance(i, receipt.Line)]
+            for item in items:
+                if item.text in dish["receipt"]["bullets"] or item.text == dish["receipt"]["product"].upper():
+                    self.assertEqual(len(receipt._text_lines(item, columns)), 1, item.text)
+            tip = receipt.Row("TIP", dish["receipt"]["tip"])
+            self.assertEqual(len(receipt._row_lines(tip, columns)), 1, tip.right)
 
     def test_pictures_span_the_paper(self):
         for width in (384, 576):
