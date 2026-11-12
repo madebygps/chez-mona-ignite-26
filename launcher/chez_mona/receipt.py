@@ -23,12 +23,12 @@ QR_CAPTION = "Scan to keep the learning going at home"
 THANKS = "Merci, chef!"
 SIGNATURE = "Chef Mona"
 SIGNATURE_FONT = "segoescb.ttf"  # Segoe Script Bold
-TICKET_BAR = "Kitchen ticket"
 TICKET_CAPTION = "Take this to any open station and scan it"
+TICKET_FOOTER = "4 dishes on the menu. Collect them all."
 FONT_A_WIDTH = 12  # dots per character, Font A at normal size
 WIDTH_DOTS = 576  # RP326 printable width: 72 mm of 80 mm paper at 203 dpi
 QR_TARGET_FRACTION = 0.45
-TICKET_QR_FRACTION = 0.6
+TICKET_QR_FRACTION = 0.5
 FONT_DIR = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
 WORDMARK_FONT = "georgiaz.ttf"  # Georgia Bold Italic
 MONA_IMAGE = Path(__file__).with_name("mona-chef.png")  # static/mona-chef.svg, rendered at 512 px
@@ -91,15 +91,17 @@ def plain(text: str) -> str:
 def ticket_layout(dish: dict, at: datetime) -> list[Item]:
     """Fridge ticket. Its QR holds only the dish ID, which the stations scan."""
     return [
+        Picture("gingham", gingham),
         Picture("wordmark", wordmark),
-        Line(TICKET_BAR.upper(), bold=True, invert=True),
         Row(f"{at:%a %b} {at.day}", clock(at)),
+        Rule("="),
+        Line(f"1x {dish['dish'].upper()}", bold=True),
         Rule(),
-        Line(f"1x {dish['dish'].upper()}", width=2, height=2, bold=True),
-        None,
+        Line("ORDER UP!", bold=True, invert=True),
         Qr(dish["id"], TICKET_QR_FRACTION),
         Line(TICKET_CAPTION, bold=True),
-        Rule(),
+        Rule("="),
+        Line(TICKET_FOOTER),
         Line(EVENT),
     ]
 
