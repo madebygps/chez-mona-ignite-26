@@ -119,13 +119,22 @@ class ReceiptTest(unittest.TestCase):
     def test_ticket_carries_dish_id_qr_and_no_number(self):
         at = datetime(2026, 11, 18, 9, 5)
         items = receipt.ticket_layout(DISHES["fried-chicken"], at)
+        texts = [i.text for i in items if isinstance(i, receipt.Line)]
         self.assertFalse(any(i.text.startswith("#") for i in items if isinstance(i, receipt.Line)))
         self.assertIn(("Wed Nov 18", "9:05 AM"), [(i.left, i.right) for i in items if isinstance(i, receipt.Row)])
         self.assertEqual([i.data for i in items if isinstance(i, receipt.Qr)], ["fried-chicken"])
+        self.assertEqual([i.fraction for i in items if isinstance(i, receipt.Qr)], [0.5])
+        self.assertIn("ORDER UP!", texts)
+        self.assertIn(receipt.TICKET_FOOTER, texts)
+        self.assertFalse(any(text.startswith(("LAB:", "STATION:", "SERVER:")) for text in texts))
+        order = next(i for i in items if isinstance(i, receipt.Line) and i.text.startswith("1x "))
+        self.assertEqual(len(receipt._text_lines(order, receipt.WIDTH_DOTS // receipt.FONT_A_WIDTH)), 1)
         data = receipt.ticket_escpos(DISHES["fried-chicken"], at, 576)
         self.assertTrue(data.endswith(b"\x1bd\x04\x1dV\x42\x00"))
         self.assertIn(b"1x MICROSOFT COPILOT", data)
         self.assertNotIn(b"Explore how you can give an agent its own", data)
+        self.assertIn(b"ORDER UP!", data)
+        self.assertIn(receipt.TICKET_FOOTER.encode("ascii"), data)
         self.assertIn(b"Take this to any open station and scan it", data)
 
 
