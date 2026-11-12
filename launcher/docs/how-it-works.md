@@ -54,6 +54,16 @@ These are previews of the layouts in [`chez_mona/receipt.py`](../chez_mona/recei
 3. VS Code opens only when the guest clicks, so it does not cover the steps before the guest reads them.
 4. Wrap up, the idle timeout and stopping the server close VS Code windows whose title contains the folder name, then delete the folder. Leftover folders are also removed when the server starts and before each new guest.
 
+## Hardware
+
+The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. Every station starts the same way, and so does every fridge. See [Set up a booth laptop](setup.md).
+
+The launcher talks to the printer directly over USB. It does not use a Windows print queue, a driver or a printer name.
+
+- It uses the first USB printer it finds. It ignores Wi-Fi, network and virtual printers like "Microsoft Print to PDF".
+- It sends raw ESC/POS commands for 80 mm paper.
+- Before each job, it asks the printer for its status. It does not print if the cover is open or the paper is out.
+
 ## Files
 
 | Path | Contents |
