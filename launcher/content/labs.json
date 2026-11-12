@@ -114,7 +114,7 @@
           "Give it tools from your own code",
           "Powered by the engine behind Copilot"
         ],
-        "tip": "Bring your own tools. We run the loop.",
+        "tip": "Give your app a Copilot of its own",
         "qr": "https://gh.io/ignite26"
       }
     },
@@ -191,7 +191,7 @@
         "product": "GitHub Agentic Workflows",
         "bullets": [
           "Add an agent to your automations",
-          "Define them in natural language",
+          "Runs on a schedule or on repo events",
           "Safe and secure on GitHub Actions"
         ],
         "tip": "Less YAML, more natural language",
