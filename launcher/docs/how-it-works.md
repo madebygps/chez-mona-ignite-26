@@ -2,7 +2,7 @@
 
 The launcher is a local web app that runs the booth flow on each laptop. A guest scans a fridge ticket or chooses a lab on screen, reads the intro, explores the lab, takes a two question quiz, wraps up and prints a receipt. The same app also runs the fridge wall kiosks that print the tickets.
 
-A small Python server listens on `localhost` only. It serves the page and does the local work the browser cannot: copy the Fried Chicken starter, open and close VS Code, send tickets and receipts to the printer, and [count labs](lab-counts.md).
+A small Python server listens on `localhost` only. It serves the page and does the local work the browser cannot: copy the Fried Chicken starter, open and close VS Code, send tickets and receipts to the printer, and [count labs](run-booth.md#get-lab-counts).
 
 ## Guest flow
 
@@ -56,7 +56,7 @@ These are previews of the layouts in [`chez_mona/receipt.py`](../chez_mona/recei
 
 ## Hardware
 
-The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. Every station starts the same way, and so does every fridge. See [Set up a booth laptop](setup.md).
+The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. Every laptop gets the same setup. See [Set up a booth laptop](setup.md).
 
 The launcher talks to the printer directly over USB. It does not use a Windows print queue, a driver or a printer name.
 
@@ -69,8 +69,8 @@ The launcher talks to the printer directly over USB. It does not use a Windows p
 | Path | Contents |
 |---|---|
 | [`chez_mona/`](../chez_mona/) | Server (`server.py`), Fried Chicken VS Code session (`sdk_session.py`), ticket and receipt layouts (`receipt.py`), USB printing (`printer.py`), station role (`config.py`), content loader (`labs.py`), lab counts (`stats.py`) |
-| [`content/labs.json`](../content/labs.json) | Every dish. See [Edit lab content](edit-content.md). |
+| [`content/labs.json`](../content/labs.json) | Every dish. |
 | [`static/`](../static/) | The cooking station page (`index.html`, `app.js`), the fridge page (`fridge.html`, `fridge.js`), shared `app.css`, vendored [Mona Sans and Mona Sans Mono](https://github.com/github/mona-sans) web fonts in `fonts/`, and vendored [jsQR](https://github.com/cozmo/jsQR) for webcam scanning |
 | [`docs/`](.) | These pages, with screenshots and printout previews in `screenshots/` |
-| [`start.ps1`](../start.ps1) | Starts a cooking station or a fridge kiosk. See [Start a laptop](start.md). |
-| [`tests/`](../tests/) | Unit tests. See [Run the tests](test.md). |
+| [`start.ps1`](../start.ps1) | Starts a cooking station or a fridge kiosk. See [Start a laptop](run-booth.md#start-a-laptop). |
+| [`tests/`](../tests/) | Unit tests. Run them from `launcher` with `uv run python -m unittest discover -s tests`. |
