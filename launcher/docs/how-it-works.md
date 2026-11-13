@@ -1,6 +1,6 @@
 # How it works
 
-The launcher is a local web app that runs the booth flow on each laptop. A guest scans a fridge ticket or chooses a lab on screen, reads the intro, explores the lab, takes a two question quiz, wraps up and prints a receipt. The same app also runs the fridge wall kiosks that print the tickets.
+The launcher is a local web app that runs the booth flow on each laptop. A guest scans a fridge ticket or chooses a lab on screen, reads the intro, explores the lab, answers a three question quiz, wraps up and prints a receipt. The same app also runs the fridge wall kiosks that print the tickets.
 
 A small Python server listens on `localhost` only. It serves the page and does the local work the browser cannot: copy the Fried Chicken starter, open and close VS Code, send tickets and receipts to the printer, and [count labs](run-booth.md#get-lab-counts).
 
