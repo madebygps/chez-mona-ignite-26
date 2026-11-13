@@ -165,11 +165,7 @@
         },
         {
           "text": "Read the instructions",
-          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions** and find these sections:",
-          "details": [
-            "**What to do** gives the agent its job on each run.",
-            "**When in doubt** tells the agent what to do when it is unsure."
-          ],
+          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions**. Read **What to do**. It gives the agent its job on each run.",
           "action": {
             "type": "open_url",
             "label": "Open instructions",
@@ -188,6 +184,15 @@
             "label": "Open guardrails",
             "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L15-L45"
           }
+        },
+        {
+          "text": "Find a guardrail in plain language",
+          "body": "You can also write guardrails in the instructions. Click **Open rule** and read the **Bots** rule.",
+          "action": {
+            "type": "open_url",
+            "label": "Open rule",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L79-L80"
+          }
         }
       ],
       "quiz": [
@@ -202,16 +207,6 @@
           "hint": "Read the `on:` section at the top of the frontmatter."
         },
         {
-          "question": "What does the agent do when it is unsure about an item?",
-          "answer": "Leaves the item open",
-          "others": [
-            "Closes it with a polite comment",
-            "Adds a label for a maintainer",
-            "Asks the author a question"
-          ],
-          "hint": "Search the instructions for \"When in doubt\"."
-        },
-        {
           "question": "The agent can only read. What stops the workflow from closing items in other repositories?",
           "answer": "`target-repo` under `safe-outputs:`",
           "others": [
@@ -220,6 +215,16 @@
             "`copilot-requests: write`"
           ],
           "hint": "Read the comment above `safe-outputs:`."
+        },
+        {
+          "question": "Dependabot opens a pull request. What does the agent do?",
+          "answer": "Skips it and leaves it open",
+          "others": [
+            "Closes it with a polite comment",
+            "Checks the workshop curriculum first",
+            "Merges it as real maintenance"
+          ],
+          "hint": "Read the **Bots** rule."
         }
       ],
       "wrap_up": ["Close the browser tabs you opened."],
