@@ -47,16 +47,18 @@ These are previews of the layouts in [`chez_mona/receipt.py`](../chez_mona/recei
 |---|---|
 | <img src="screenshots/kitchen-ticket.png" alt="Kitchen ticket" width="320"> | <img src="screenshots/receipt.png" alt="Receipt" width="320"> |
 
-## Fried Chicken
+## Fried Chicken VS Code session
 
-1. **Start lab** copies [`copilot-sdk/`](../../copilot-sdk/) to `%LOCALAPPDATA%\ChezMona\guests\chez-mona-fried-chicken-<id>`, without caches or virtual environments. It adds workspace settings that turn on auto save, so closing never stops on an unsaved changes prompt.
-2. **Open in VS Code** in Explore step 1 runs `code --new-window --disable-workspace-trust <folder> <folder>\main.py`. If the window is already open, it uses `--reuse-window` to focus it. If the guest closed it, the button opens it again.
-3. VS Code opens only when the guest clicks, so it does not cover the steps before the guest reads them.
-4. **Next guest**, the idle timeout and stopping the server close VS Code windows whose title contains the folder name, then delete the folder. Leftover folders are also removed when the server starts and before each new guest.
+The Fried Chicken lab gives each guest a fresh copy of the [`copilot-sdk/`](../../copilot-sdk/) sample in VS Code. The launcher tries to remove the copy when the guest is done.
+
+1. When the guest clicks **Start lab**, the launcher copies `copilot-sdk/` to `%LOCALAPPDATA%\ChezMona\guests\chez-mona-fried-chicken-<id>`, without caches or virtual environments. It also turns on auto-save in the copy, so VS Code is less likely to stop cleanup with a save prompt.
+2. When the guest clicks **Open in VS Code** in Explore step 1, the launcher opens the folder and `main.py` in a new VS Code window. If that window is already open, the button brings it to the front.
+3. When the guest clicks **Next guest** or the station times out, the launcher closes the guest's VS Code window if it is still open, then tries to delete the folder. Pressing Ctrl+C to stop the launcher does the same.
+4. If Windows keeps a folder locked, the folder stays. The launcher tries to delete it again the next time the launcher starts or a guest starts the Fried Chicken lab. Each guest gets a new `<id>`, so a locked folder does not block the next guest.
 
 ## Hardware
 
-The booth has 6 cooking station laptops and 2 fridge laptops, all identical Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. Every laptop gets the same setup. See [Set up a booth laptop](setup.md).
+The booth has 6 cooking station laptops and 2 fridge laptops, all Surface laptops on Windows. Each laptop has its own Rongta RP326 receipt printer, connected by USB. Every laptop gets the same setup. See [Set up a booth laptop](setup.md).
 
 The launcher talks to the printer directly over USB. It does not use a Windows print queue, a driver or a printer name.
 
