@@ -129,6 +129,7 @@ class ServerTest(unittest.TestCase):
         self.assertNotIn("check", result)
         self.assertIn(b"AUTOFIX ARTICHOKE DIP", sent[0])
         self.assertNotIn(b"No.", sent[0])
+        self.assertTrue(result["image"].startswith("data:image/png;base64,"))
 
     def test_receipt_numbers_continue_across_dishes_days_and_restarts(self):
         with tempfile.TemporaryDirectory() as directory:

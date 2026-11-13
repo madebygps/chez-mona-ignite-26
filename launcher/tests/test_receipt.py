@@ -36,6 +36,12 @@ class ReceiptTest(unittest.TestCase):
             self.assertNotIn(b"No.", data)
             self.assertNotIn(b"GUEST CHECK", data)
 
+    def test_preview_spans_the_paper_and_draws_inverted_bars(self):
+        image = receipt.render_image(receipt.layout(DISHES["dip"], receipt.Check(AT, [0, 1])), receipt.WIDTH_DOTS)
+        self.assertEqual(image.width, receipt.WIDTH_DOTS + 2 * receipt.PREVIEW_MARGIN)
+        bar = receipt._line_image("CODE SCANNING + COPILOT".center(48), receipt.WIDTH_DOTS, "left", invert=True)
+        self.assertGreater(bar.histogram()[0], bar.width * bar.height // 2)
+
     def test_receipt_prints_the_bullets_not_the_questions(self):
         dish = DISHES["fusilli"]
         texts = [line for line, _ in printed_lines(receipt.layout(dish, receipt.Check(AT)), 576)]

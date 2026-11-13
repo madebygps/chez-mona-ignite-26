@@ -106,7 +106,7 @@
           "hint": "Find the line that asks the vegetarian question."
         }
       ],
-      "wrap_up": ["The launcher closes the VS Code window and deletes your copy of the starter."],
+      "wrap_up": ["Close the VS Code window."],
       "receipt": {
         "product": "Microsoft Copilot SDK",
         "bullets": [
@@ -186,7 +186,7 @@
           "hint": "Search the instructions for \"When in doubt\"."
         }
       ],
-      "wrap_up": ["Close the GitHub tabs you opened."],
+      "wrap_up": ["Close the browser tabs you opened."],
       "receipt": {
         "product": "GitHub Agentic Workflows",
         "bullets": [
@@ -269,7 +269,7 @@
           "hint": "Find the comment that is not about the SQL query."
         }
       ],
-      "wrap_up": ["Close the GitHub tabs you opened."],
+      "wrap_up": ["Close the browser tabs you opened."],
       "receipt": {
         "product": "Code scanning + Copilot",
         "bullets": [

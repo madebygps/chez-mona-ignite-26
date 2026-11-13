@@ -450,36 +450,44 @@ function renderQuiz(index) {
 
 // ---------- Print ----------
 
+// The receipt slides out of a printer slot once the job is sent, then the
+// rank stamp lands on it. The image is the same check the printer received.
 async function renderPrint() {
   const dish = state.dish;
   show("print", `
-    <section class="card center">
-      <p class="eyebrow">Well done</p>
-      <h2>Printing your receipt…</h2>
-    </section>`);
-  try {
-    await api("/api/print", { dish: dish.id, hints: state.hints });
-    show("print", `
-      <section class="card center">
+    <section class="card receipt-screen">
+      <div class="slot"><div class="feed" id="feed"></div></div>
+      <div>
         <p class="eyebrow">Thanks for cooking with us</p>
-        <h2 class="status-ok">Your receipt is on its way</h2>
-        <p class="lede">Pick it up from the printer.</p>
-        <div class="row" style="justify-content:center">
-          <button class="primary" id="next">Next guest</button>
-        </div>
-      </section>`);
+        <h2 id="print-title">Printing your receipt…</h2>
+        <div id="print-body"></div>
+      </div>
+    </section>`);
+  const title = document.getElementById("print-title");
+  const body = document.getElementById("print-body");
+  try {
+    const result = await api("/api/print", { dish: dish.id, hints: state.hints });
+    document.getElementById("feed").innerHTML = `
+      <div class="paper">
+        ${result.image ? `<img src="${result.image}" alt="Your receipt for ${escapeHtml(dish.dish)}">` : ""}
+        <p class="stamp">You earned<strong>${rank(state.hints || [])}</strong></p>
+      </div>`;
+    title.className = "status-ok";
+    title.textContent = "Your receipt is on its way";
+    body.innerHTML = `
+      <p class="lede">Pick it up from the printer.</p>
+      <div class="row"><button class="primary" id="next">Next guest</button></div>`;
     on("next", endLab);
   } catch (error) {
-    show("print", `
-      <section class="card center">
-        <h2 class="status-error">The receipt did not print</h2>
-        <p class="lede">Please ask a chef. You still finished the lab!</p>
-        <pre class="detail">${escapeHtml(error.message)}</pre>
-        <div class="row" style="justify-content:center">
-          <button class="primary" id="next">Next guest</button>
-          <button id="again">Staff: print again</button>
-        </div>
-      </section>`);
+    title.className = "status-error";
+    title.textContent = "The receipt did not print";
+    body.innerHTML = `
+      <p class="lede">Please ask a chef. You still finished the lab!</p>
+      <pre class="detail">${escapeHtml(error.message)}</pre>
+      <div class="row">
+        <button class="primary" id="next">Next guest</button>
+        <button id="again">Staff: print again</button>
+      </div>`;
     on("next", endLab);
     on("again", renderPrint);
   }
@@ -487,33 +495,43 @@ async function renderPrint() {
 
 // ---------- Wrap up ----------
 
-async function renderWrap() {
+// Same thresholds as rank() in chez_mona/receipt.py, so the stamp matches the receipt.
+function rank(hints) {
+  const wrong = hints.reduce((sum, n) => sum + n, 0);
+  if (wrong === 0) return "Head chef";
+  return wrong <= 2 ? "Sous chef" : "Line cook";
+}
+
+// The guest ticks every chore. For the SDK dish, endLab() also closes any
+// leftover VS Code window and deletes the starter copy after the receipt.
+function renderWrap() {
   const dish = state.dish;
-  const sdk = dish.start.type === "sdk";
   show("wrap", `
     <section class="card">
-      <p class="eyebrow">Well done</p>
-      <h2>Clean up before your receipt</h2>
-      <ul class="step-details">${dish.wrap_up.map((w) => `<li>${fmt(w)}</li>`).join("")}</ul>
-      <p class="muted" id="cleanup">${sdk ? "Cleaning up…" : ""}</p>
+      <p class="eyebrow">Service complete</p>
+      <h2>Clean your station</h2>
+      <ul class="chores">
+        ${dish.wrap_up.map((w, i) => `<li><button class="chore" id="chore-${i}"         aria-pressed="false">
+                  <span>${fmt(w)}</span>
+        </button></li>`).join("")}
+      </ul>
       <div class="row">
-        <button class="primary" id="next">Print my receipt</button>
+        <button class="primary" id="next" disabled>Check, please!</button>
       </div>
     </section>`);
-  on("next", renderPrint);
+  const next = on("next", renderPrint);
+  const chores = dish.wrap_up.map((_, i) => document.getElementById(`chore-${i}`));
+  const tick = (chore, done) => {
+    chore.className = done ? "chore done" : "chore";
+    chore.ariaPressed = String(done);
+  };
   api("/api/complete", { dish: dish.id }).catch((error) => console.warn("Could not record completion:", error));
-  if (sdk) {
-    const cleanup = document.getElementById("cleanup");
-    try {
-      const result = await api("/api/session/end", {});
-      const notes = [];
-      if (result.window_still_open) notes.push("Please close the VS Code window.");
-      if (result.ended && !result.deleted) notes.push("Staff: the starter folder could not be deleted yet; it is removed on the next start.");
-      cleanup.textContent = notes.length ? notes.join(" ") : "All clean.";
-    } catch (error) {
-      cleanup.textContent = `Staff: cleanup failed. ${error.message}`;
-    }
-  }
+  chores.forEach((chore) =>
+    chore.addEventListener("click", () => {
+      tick(chore, chore.ariaPressed !== "true");
+      next.disabled = !chores.every((c) => c.ariaPressed === "true");
+    })
+  );
 }
 
 // ---------- Staff panel ----------

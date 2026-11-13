@@ -13,8 +13,8 @@ flowchart LR
     A[Fridge: pick a dish] --> B[Fridge: confirm and print]
     B --> T([Kitchen ticket])
     T --> C[Station: scan ticket]
-    C --> D[Intro] --> E[Steps] --> F[Quiz] --> G[Wrap up]
-    G --> R([Receipt])
+    C --> D[Intro] --> E[Steps] --> F[Quiz] --> G[Clean up] --> H[Receipt screen]
+    H --> R([Receipt])
 ```
 
 These screenshots show the Copilot Fusion Fusilli lab. The other dishes use the same screens with their own content from [`content/labs.json`](../content/labs.json).
@@ -35,9 +35,9 @@ These screenshots show the Copilot Fusion Fusilli lab. The other dishes use the 
 |---|---|
 | ![Fusilli steps](screenshots/station-steps.png) | ![Quiz question](screenshots/station-quiz.png) |
 
-| 7. Wrap up | 8. Take the receipt |
+| 7. Clean the station | 8. Take the receipt |
 |---|---|
-| ![Wrap up with Print my receipt](screenshots/station-wrap-up.png) | ![Receipt on its way](screenshots/station-print.png) |
+| ![Clean your station checklist](screenshots/station-wrap-up.png) | ![Receipt preview with the rank stamp while the receipt prints](screenshots/station-print.png) |
 
 ### Printouts
 
@@ -52,7 +52,7 @@ These are previews of the layouts in [`chez_mona/receipt.py`](../chez_mona/recei
 1. **Start lab** copies [`copilot-sdk/`](../../copilot-sdk/) to `%LOCALAPPDATA%\ChezMona\guests\chez-mona-fried-chicken-<id>`, without caches or virtual environments. It adds workspace settings that turn on auto save, so closing never stops on an unsaved changes prompt.
 2. **Open in VS Code** in Explore step 1 runs `code --new-window --disable-workspace-trust <folder> <folder>\main.py`. If the window is already open, it uses `--reuse-window` to focus it. If the guest closed it, the button opens it again.
 3. VS Code opens only when the guest clicks, so it does not cover the steps before the guest reads them.
-4. Wrap up, the idle timeout and stopping the server close VS Code windows whose title contains the folder name, then delete the folder. Leftover folders are also removed when the server starts and before each new guest.
+4. **Next guest**, the idle timeout and stopping the server close VS Code windows whose title contains the folder name, then delete the folder. Leftover folders are also removed when the server starts and before each new guest.
 
 ## Hardware
 

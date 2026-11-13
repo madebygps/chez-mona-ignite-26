@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import mimetypes
 import socket
@@ -88,7 +89,8 @@ class Launcher:
             check = receipt.Check(datetime.now(), hints, number, course)
             job = printer.submit_usb(receipt.escpos(dish, check))
             stats.record("receipt", dish_id, self.stats_path)
-        return {"status": "sent", "job": job}
+        image = base64.b64encode(receipt.png(dish, check)).decode("ascii")
+        return {"status": "sent", "job": job, "image": f"data:image/png;base64,{image}"}
 
     def print_ticket(self, dish_id: str) -> dict:
         dish = self.dish(dish_id)
