@@ -155,22 +155,21 @@
       "story": "In this lab, you'll explore a real agentic workflow: a GitHub Actions workflow written in Markdown. It puts an agent to work for the maintainers of a busy workshop repository. You'll find out when the agent runs, what its job is, and how the workflow keeps it safe.",
       "steps": [
         {
-          "text": "Read the frontmatter",
-          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open frontmatter** and find these keys:",
-          "details": [
-            "`on:` sets when the workflow runs.",
-            "`permissions:` sets what the workflow can access.",
-            "`safe-outputs:` sets what the workflow may change."
-          ],
+          "text": "Find the trigger",
+          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open trigger**. Find `on:`. It sets when the workflow runs.",
           "action": {
             "type": "open_url",
-            "label": "Open frontmatter",
-            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L1-L45"
+            "label": "Open trigger",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L1-L13"
           }
         },
         {
           "text": "Read the instructions",
-          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions**. Read **What to do**. It gives the agent its job on each run.",
+          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions** and find these sections:",
+          "details": [
+            "**What to do** gives the agent its job on each run.",
+            "**When in doubt** tells the agent what to do when it is unsure."
+          ],
           "action": {
             "type": "open_url",
             "label": "Open instructions",
@@ -178,12 +177,17 @@
           }
         },
         {
-          "text": "Find the safety rules",
-          "body": "In the same instructions, find these sections:",
+          "text": "Find the guardrails",
+          "body": "The guardrails are settings in the frontmatter. Click **Open guardrails** and find these keys:",
           "details": [
-            "**Never close these** lists the items the agent must skip.",
-            "**When in doubt** tells the agent what to do when it is unsure."
-          ]
+            "`permissions:` sets what the agent can access.",
+            "`safe-outputs:` sets what the workflow may change. Read the comment above it."
+          ],
+          "action": {
+            "type": "open_url",
+            "label": "Open guardrails",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L15-L45"
+          }
         }
       ],
       "quiz": [
@@ -198,16 +202,6 @@
           "hint": "Read the `on:` section at the top of the frontmatter."
         },
         {
-          "question": "Which items must the agent never close?",
-          "answer": "Items from maintainers and bots",
-          "others": [
-            "Items from first-time contributors",
-            "Items that are older than one week",
-            "Items that have no labels"
-          ],
-          "hint": "Read **Never close these**."
-        },
-        {
           "question": "What does the agent do when it is unsure about an item?",
           "answer": "Leaves the item open",
           "others": [
@@ -216,6 +210,16 @@
             "Asks the author a question"
           ],
           "hint": "Search the instructions for \"When in doubt\"."
+        },
+        {
+          "question": "The agent can only read. What stops the workflow from closing items in other repositories?",
+          "answer": "`target-repo` under `safe-outputs:`",
+          "others": [
+            "The **When in doubt** section",
+            "`network: defaults`",
+            "`copilot-requests: write`"
+          ],
+          "hint": "Read the comment above `safe-outputs:`."
         }
       ],
       "wrap_up": ["Close the browser tabs you opened."],
