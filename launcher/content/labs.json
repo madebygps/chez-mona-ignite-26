@@ -73,7 +73,7 @@
         "Find how the app sends a prompt to the agent"
       ],
       "start": { "type": "sdk" },
-      "story": "In this lab, you'll explore a small Python app that uses the Microsoft Copilot SDK to run an agent. You'll use GitHub Copilot to understand how the app gives its agent a tool of its own: the Chez Mona menu.",
+      "story": "In this lab, you'll explore a small Python app that uses the Microsoft Copilot SDK to run an agent. You'll use GitHub Copilot to understand how the app gives its agent a custom tool of its own.",
       "steps": [
         {
           "text": "Open VS Code",
