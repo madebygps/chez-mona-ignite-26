@@ -7,20 +7,31 @@
       "pitch": "Let Copilot pick the right models for each prompt, then see which models answered.",
       "uses": ["GitHub Copilot app", "Copilot Fusion"],
       "about": [
-        "What Copilot Fusion is",
-        "The three execution patterns that Fusion can use",
-        "How to see which models answered your prompt"
+        "Turn on Copilot Fusion in the Copilot app",
+        "Compare the execution patterns that Fusion uses",
+        "See which models answered your prompt"
       ],
       "start": { "type": "none" },
+      "story": "In this lab, you'll learn about Copilot Fusion by asking Copilot itself to explain it. Then you'll see which models teamed up to write your answer.",
       "steps": [
         { "text": "Open the app", "body": "In the taskbar, click the **GitHub Copilot app** icon to open it." },
         { "text": "Start a chat", "body": "On the left, find **Sessions**. Click **+** (New) on the right.", "image": "steps/fusilli-new-chat.png", "alt": "The Sessions row in the Copilot app sidebar, with the New button on the right" },
         { "text": "Turn on Fusion", "body": "In the chat box, click the model name. Turn on **Copilot Fusion**. Under **Effort level**, select **High**.", "image": "steps/fusilli-fusion.png", "alt": "The model menu in the chat box, with Copilot Fusion turned on and High selected under Effort level" },
-        { "text": "Ask about the patterns", "body": "Copy this prompt and paste it into the chat.", "prompt": "Read https://docs.github.com/en/copilot/concepts/models/copilot-fusion. What execution patterns can Copilot Fusion use?" },
+        { "text": "Ask about Fusion", "body": "Copy this prompt and paste it into the chat.", "prompt": "Read https://docs.github.com/en/copilot/concepts/models/copilot-fusion. What is Copilot Fusion, and what execution patterns can it use?" },
         { "text": "Compare two patterns", "body": "Copy this prompt and paste it into the same chat.", "prompt": "What is the difference between cascade and critique?" },
         { "text": "See the models", "body": "Below the reply, find **Copilot Fusion** and the name of the model that answered. Then return here and click **I'm ready for the quiz**.", "image": "steps/fusilli-models.png", "alt": "The label below a reply in the Copilot app that reads Copilot Fusion, GPT-6.1 Terra" }
       ],
       "quiz": [
+        {
+          "question": "What is Copilot Fusion?",
+          "answer": "A model router and orchestrator that picks the models and pattern for each task",
+          "others": [
+            "A new model that GitHub trained on code",
+            "A setting that makes one model reply faster",
+            "A tool that merges replies from chats you pick"
+          ],
+          "hint": "Read the reply to your first prompt."
+        },
         {
           "question": "Which pattern sends a draft to a judge that can escalate to a stronger model?",
           "answer": "Cascade",
@@ -57,11 +68,12 @@
       "pitch": "Explore how you can give an agent its own tool with code.",
       "uses": ["VS Code", "GitHub Copilot", "Python"],
       "about": [
-        "How the Microsoft Copilot SDK runs an agent in an app",
-        "How the app gives the agent its own tool",
-        "How to send a prompt and get the reply"
+        "Read an app that runs an agent",
+        "Find the tool the app gives the agent",
+        "Find how the app sends a prompt to the agent"
       ],
       "start": { "type": "sdk" },
+      "story": "In this lab, you'll explore a small Python app that uses the Microsoft Copilot SDK to run an agent. You'll use GitHub Copilot to understand how the app gives its agent a custom tool of its own.",
       "steps": [
         {
           "text": "Open VS Code",
@@ -74,12 +86,12 @@
         },
         {
           "text": "Ask about the tool",
-          "body": "Copy this question and paste it into the chat.",
+          "body": "Copy this question and paste it into the chat. Then find `get_menu` in `main.py`.",
           "prompt": "What does define_tool do?"
         },
         {
           "text": "Ask about the menu",
-          "body": "Copy this question and paste it into the chat.",
+          "body": "Copy this question and paste it into the chat. Then find `main` in `main.py`.",
           "prompt": "How does the agent get the menu?"
         },
         {
@@ -98,6 +110,16 @@
             "Name the function `tool_menu`, then import it in `main.py`"
           ],
           "hint": "Look at the line above `get_menu`, and at `create_session`."
+        },
+        {
+          "question": "A guest is vegetarian. How does the agent get only the vegetarian dishes?",
+          "answer": "It calls `get_menu` with `vegetarian_only` set to true",
+          "others": [
+            "It removes the meat dishes from its reply",
+            "It reads a vegetarian menu file",
+            "The prompt lists the vegetarian dishes"
+          ],
+          "hint": "Read the reply to your second question."
         },
         {
           "question": "Which call sends a prompt and waits for the reply?",
@@ -125,42 +147,51 @@
       "pitch": "Read a CI workflow where an agent triages issues every week.",
       "uses": ["GitHub Agentic Workflows"],
       "about": [
-        "What an agentic workflow is",
-        "How the frontmatter sets the trigger and permissions",
-        "How the agent follows plain-language instructions"
+        "How the workflow sets triggers, permissions and other settings",
+        "How the workflow gives the agent its instructions",
+        "How the workflow sets guardrails for the agent"
       ],
       "start": { "type": "none" },
+      "story": "In this lab, you'll explore a real agentic workflow: a GitHub Actions workflow written in Markdown. It puts an agent to work for the maintainers of a busy workshop repository. You'll find out when the agent runs, what its job is, and how the workflow keeps it safe.",
       "steps": [
         {
-          "text": "Meet agentic workflows",
-          "body": "An agentic workflow is a GitHub Actions workflow written in Markdown. An agent follows its plain-language instructions."
+          "text": "Find the trigger",
+          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open trigger**. Find `on:`. It sets when the workflow runs.",
+          "action": {
+            "type": "open_url",
+            "label": "Open trigger",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L1-L13"
+          }
         },
         {
-          "text": "Read the frontmatter",
-          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open frontmatter** and look for these keys:",
+          "text": "Find the guardrails",
+          "body": "The frontmatter also sets guardrails. Click **Open guardrails** and find these keys:",
           "details": [
-            "`on:` sets when the workflow runs.",
-            "`permissions:` sets what the workflow can access.",
-            "`safe-outputs:` sets what the workflow may change."
+            "`permissions:` sets what the agent can access.",
+            "`safe-outputs:` sets what the workflow may change. Read the comment above it."
           ],
           "action": {
             "type": "open_url",
-            "label": "Open frontmatter",
-            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L1-L45"
+            "label": "Open guardrails",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L15-L45"
           }
         },
         {
           "text": "Read the instructions",
-          "body": "The instructions are the plain-language prompt below the frontmatter. The agent follows them on each run. Click **Open instructions** and look for these sections:",
-          "details": [
-            "**What to do** gives the agent its job.",
-            "**Never close these** lists the items the agent must skip.",
-            "**When in doubt** tells the agent what to do when it is unsure."
-          ],
+          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions**. Read **What to do**. It gives the agent its job on each run.",
           "action": {
             "type": "open_url",
             "label": "Open instructions",
             "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L47-L146"
+          }
+        },
+        {
+          "text": "Find a guardrail in plain language",
+          "body": "You can also write guardrails in the instructions. Click **Open rule** and read the **Bots** rule.",
+          "action": {
+            "type": "open_url",
+            "label": "Open rule",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L79-L80"
           }
         }
       ],
@@ -176,14 +207,24 @@
           "hint": "Read the `on:` section at the top of the frontmatter."
         },
         {
-          "question": "What does the agent do when it is unsure about an item?",
-          "answer": "Leaves the item open",
+          "question": "The agent can only read. What stops the workflow from closing items in other repositories?",
+          "answer": "`target-repo` under `safe-outputs:`",
+          "others": [
+            "The **When in doubt** section",
+            "`network: defaults`",
+            "`copilot-requests: write`"
+          ],
+          "hint": "Read the comment above `safe-outputs:`."
+        },
+        {
+          "question": "Dependabot opens a pull request. What does the agent do?",
+          "answer": "Skips it and leaves it open",
           "others": [
             "Closes it with a polite comment",
-            "Adds a label for a maintainer",
-            "Asks the author a question"
+            "Checks the workshop curriculum first",
+            "Merges it as real maintenance"
           ],
-          "hint": "Search the instructions for \"When in doubt\"."
+          "hint": "Read the **Bots** rule."
         }
       ],
       "wrap_up": ["Close the browser tabs you opened."],
@@ -210,7 +251,7 @@
         "Review all suggestions from Copilot code review"
       ],
       "start": { "type": "none" },
-      "story": "In this lab, a pull request we opened adds a security vulnerability. See how GitHub Advanced Security and GitHub Copilot find security issues and other code improvements.",
+      "story": "In this lab, you'll review a pull request that sneaks a security vulnerability into our code. You'll watch GitHub Advanced Security catch it, then see what else Copilot code review finds.",
       "steps": [
         {
           "text": "Find the issue with GitHub Advanced Security",

@@ -117,9 +117,9 @@ class ServerTest(unittest.TestCase):
         status, _, data = self.request("POST", "/api/print", {"dish": "fusilli"})
         self.assertEqual((status, json.loads(data)["status"]), (200, "sent"))
         self.assertEqual(self.request("POST", "/api/print", {"dish": "pizza"})[0], 400)
-        self.assertEqual(self.request("POST", "/api/print", {"dish": "soup", "hints": [0, 2]})[0], 200)
-        for hints in ([0], [0, -1], [0, 9], [0, "1"], [True, 0], "0,0"):
-            self.assertEqual(self.request("POST", "/api/print", {"dish": "soup", "hints": hints})[0], 400, hints)
+        self.assertEqual(self.request("POST", "/api/print", {"dish": "fusilli", "hints": [0, 2, 1]})[0], 200)
+        for hints in ([0, 0], [0, -1, 0], [0, 9, 0], [0, "1", 0], [True, 0, 0], "0,0,0"):
+            self.assertEqual(self.request("POST", "/api/print", {"dish": "fusilli", "hints": hints})[0], 400, hints)
 
     def test_print_sends_ticket(self):
         result = json.loads(self.request("POST", "/api/ticket", {"dish": "soup"})[2])

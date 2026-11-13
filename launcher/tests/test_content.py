@@ -22,7 +22,7 @@ class LabsTest(unittest.TestCase):
             labs.validate(data)
 
     def test_rejects_bad_content(self):
-        self.assert_rejected(lambda d: d["dishes"][0]["quiz"].pop())
+        self.assert_rejected(lambda d: d["dishes"][0]["quiz"].__delitem__(slice(1, None)))
         self.assert_rejected(lambda d: d["dishes"][3]["quiz"].append(d["dishes"][3]["quiz"][0]))
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"][0]["others"].append("Extra"))
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"][0].update(others=["a", "a", "b"]))
