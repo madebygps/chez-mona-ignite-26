@@ -279,16 +279,21 @@ function renderIntro(id) {
   state.question = 0;
   show("intro", `
     <section class="card intro">
+      <div class="intro-inner">
       <p class="eyebrow">${escapeHtml(dish.lab)}</p>
       <h1>${escapeHtml(dish.dish)}</h1>
       <p class="confirm-meta">${dish.uses.map(escapeHtml).join(" · ")}</p>
-      <div class="confirm-about">
-        <p class="confirm-label">You'll learn</p>
-        <ul>${dish.about.map((point) => `<li>${fmt(point)}</li>`).join("")}</ul>
+      <div class="intro-text">
+        ${dish.story ? `<p class="story">${fmt(dish.story)}</p>` : ""}
+        <div class="confirm-about">
+          <p class="confirm-label">You'll learn</p>
+          <ul>${dish.about.map((point) => `<li>${fmt(point)}</li>`).join("")}</ul>
+        </div>
       </div>
       <div class="row">
         <button class="primary" id="start">Start lab</button>
         <button class="link" id="back">Not my dish</button>
+      </div>
       </div>
     </section>`);
   on("start", startLab);

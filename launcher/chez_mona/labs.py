@@ -45,6 +45,8 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
         _check(isinstance(about, list) and 1 <= len(about) <= 4
                and all(isinstance(p, str) and p.strip() for p in about),
                f"{did}: about needs 1 to 4 short points")
+        if "story" in dish:
+            _check(isinstance(dish["story"], str) and dish["story"].strip(), f"{did}: empty story")
         _check(dish.get("start", {}).get("type") in START_TYPES, f"{did}: bad start type")
         if dish["start"]["type"] == "open_url":
             _check(dish["start"].get("url", "").startswith("https://"), f"{did}: start needs https url")
@@ -68,7 +70,7 @@ def validate(data: dict, content_dir: Path = CONTENT_DIR) -> None:
                 if action["type"] == "open_url":
                     _check(action.get("url", "").startswith("https://"), f"{did} step {i}: action needs https url")
         quiz = dish.get("quiz", [])
-        _check(len(quiz) == 2, f"{did}: quiz needs exactly 2 questions")
+        _check(len(quiz) in (2, 3), f"{did}: quiz needs 2 or 3 questions")
         for i, q in enumerate(quiz, 1):
             for key in ("question", "answer", "hint"):
                 _check(q.get(key), f"{did} question {i}: missing {key}")

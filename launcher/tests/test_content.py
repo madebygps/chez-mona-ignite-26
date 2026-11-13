@@ -23,6 +23,7 @@ class LabsTest(unittest.TestCase):
 
     def test_rejects_bad_content(self):
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"].pop())
+        self.assert_rejected(lambda d: d["dishes"][3]["quiz"].append(d["dishes"][3]["quiz"][0]))
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"][0]["others"].append("Extra"))
         self.assert_rejected(lambda d: d["dishes"][0]["quiz"][0].update(others=["a", "a", "b"]))
         self.assert_rejected(lambda d: d["dishes"][3]["steps"][0]["action"].update(url="http://example.com"))
@@ -46,6 +47,7 @@ class LabsTest(unittest.TestCase):
         self.assert_rejected(lambda d: d["dishes"][0].update(uses="GitHub.com"))
         self.assert_rejected(lambda d: d["dishes"][0].update(about=[]))
         self.assert_rejected(lambda d: d["dishes"][0].update(about="One string"))
+        self.assert_rejected(lambda d: d["dishes"][0].update(story=" "))
 
 
 class ConfigTest(unittest.TestCase):
