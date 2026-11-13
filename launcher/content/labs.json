@@ -147,9 +147,9 @@
       "pitch": "Read a CI workflow where an agent triages issues every week.",
       "uses": ["GitHub Agentic Workflows"],
       "about": [
-        "Read the frontmatter: the trigger, permissions and safe outputs",
-        "Read the plain-language prompt that gives the agent its job",
-        "Find the guardrails that tell the agent what to leave alone"
+        "How the frontmatter sets triggers, permissions and other settings",
+        "How the workflow gives the agent its instructions",
+        "How the workflow sets guardrails for the agent"
       ],
       "start": { "type": "none" },
       "story": "In this lab, you'll explore a real agentic workflow: a GitHub Actions workflow written in Markdown. It puts an agent to work for the maintainers of a busy workshop repository. You'll find out when the agent runs, what its job is, and how the workflow keeps it safe.",
