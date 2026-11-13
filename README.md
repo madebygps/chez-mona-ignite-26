@@ -6,6 +6,7 @@ Private booth repository for the Chez Mona labs.
 
 | I want to | Read |
 |---|---|
+| Learn the basics before a booth shift | [Booth staff brief](launcher/docs/staff-brief.md) |
 | Set up a laptop | [Set up a booth laptop](launcher/docs/setup.md) |
 | Start, check or staff a laptop, or get lab counts | [Run the booth](launcher/docs/run-booth.md) |
 | Understand the guest flow and the code | [How it works](launcher/docs/how-it-works.md) |
