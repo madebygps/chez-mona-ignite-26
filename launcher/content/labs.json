@@ -186,7 +186,7 @@
           "hint": "Search the instructions for \"When in doubt\"."
         }
       ],
-      "wrap_up": ["Close the GitHub tabs you opened."],
+      "wrap_up": ["Close the github.com tabs you opened."],
       "receipt": {
         "product": "GitHub Agentic Workflows",
         "bullets": [
@@ -269,7 +269,7 @@
           "hint": "Find the comment that is not about the SQL query."
         }
       ],
-      "wrap_up": ["Close the GitHub tabs you opened."],
+      "wrap_up": ["Close the github.com tabs you opened."],
       "receipt": {
         "product": "Code scanning + Copilot",
         "bullets": [
