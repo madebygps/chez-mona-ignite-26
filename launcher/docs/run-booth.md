@@ -30,6 +30,21 @@ The script starts the server, waits for it, then opens the page in an Edge app w
 - To use another port, add `-Port N`. If the port is already taken, for example by a second station window, the script stops with an error.
 - To run the server alone: `uv run python -u -m chez_mona [--role station|fridge] [--port N]`.
 
+### Launcher icon
+
+Both pages use the Mona favicon. The icon files are in `launcher\static`:
+`favicon.svg`, `favicon.ico` and `launcher-icon.png`.
+
+These steps apply only to a normal Windows shortcut, not an Edge app window.
+To use the icon on an existing Windows shortcut, open **Properties**.
+Select **Change Icon**, then browse to `launcher\static\favicon.ico` in this repo.
+Select the Mona icon and click **OK**, then **Apply**.
+The launcher opens in an Edge app window. Edge controls that window's taskbar icon.
+Changing a Windows shortcut icon does not change the Edge window's taskbar icon.
+The ICO includes native sizes for common Windows display scales.
+After an icon update, unpin the launcher shortcut from the taskbar.
+Apply the updated icon to the shortcut, then pin it again.
+
 ## Check a new laptop
 
 Do these checks after you [set up a laptop](setup.md) and start it for the first time.
