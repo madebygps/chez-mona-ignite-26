@@ -57,11 +57,12 @@
       "pitch": "Explore how you can give an agent its own tool with code.",
       "uses": ["VS Code", "GitHub Copilot", "Python"],
       "about": [
-        "How the Microsoft Copilot SDK runs an agent in an app",
-        "How the app gives the agent its own tool",
-        "How to send a prompt and get the reply"
+        "Read an app that runs an agent",
+        "Find the tool the app gives the agent",
+        "Find how the app sends a prompt to the agent"
       ],
       "start": { "type": "sdk" },
+      "story": "In this lab, a small Python app uses the Microsoft Copilot SDK to run an agent. The app gives the agent a tool from its own code: a function that returns the Chez Mona menu. Ask Copilot how the code works.",
       "steps": [
         {
           "text": "Open VS Code",
@@ -74,12 +75,12 @@
         },
         {
           "text": "Ask about the tool",
-          "body": "Copy this question and paste it into the chat.",
+          "body": "Copy this question and paste it into the chat. Then find `get_menu` in `main.py`.",
           "prompt": "What does define_tool do?"
         },
         {
           "text": "Ask about the menu",
-          "body": "Copy this question and paste it into the chat.",
+          "body": "Copy this question and paste it into the chat. Then find `main` in `main.py`.",
           "prompt": "How does the agent get the menu?"
         },
         {
@@ -98,6 +99,16 @@
             "Name the function `tool_menu`, then import it in `main.py`"
           ],
           "hint": "Look at the line above `get_menu`, and at `create_session`."
+        },
+        {
+          "question": "A guest is vegetarian. How does the agent get only the vegetarian dishes?",
+          "answer": "It calls `get_menu` with `vegetarian_only` set to true",
+          "others": [
+            "It removes the meat dishes from its reply",
+            "It reads a vegetarian menu file",
+            "The prompt lists the vegetarian dishes"
+          ],
+          "hint": "Read the reply to your second question."
         },
         {
           "question": "Which call sends a prompt and waits for the reply?",
@@ -125,19 +136,16 @@
       "pitch": "Read a CI workflow where an agent triages issues every week.",
       "uses": ["GitHub Agentic Workflows"],
       "about": [
-        "What an agentic workflow is",
-        "How the frontmatter sets the trigger and permissions",
-        "How the agent follows plain-language instructions"
+        "Read the settings of an agentic workflow",
+        "Read the instructions the agent follows",
+        "Find the rules that keep the agent safe"
       ],
       "start": { "type": "none" },
+      "story": "In this lab, you read a real agentic workflow from the Tailspin Toys repository. An agentic workflow is a GitHub Actions workflow written in Markdown. Each week, an agent follows its plain-language instructions and closes issues and pull requests that workshop learners opened by mistake.",
       "steps": [
         {
-          "text": "Meet agentic workflows",
-          "body": "An agentic workflow is a GitHub Actions workflow written in Markdown. An agent follows its plain-language instructions."
-        },
-        {
           "text": "Read the frontmatter",
-          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open frontmatter** and look for these keys:",
+          "body": "The frontmatter is the settings block at the top, between the `---` lines. Click **Open frontmatter** and find these keys:",
           "details": [
             "`on:` sets when the workflow runs.",
             "`permissions:` sets what the workflow can access.",
@@ -151,17 +159,20 @@
         },
         {
           "text": "Read the instructions",
-          "body": "The instructions are the plain-language prompt below the frontmatter. The agent follows them on each run. Click **Open instructions** and look for these sections:",
-          "details": [
-            "**What to do** gives the agent its job.",
-            "**Never close these** lists the items the agent must skip.",
-            "**When in doubt** tells the agent what to do when it is unsure."
-          ],
+          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions**. Read **What to do**. It gives the agent its job on each run.",
           "action": {
             "type": "open_url",
             "label": "Open instructions",
             "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L47-L146"
           }
+        },
+        {
+          "text": "Find the safety rules",
+          "body": "In the same instructions, find these sections:",
+          "details": [
+            "**Never close these** lists the items the agent must skip.",
+            "**When in doubt** tells the agent what to do when it is unsure."
+          ]
         }
       ],
       "quiz": [
@@ -174,6 +185,16 @@
             "Once a day at midnight, or when a maintainer adds a label"
           ],
           "hint": "Read the `on:` section at the top of the frontmatter."
+        },
+        {
+          "question": "Which items must the agent never close?",
+          "answer": "Items from maintainers and bots",
+          "others": [
+            "Items from first-time contributors",
+            "Items that are older than one week",
+            "Items that have no labels"
+          ],
+          "hint": "Read **Never close these**."
         },
         {
           "question": "What does the agent do when it is unsure about an item?",
