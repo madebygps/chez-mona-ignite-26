@@ -10,6 +10,8 @@ from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
+from PIL import Image
+
 from chez_mona import printer, stats
 from chez_mona.config import StationConfig
 from chez_mona.server import Launcher, make_server, parse_args
@@ -81,6 +83,20 @@ class ServerTest(unittest.TestCase):
         status, content_type, _ = self.request("GET", "/")
         self.assertEqual((status, content_type), (200, "text/html; charset=utf-8"))
 
+    def test_launcher_icons(self):
+        status, content_type, data = self.request("GET", "/favicon.svg")
+        self.assertEqual((status, content_type), (200, "image/svg+xml"))
+        self.assertIn(b"<svg", data)
+        status, content_type, data = self.request("GET", "/favicon.ico")
+        self.assertEqual(status, 200)
+        self.assertIn(content_type, ("image/vnd.microsoft.icon", "image/x-icon"))
+        with Image.open(io.BytesIO(data)) as icon:
+            self.assertEqual(icon.format, "ICO")
+            self.assertTrue({
+                (16, 16), (20, 20), (24, 24), (32, 32), (40, 40), (48, 48),
+                (64, 64), (96, 96), (128, 128), (256, 256),
+            } <= icon.ico.sizes())
+
     def test_rejects_other_hosts_and_traversal(self):
         self.assertEqual(self.request("GET", "/api/labs", headers={"Host": "evil.example"})[0], 403)
         self.assertEqual(self.request("GET", "/../chez_mona/server.py")[0], 404)
@@ -117,10 +133,14 @@ class ServerTest(unittest.TestCase):
         try:
             _, _, data = self.request("GET", "/")
             self.assertIn(b"fridge.js", data)
+            self.assertIn(b'href="/favicon.svg"', data)
+            self.assertIn(b'href="/favicon.ico"', data)
         finally:
             launcher.config.role = "station"
         _, _, data = self.request("GET", "/")
         self.assertIn(b"app.js", data)
+        self.assertIn(b'href="/favicon.svg"', data)
+        self.assertIn(b'href="/favicon.ico"', data)
 
     def test_print_sends_the_receipt(self):
         sent = []
