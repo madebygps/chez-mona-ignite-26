@@ -487,33 +487,68 @@ async function renderPrint() {
 
 // ---------- Wrap up ----------
 
+// Same thresholds as rank() in chez_mona/receipt.py, so the stamp matches the receipt.
+function rank(hints) {
+  const wrong = hints.reduce((sum, n) => sum + n, 0);
+  if (wrong === 0) return "Head chef";
+  return wrong <= 2 ? "Sous chef" : "Line cook";
+}
+
 async function renderWrap() {
   const dish = state.dish;
   const sdk = dish.start.type === "sdk";
   show("wrap", `
     <section class="card">
-      <p class="eyebrow">Well done</p>
-      <h2>Clean up before your receipt</h2>
-      <ul class="step-details">${dish.wrap_up.map((w) => `<li>${fmt(w)}</li>`).join("")}</ul>
-      <p class="muted" id="cleanup">${sdk ? "Cleaning up…" : ""}</p>
+      <div class="wrap-head">
+        <div>
+          <p class="eyebrow">Service complete</p>
+          <h2>Clean your station</h2>
+        </div>
+        <p class="stamp">You earned<strong>${rank(state.hints || [])}</strong></p>
+      </div>
+      <ul class="chores">
+        ${dish.wrap_up.map((w, i) => `<li><button class="chore" id="chore-${i}" aria-pressed="false"${sdk ? " disabled" : ""}>
+          <span>${fmt(w)}</span>${sdk ? `<span class="chore-status" id="chore-status-${i}">Wiping down…</span>` : ""}
+        </button></li>`).join("")}
+      </ul>
+      <p class="muted small" id="cleanup"></p>
       <div class="row">
-        <button class="primary" id="next">Print my receipt</button>
+        <button class="primary" id="next" disabled>Check, please!</button>
       </div>
     </section>`);
-  on("next", renderPrint);
+  const next = on("next", renderPrint);
+  const chores = dish.wrap_up.map((_, i) => document.getElementById(`chore-${i}`));
+  const tick = (chore, done) => {
+    chore.className = done ? "chore done" : "chore";
+    chore.ariaPressed = String(done);
+  };
   api("/api/complete", { dish: dish.id }).catch((error) => console.warn("Could not record completion:", error));
-  if (sdk) {
-    const cleanup = document.getElementById("cleanup");
-    try {
-      const result = await api("/api/session/end", {});
-      const notes = [];
-      if (result.window_still_open) notes.push("Please close the VS Code window.");
-      if (result.ended && !result.deleted) notes.push("Staff: the starter folder could not be deleted yet; it is removed on the next start.");
-      cleanup.textContent = notes.length ? notes.join(" ") : "All clean.";
-    } catch (error) {
-      cleanup.textContent = `Staff: cleanup failed. ${error.message}`;
-    }
+  if (!sdk) {
+    chores.forEach((chore) =>
+      chore.addEventListener("click", () => {
+        tick(chore, chore.ariaPressed !== "true");
+        next.disabled = !chores.every((c) => c.ariaPressed === "true");
+      })
+    );
+    return;
   }
+  const cleanup = document.getElementById("cleanup");
+  let status = "Spotless";
+  try {
+    const result = await api("/api/session/end", {});
+    const notes = [];
+    if (result.window_still_open) notes.push("Please close the VS Code window.");
+    if (result.ended && !result.deleted) notes.push("Staff: the starter folder could not be deleted yet; it is removed on the next start.");
+    cleanup.textContent = notes.join(" ");
+  } catch (error) {
+    status = "Ask a chef";
+    cleanup.textContent = `Staff: cleanup failed. ${error.message}`;
+  }
+  chores.forEach((chore, i) => {
+    tick(chore, status === "Spotless");
+    document.getElementById(`chore-status-${i}`).textContent = status;
+  });
+  next.disabled = false;
 }
 
 // ---------- Staff panel ----------

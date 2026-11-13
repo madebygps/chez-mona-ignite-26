@@ -37,7 +37,7 @@ These screenshots show the Copilot Fusion Fusilli lab. The other dishes use the 
 
 | 7. Wrap up | 8. Take the receipt |
 |---|---|
-| ![Wrap up with Print my receipt](screenshots/station-wrap-up.png) | ![Receipt on its way](screenshots/station-print.png) |
+| ![Clean your station checklist with the rank stamp](screenshots/station-wrap-up.png) | ![Receipt on its way](screenshots/station-print.png) |
 
 ### Printouts
 

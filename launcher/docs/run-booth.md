@@ -41,8 +41,8 @@ Do these checks after you [set up a laptop](setup.md) and start it for the first
 3. Scan a fridge ticket. The station should open that dish's intro.
 4. Return to Scan, tap **Manually select a lab instead**, pick Fried Chicken and start the lab. Click **Open in VS Code**. VS Code should open `main.py`.
 5. In the Copilot app, click **+** next to **Sessions**. Click the model name in the chat box, turn on **Copilot Fusion** and check that **High** is available.
-6. Finish one Fried Chicken lab through the quiz. On the wrap up screen, check that its VS Code window closed.
-7. Click **Print my receipt**. A receipt should print and cut, and its QR code should scan with a phone.
+6. Finish one Fried Chicken lab through the quiz. On the **Clean your station** screen, check that its VS Code window closed and that the item shows **Spotless**.
+7. Click **Check, please!**. A receipt should print and cut, and its QR code should scan with a phone.
 
 ### Fridge
 
