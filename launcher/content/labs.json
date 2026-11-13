@@ -24,7 +24,7 @@
       "quiz": [
         {
           "question": "What is Copilot Fusion?",
-          "answer": "A router that picks the models and pattern for each prompt",
+          "answer": "A model router and orchestrator that picks the models and pattern for each task",
           "others": [
             "A new model that GitHub trained on code",
             "A setting that makes one model reply faster",
