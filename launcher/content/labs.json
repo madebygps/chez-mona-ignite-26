@@ -147,7 +147,7 @@
       "pitch": "Read a CI workflow where an agent triages issues every week.",
       "uses": ["GitHub Agentic Workflows"],
       "about": [
-        "How the frontmatter sets triggers, permissions and other settings",
+        "How the workflow sets triggers, permissions and other settings",
         "How the workflow gives the agent its instructions",
         "How the workflow sets guardrails for the agent"
       ],
