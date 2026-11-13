@@ -7,11 +7,12 @@
       "pitch": "Let Copilot pick the right models for each prompt, then see which models answered.",
       "uses": ["GitHub Copilot app", "Copilot Fusion"],
       "about": [
-        "What Copilot Fusion is",
-        "The three execution patterns that Fusion can use",
-        "How to see which models answered your prompt"
+        "Turn on Copilot Fusion in the Copilot app",
+        "Compare the execution patterns that Fusion uses",
+        "See which models answered your prompt"
       ],
       "start": { "type": "none" },
+      "story": "In this lab, you turn on Copilot Fusion in the GitHub Copilot app. You do not pick a model. For each prompt, Fusion picks the models and how they work together, then gives you one reply.",
       "steps": [
         { "text": "Open the app", "body": "In the taskbar, click the **GitHub Copilot app** icon to open it." },
         { "text": "Start a chat", "body": "On the left, find **Sessions**. Click **+** (New) on the right.", "image": "steps/fusilli-new-chat.png", "alt": "The Sessions row in the Copilot app sidebar, with the New button on the right" },
@@ -21,6 +22,16 @@
         { "text": "See the models", "body": "Below the reply, find **Copilot Fusion** and the name of the model that answered. Then return here and click **I'm ready for the quiz**.", "image": "steps/fusilli-models.png", "alt": "The label below a reply in the Copilot app that reads Copilot Fusion, GPT-6.1 Terra" }
       ],
       "quiz": [
+        {
+          "question": "In the single pattern, what happens?",
+          "answer": "One model completes the task",
+          "others": [
+            "You pick the model for each prompt",
+            "Two models answer and you pick the best reply",
+            "The fastest model answers every prompt"
+          ],
+          "hint": "Read the reply to your first prompt."
+        },
         {
           "question": "Which pattern sends a draft to a judge that can escalate to a stronger model?",
           "answer": "Cascade",
