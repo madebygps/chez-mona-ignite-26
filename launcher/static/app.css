@@ -378,7 +378,6 @@ main:has(> section.card, > section.menu) { justify-content: center; }
   border-radius: var(--radius);
   padding: 0.9em 1.2em;
 }
-.chore:disabled { opacity: 1; }
 .chore::before {
   content: "";
   flex: none;
@@ -394,16 +393,6 @@ main:has(> section.card, > section.menu) { justify-content: center; }
 }
 .chore.done { border-color: var(--ink); }
 .chore.done::before { content: "\2713"; background: var(--ink); border-color: var(--ink); }
-.chore-status {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--text-soft);
-}
-.chore.done .chore-status { color: var(--ink); }
 
 /* Print */
 .status-ok { color: var(--ink); }

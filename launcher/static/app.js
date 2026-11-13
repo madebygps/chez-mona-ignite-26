@@ -494,9 +494,10 @@ function rank(hints) {
   return wrong <= 2 ? "Sous chef" : "Line cook";
 }
 
-async function renderWrap() {
+// The guest ticks every chore. For the SDK dish, endLab() also closes any
+// leftover VS Code window and deletes the starter copy after the receipt.
+function renderWrap() {
   const dish = state.dish;
-  const sdk = dish.start.type === "sdk";
   show("wrap", `
     <section class="card">
       <div class="wrap-head">
@@ -507,11 +508,10 @@ async function renderWrap() {
         <p class="stamp">You earned<strong>${rank(state.hints || [])}</strong></p>
       </div>
       <ul class="chores">
-        ${dish.wrap_up.map((w, i) => `<li><button class="chore" id="chore-${i}" aria-pressed="false"${sdk ? " disabled" : ""}>
-          <span>${fmt(w)}</span>${sdk ? `<span class="chore-status" id="chore-status-${i}">Wiping down…</span>` : ""}
+        ${dish.wrap_up.map((w, i) => `<li><button class="chore" id="chore-${i}"         aria-pressed="false">
+                  <span>${fmt(w)}</span>
         </button></li>`).join("")}
       </ul>
-      <p class="muted small" id="cleanup"></p>
       <div class="row">
         <button class="primary" id="next" disabled>Check, please!</button>
       </div>
@@ -523,32 +523,12 @@ async function renderWrap() {
     chore.ariaPressed = String(done);
   };
   api("/api/complete", { dish: dish.id }).catch((error) => console.warn("Could not record completion:", error));
-  if (!sdk) {
-    chores.forEach((chore) =>
-      chore.addEventListener("click", () => {
-        tick(chore, chore.ariaPressed !== "true");
-        next.disabled = !chores.every((c) => c.ariaPressed === "true");
-      })
-    );
-    return;
-  }
-  const cleanup = document.getElementById("cleanup");
-  let status = "Spotless";
-  try {
-    const result = await api("/api/session/end", {});
-    const notes = [];
-    if (result.window_still_open) notes.push("Please close the VS Code window.");
-    if (result.ended && !result.deleted) notes.push("Staff: the starter folder could not be deleted yet; it is removed on the next start.");
-    cleanup.textContent = notes.join(" ");
-  } catch (error) {
-    status = "Ask a chef";
-    cleanup.textContent = `Staff: cleanup failed. ${error.message}`;
-  }
-  chores.forEach((chore, i) => {
-    tick(chore, status === "Spotless");
-    document.getElementById(`chore-status-${i}`).textContent = status;
-  });
-  next.disabled = false;
+  chores.forEach((chore) =>
+    chore.addEventListener("click", () => {
+      tick(chore, chore.ariaPressed !== "true");
+      next.disabled = !chores.every((c) => c.ariaPressed === "true");
+    })
+  );
 }
 
 // ---------- Staff panel ----------

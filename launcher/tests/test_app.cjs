@@ -151,14 +151,15 @@ test("cleanup checklist gates the receipt and stamps the receipt rank", async ()
   assert.equal(page.elements.get("next").disabled, true);
 });
 
-test("sdk cleanup ticks itself and opens the receipt", async () => {
+test("sdk cleanup is a manual chore", async () => {
   const page = await launcher();
   const dish = content.dishes.find((d) => d.start.type === "sdk");
+  const before = page.requests.length;
   page.run(`state.dish = state.dishes[${JSON.stringify(dish.id)}]; state.hints = [0, 0]; renderWrap();`);
   await settle();
   assert.match(page.elements.get("app").innerHTML, /You earned<strong>Head chef<\/strong>/);
-  assert.ok(page.requests.includes("/api/session/end"));
-  assert.equal(page.elements.get("chore-0").className, "chore done");
-  assert.equal(page.elements.get("chore-status-0").textContent, "Spotless");
+  assert.ok(!page.requests.slice(before).includes("/api/session/end"));
+  assert.match(page.elements.get("app").innerHTML, /id="next" disabled>/);
+  dish.wrap_up.forEach((_, i) => page.click(`chore-${i}`));
   assert.equal(page.elements.get("next").disabled, false);
 });

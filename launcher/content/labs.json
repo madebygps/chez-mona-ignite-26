@@ -106,7 +106,7 @@
           "hint": "Find the line that asks the vegetarian question."
         }
       ],
-      "wrap_up": ["The launcher closes the VS Code window and deletes your copy of the starter."],
+      "wrap_up": ["Close the VS Code window."],
       "receipt": {
         "product": "Microsoft Copilot SDK",
         "bullets": [
