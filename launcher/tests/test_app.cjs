@@ -136,14 +136,14 @@ test("camera failure points guests to the visible picker", async () => {
   assert.equal(page.run("state.screen"), "menu");
 });
 
-test("cleanup checklist gates the receipt and stamps the receipt rank", async () => {
+test("cleanup checklist gates the receipt", async () => {
   const page = await launcher();
   const dish = content.dishes.find((d) => d.start.type !== "sdk" && d.wrap_up.length);
   page.run(`state.dish = state.dishes[${JSON.stringify(dish.id)}]; state.hints = [1, 1]; renderWrap();`);
   await settle();
   const html = page.elements.get("app").innerHTML;
   assert.match(html, /Clean your station/);
-  assert.match(html, /You earned<strong>Sous chef<\/strong>/);
+  assert.doesNotMatch(html, /class="stamp"/);
   assert.match(html, /id="next" disabled>Check, please!/);
   dish.wrap_up.forEach((_, i) => page.click(`chore-${i}`));
   assert.equal(page.elements.get("next").disabled, false);
@@ -157,9 +157,19 @@ test("sdk cleanup is a manual chore", async () => {
   const before = page.requests.length;
   page.run(`state.dish = state.dishes[${JSON.stringify(dish.id)}]; state.hints = [0, 0]; renderWrap();`);
   await settle();
-  assert.match(page.elements.get("app").innerHTML, /You earned<strong>Head chef<\/strong>/);
   assert.ok(!page.requests.slice(before).includes("/api/session/end"));
   assert.match(page.elements.get("app").innerHTML, /id="next" disabled>/);
   dish.wrap_up.forEach((_, i) => page.click(`chore-${i}`));
   assert.equal(page.elements.get("next").disabled, false);
+});
+
+test("receipt screen shows the printed check with the rank stamp", async () => {
+  const page = await launcher();
+  const dish = content.dishes[0];
+  page.run(`state.dish = state.dishes[${JSON.stringify(dish.id)}]; state.hints = [0, 0]; renderPrint();`);
+  await settle();
+  assert.ok(page.requests.includes("/api/print"));
+  assert.match(page.elements.get("feed").innerHTML, /You earned<strong>Head chef<\/strong>/);
+  assert.equal(page.elements.get("print-title").textContent, "Your receipt is on its way");
+  assert.match(page.elements.get("print-body").innerHTML, /id="next">Next guest/);
 });

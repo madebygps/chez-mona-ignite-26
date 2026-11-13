@@ -6,6 +6,7 @@ is a keepsake guest check, with the same wordmark and gingham edges.
 
 from __future__ import annotations
 
+import io
 import os
 import re
 import textwrap
@@ -256,6 +257,71 @@ def raster(image: Image.Image) -> bytes:
     data = bytes(b ^ 0xFF for b in image.tobytes())
     x_bytes = width // 8
     return GS + b"v0\x00" + bytes([x_bytes & 0xFF, x_bytes >> 8, height & 0xFF, height >> 8]) + data
+
+
+# ---------- Preview ----------
+
+LINE_DOTS = 30  # Font A is 12 x 24 dots; the printer adds line spacing
+PREVIEW_FONTS = {False: "consola.ttf", True: "consolab.ttf"}
+PREVIEW_MARGIN = 24
+
+
+def _glyphs(text: str, bold: bool, invert: bool = False) -> Image.Image:
+    """Text in fixed 12-dot cells, so columns line up as they do on paper."""
+    face = font(PREVIEW_FONTS[bold], 22)
+    image = Image.new("1", (max(1, len(text)) * FONT_A_WIDTH, LINE_DOTS), int(not invert))
+    draw = ImageDraw.Draw(image)
+    for i, char in enumerate(text):
+        draw.text((i * FONT_A_WIDTH + FONT_A_WIDTH / 2, LINE_DOTS / 2), char, font=face, fill=int(invert), anchor="mm")
+    return image
+
+
+def _line_image(text: str, width_dots: int, align: str = "center", width: int = 1, height: int = 1,
+                bold: bool = False, invert: bool = False) -> Image.Image:
+    glyphs = _glyphs(text, bold, invert)
+    if width > 1 or height > 1:
+        glyphs = glyphs.resize((glyphs.width * width, glyphs.height * height), Image.NEAREST)
+    line = Image.new("1", (width_dots, glyphs.height), 1)
+    x = {"left": 0, "center": (width_dots - glyphs.width) // 2, "right": width_dots - glyphs.width}[align]
+    line.paste(glyphs, (max(0, x), 0))
+    return line
+
+
+def render_image(items: list[Item], width_dots: int) -> Image.Image:
+    """What render_escpos prints, drawn with Consolas in place of the printer font."""
+    columns = width_dots // FONT_A_WIDTH
+    blank = Image.new("1", (width_dots, LINE_DOTS), 1)
+    parts: list[Image.Image] = []
+    for item in items:
+        if item is None:
+            parts.append(blank)
+        elif isinstance(item, Qr):
+            parts += [qr_image(item.data, width_dots, item.fraction), blank]
+        elif isinstance(item, Picture):
+            parts.append(item.draw(width_dots))
+        elif isinstance(item, Rule):
+            text = (item.char + " ") * columns if item.spaced else item.char * columns
+            parts.append(_line_image(text[:columns].rstrip(), width_dots))
+        elif isinstance(item, Row):
+            parts += [_line_image(line, width_dots, "left", item.size, item.size, item.bold)
+                      for line in _row_lines(item, columns // item.size)]
+        else:
+            align = "left" if item.invert else item.align
+            parts += [_line_image(line, width_dots, align, item.width, item.height, item.bold, item.invert)
+                      for line in _text_lines(item, columns // item.width)]
+    image = Image.new("1", (width_dots + 2 * PREVIEW_MARGIN, sum(p.height for p in parts) + 2 * PREVIEW_MARGIN), 1)
+    y = PREVIEW_MARGIN
+    for part in parts:
+        image.paste(part, (PREVIEW_MARGIN, y))
+        y += part.height
+    return image
+
+
+def png(dish: dict, check: Check, width_dots: int = WIDTH_DOTS) -> bytes:
+    """The receipt as a PNG, for the station screen."""
+    out = io.BytesIO()
+    render_image(layout(dish, check), width_dots).save(out, "PNG", optimize=True)
+    return out.getvalue()
 
 
 # ---------- ESC/POS ----------
