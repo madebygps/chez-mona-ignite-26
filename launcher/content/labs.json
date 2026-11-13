@@ -12,7 +12,7 @@
         "See which models answered your prompt"
       ],
       "start": { "type": "none" },
-      "story": "In this lab, you turn on Copilot Fusion in the GitHub Copilot app. You do not pick a model. For each prompt, Fusion picks the models and how they work together, then gives you one reply.",
+      "story": "In this lab, you'll learn about Copilot Fusion by asking Copilot itself to explain it. Then you'll see which models teamed up to write your answer.",
       "steps": [
         { "text": "Open the app", "body": "In the taskbar, click the **GitHub Copilot app** icon to open it." },
         { "text": "Start a chat", "body": "On the left, find **Sessions**. Click **+** (New) on the right.", "image": "steps/fusilli-new-chat.png", "alt": "The Sessions row in the Copilot app sidebar, with the New button on the right" },
@@ -73,7 +73,7 @@
         "Find how the app sends a prompt to the agent"
       ],
       "start": { "type": "sdk" },
-      "story": "In this lab, a small Python app uses the Microsoft Copilot SDK to run an agent. The app gives the agent a tool from its own code: a function that returns the Chez Mona menu. Ask Copilot how the code works.",
+      "story": "In this lab, you'll explore a small Python app that uses the Microsoft Copilot SDK to run an agent. You'll use GitHub Copilot to understand how the app gives its agent a tool of its own: the Chez Mona menu.",
       "steps": [
         {
           "text": "Open VS Code",
@@ -152,7 +152,7 @@
         "Find the rules that keep the agent safe"
       ],
       "start": { "type": "none" },
-      "story": "In this lab, you read a real agentic workflow from the Tailspin Toys repository. An agentic workflow is a GitHub Actions workflow written in Markdown. Each week, an agent follows its plain-language instructions and closes issues and pull requests that workshop learners opened by mistake.",
+      "story": "In this lab, you'll explore a real agentic workflow: a GitHub Actions workflow written in Markdown. Every week, an agent reads its plain-language instructions and tidies up issues and pull requests that workshop learners opened by mistake. You'll see how the workflow keeps the agent safe.",
       "steps": [
         {
           "text": "Read the frontmatter",
@@ -242,7 +242,7 @@
         "Review all suggestions from Copilot code review"
       ],
       "start": { "type": "none" },
-      "story": "In this lab, a pull request we opened adds a security vulnerability. See how GitHub Advanced Security and GitHub Copilot find security issues and other code improvements.",
+      "story": "In this lab, you'll review a pull request that sneaks a security vulnerability into our code. You'll watch GitHub Advanced Security catch it, then see what else Copilot code review finds.",
       "steps": [
         {
           "text": "Find the issue with GitHub Advanced Security",
