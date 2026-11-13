@@ -205,68 +205,54 @@
       "pitch": "See how AI reviewers catch bugs in a pull request.",
       "uses": ["Code scanning", "Copilot Autofix", "Copilot code review"],
       "about": [
-        "How code scanning finds a SQL injection",
-        "How Copilot Autofix suggests the fix",
-        "How Copilot code review checks the whole change"
+        "Read a code scanning alert",
+        "Review the fix from Copilot Autofix",
+        "Review all suggestions from Copilot code review"
       ],
       "start": { "type": "none" },
+      "story": "In this lab, a pull request we opened adds a security vulnerability. See how GitHub Advanced Security and GitHub Copilot find security issues and other code improvements.",
       "steps": [
         {
-          "text": "Read the code scanning alert",
-          "body": "Code scanning uses CodeQL to find known vulnerability patterns. Click **Open alert** and look for these parts:",
+          "text": "Find the issue with GitHub Advanced Security",
+          "body": "In the pull request, find the **github-advanced-security** comment:",
           "details": [
-            "The **title** names the problem CodeQL found.",
-            "The **flagged line** is the code above the alert."
+            "**CodeQL / Database query built from user-controlled sources** names the issue.",
+            "The **code above the comment** is the flagged line.",
+            "**Suggested changeset** is the fix from Copilot Autofix. Red is unsafe. Green is fixed."
           ],
           "action": {
             "type": "open_url",
-            "label": "Open alert",
-            "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files#discussion_r4461811755"
+            "label": "Open pull request",
+            "url": "https://github.com/madebygps/chez-mona-dip/pull/2"
           }
         },
         {
-          "text": "Read the Autofix",
-          "body": "Copilot Autofix suggests a fix for the alert. Find **Suggested changeset** under the same alert:",
-          "details": [
-            "The **red line** is the unsafe query.",
-            "The **green line** is the fixed query."
-          ]
+          "text": "Find the same issue in Copilot code review",
+          "body": "Scroll down to the **Copilot** review. Find the comment about the same query. Read the risk and the fix it suggests."
         },
         {
-          "text": "Read the Copilot review",
-          "body": "Copilot code review checks the whole change, not only known patterns. Click **Open review** and look for these parts:",
-          "details": [
-            "**Changes recommended** sums up the review.",
-            "**4 open issues** lists each comment Copilot left."
-          ],
-          "action": {
-            "type": "open_url",
-            "label": "Open review",
-            "url": "https://github.com/madebygps/chez-mona-dip/pull/2#pullrequestreview-5772715680"
-          }
-        },
-        {
-          "text": "Read the route comment",
-          "body": "This comment finds a bug that code scanning did not report. Click **Open comment** and read **Register the search route before the parameterized ID route**. Find why the search route never runs.",
-          "action": {
-            "type": "open_url",
-            "label": "Open comment",
-            "url": "https://github.com/madebygps/chez-mona-dip/pull/2/files#discussion_r4470875041"
-          }
+          "text": "Read the other Copilot comments",
+          "body": "Read **Register the search route before the parameterized ID route**. Read why Copilot thinks the search route never runs."
         }
       ],
       "quiz": [
         {
-          "question": "What did code scanning find?",
+          "question": "What type of issue did code scanning find?",
           "answer": "SQL injection",
           "others": ["Exposed secret", "Outdated dependency", "Cross site scripting"],
           "hint": "User input ends up inside a database query."
         },
         {
-          "question": "Which reviewer looks at the whole change, not only known vulnerability patterns?",
-          "answer": "Copilot code review",
-          "others": ["Code scanning", "Copilot Autofix", "The PR author"],
-          "hint": "Find the comment that is not about the SQL query."
+          "question": "What fix did Copilot Autofix suggest?",
+          "answer": "Pass the search term as a query parameter",
+          "others": ["Remove the search route", "Escape quotes in the search term", "Limit the length of the search term"],
+          "hint": "Compare the red and green lines in Suggested changeset."
+        },
+        {
+          "question": "Code scanning finds security vulnerabilities. What else does Copilot code review find?",
+          "answer": "Bugs and other code improvements",
+          "others": ["Only security vulnerabilities", "Outdated dependencies", "Exposed secrets"],
+          "hint": "Read why the search route never runs."
         }
       ],
       "wrap_up": ["Close the browser tabs you opened."],

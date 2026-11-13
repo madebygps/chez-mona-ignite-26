@@ -526,4 +526,8 @@ pre.detail {
 }
 .confirm-about ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
 .confirm-about li { font-size: 1.05rem; font-weight: 300; color: var(--text); }
-.intro .confirm-about { margin: 24px 0; }
+.intro .intro-inner { width: fit-content; max-width: 100%; margin: 0 auto; }
+.intro .intro-text { max-width: 30em; }
+.intro .confirm-about { max-width: none; margin: 24px 0; }
+.intro .story { margin: 24px 0 0; font-size: 1.05rem; font-weight: 400; color: var(--text); text-wrap: pretty; }
+.intro .confirm-label { color: var(--text-soft); }
