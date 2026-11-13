@@ -164,17 +164,8 @@
           }
         },
         {
-          "text": "Read the instructions",
-          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions**. Read **What to do**. It gives the agent its job on each run.",
-          "action": {
-            "type": "open_url",
-            "label": "Open instructions",
-            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L47-L146"
-          }
-        },
-        {
           "text": "Find the guardrails",
-          "body": "The guardrails are settings in the frontmatter. Click **Open guardrails** and find these keys:",
+          "body": "The frontmatter also sets guardrails. Click **Open guardrails** and find these keys:",
           "details": [
             "`permissions:` sets what the agent can access.",
             "`safe-outputs:` sets what the workflow may change. Read the comment above it."
@@ -183,6 +174,15 @@
             "type": "open_url",
             "label": "Open guardrails",
             "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L15-L45"
+          }
+        },
+        {
+          "text": "Read the instructions",
+          "body": "The instructions are the plain-language prompt below the frontmatter. Click **Open instructions**. Read **What to do**. It gives the agent its job on each run.",
+          "action": {
+            "type": "open_url",
+            "label": "Open instructions",
+            "url": "https://github.com/github-samples/tailspin-toys/blob/5cea2126c68a80d29f771ef14eb9e8cac0c91f65/.github/workflows/weekly-workshop-triage.md?plain=1#L47-L146"
           }
         },
         {
